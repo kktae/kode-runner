@@ -306,8 +306,8 @@ export class GameLoop {
     const cellWidth = width / BOARD_WIDTH;
     const cellHeight = height / BOARD_HEIGHT;
 
-    // Grid lines - Warm Kakao Theme
-    this.ctx.strokeStyle = 'rgba(60, 30, 30, 0.08)';
+    // Grid lines - High Contrast Dark Canvas
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
     this.ctx.lineWidth = 1;
 
     for (let r = 0; r <= BOARD_HEIGHT; r++) {
