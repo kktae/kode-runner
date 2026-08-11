@@ -31,6 +31,8 @@ export class GameLoop {
   private lastTime = 0;
   private dropCounter = 0;
   private dropInterval = 800; // ms
+  private lockDelayCounter = 0;
+  private readonly lockDelay = 300; // 300ms lock delay when resting on ground
 
   private animationFrameId: number | null = null;
   private timerIntervalId: number | null = null;
@@ -107,6 +109,8 @@ export class GameLoop {
     this.board = new TetrisBoard(this.factory);
     this.stats = this.createInitialStats();
     this.dropInterval = 800;
+    this.dropCounter = 0;
+    this.lockDelayCounter = 0;
     this.isRunning = false;
     this.isPaused = false;
   }
@@ -145,19 +149,32 @@ export class GameLoop {
 
     switch (action) {
       case 'left':
-        if (this.board.moveLeft()) this.soundManager.playMove();
+        if (this.board.moveLeft()) {
+          this.soundManager.playMove();
+          this.resetLockDelayIfGrounded();
+        }
         break;
       case 'right':
-        if (this.board.moveRight()) this.soundManager.playMove();
+        if (this.board.moveRight()) {
+          this.soundManager.playMove();
+          this.resetLockDelayIfGrounded();
+        }
         break;
       case 'down':
         if (this.board.moveDown()) {
           this.stats.score += 1;
           this.soundManager.playMove();
+          this.dropCounter = 0;
+        } else {
+          // Soft drop touching ground -> immediate lock & clear
+          this.lockAndNext();
         }
         break;
       case 'rotate':
-        if (this.board.rotate(true)) this.soundManager.playRotate();
+        if (this.board.rotate(true)) {
+          this.soundManager.playRotate();
+          this.resetLockDelayIfGrounded();
+        }
         break;
       case 'hardDrop': {
         const dropped = this.board.hardDrop();
@@ -177,9 +194,29 @@ export class GameLoop {
     this.callbacks.onStatsUpdate(this.stats);
   }
 
+  private resetLockDelayIfGrounded() {
+    if (this.isGrounded()) {
+      this.lockDelayCounter = 0;
+    }
+  }
+
+  private isGrounded(): boolean {
+    if (!this.board.activePiece) return false;
+    return this.board.checkCollision(
+      this.board.activePiece.shape,
+      this.board.activePiece.x,
+      this.board.activePiece.y + 1
+    );
+  }
+
   private lockAndNext() {
+    this.lockDelayCounter = 0;
+    this.dropCounter = 0;
+
+    // 1. Lock active piece into board grid
     this.board.lockPiece();
 
+    // 2. Check and clear completed lines immediately
     const clearEvent = this.board.clearLines();
     if (clearEvent.count > 0) {
       this.stats.combo++;
@@ -203,7 +240,7 @@ export class GameLoop {
         this.updateDropInterval();
       }
 
-      // Particles & Audio
+      // Particle explosions & Audio
       const colors = ['#FFB800', '#FF69B4', '#FFA500', '#FFD700', '#1E90FF', '#00FA9A'];
       for (const row of clearEvent.clearedRows) {
         const cellWidth = this.canvas.width / BOARD_WIDTH;
@@ -217,13 +254,14 @@ export class GameLoop {
       this.stats.combo = 0;
     }
 
-    // Spawn Next
+    // 3. Spawn next piece
     if (!this.board.spawnPiece()) {
       this.gameOver();
       return;
     }
 
     this.updateQueueAndHold();
+    this.callbacks.onStatsUpdate(this.stats);
   }
 
   private loop(timestamp: number) {
@@ -234,12 +272,21 @@ export class GameLoop {
 
     if (!this.isPaused) {
       this.dropCounter += deltaTime;
-      if (this.dropCounter >= this.dropInterval) {
-        this.dropCounter = 0;
-        if (!this.board.moveDown()) {
+
+      if (this.isGrounded()) {
+        // Increment lock delay counter while sitting on ground
+        this.lockDelayCounter += deltaTime;
+        if (this.lockDelayCounter >= this.lockDelay) {
           this.lockAndNext();
         }
+      } else {
+        this.lockDelayCounter = 0;
+        if (this.dropCounter >= this.dropInterval) {
+          this.dropCounter = 0;
+          this.board.moveDown();
+        }
       }
+
       this.particles.update();
     }
 

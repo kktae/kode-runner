@@ -170,7 +170,7 @@ export class TetrisBoard {
           if (targetY >= 0 && targetY < BOARD_HEIGHT && targetX >= 0 && targetX < BOARD_WIDTH) {
             this.grid[targetY][targetX] = {
               filled: true,
-              color: '', // Rendered by MinoType
+              color: '',
               characterType: this.activePiece.type
             };
           }
@@ -180,23 +180,29 @@ export class TetrisBoard {
     this.activePiece = null;
   }
 
+  /**
+   * Correct, bug-free line clear algorithm:
+   * Filter out completed rows and prepend empty rows at the top.
+   */
   public clearLines(): LineClearEvent {
     const clearedRows: number[] = [];
 
-    for (let r = BOARD_HEIGHT - 1; r >= 0; r--) {
+    for (let r = 0; r < BOARD_HEIGHT; r++) {
       if (this.grid[r].every(cell => cell.filled)) {
         clearedRows.push(r);
       }
     }
 
     if (clearedRows.length > 0) {
-      // Remove cleared rows and unshift empty ones
-      for (const row of clearedRows) {
-        this.grid.splice(row, 1);
-        this.grid.unshift(
-          Array.from({ length: BOARD_WIDTH }, () => ({ filled: false, color: '#000000' }))
-        );
-      }
+      // Filter out cleared rows
+      const remainingRows = this.grid.filter((_, idx) => !clearedRows.includes(idx));
+      const emptyRowsCount = BOARD_HEIGHT - remainingRows.length;
+
+      const newEmptyRows = Array.from({ length: emptyRowsCount }, () =>
+        Array.from({ length: BOARD_WIDTH }, () => ({ filled: false, color: '#000000' }))
+      );
+
+      this.grid = [...newEmptyRows, ...remainingRows];
     }
 
     return {
