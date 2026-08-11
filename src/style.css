@@ -479,25 +479,26 @@ kbd {
   margin: 0 2px;
 }
 
-/* Combo Banner Overlay */
+/* Combo Banner Overlay - Pure Typography Motion */
 .combo-banner {
   position: absolute;
-  top: 42%;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: 'Outfit', 'Pretendard', sans-serif;
-  font-size: 1.6rem;
-  font-weight: 800;
+  font-size: 1.8rem;
+  font-weight: 900;
   text-align: center;
   pointer-events: none;
   z-index: 100;
   opacity: 0;
-  width: 90%;
-  background: var(--surface-modal);
-  padding: 12px 20px;
-  border-radius: 16px;
-  border: 2px solid var(--kakao-yellow);
-  box-shadow: var(--shadow-modal);
+  width: auto;
+  white-space: nowrap;
+  background: none;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  letter-spacing: -0.02em;
 }
 
 /* Modals - Clean Human Pro Surface Design */
