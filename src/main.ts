@@ -133,6 +133,14 @@ function renderLeaderboard(mode: GameMode) {
   const entries = LeaderboardManager.getEntries(mode);
   leaderboardList.innerHTML = '';
 
+  if (entries.length === 0) {
+    const emptyLi = document.createElement('li');
+    emptyLi.className = 'leader-empty';
+    emptyLi.innerText = '등록된 랭킹이 없습니다.';
+    leaderboardList.appendChild(emptyLi);
+    return;
+  }
+
   entries.forEach((entry, index) => {
     const li = document.createElement('li');
     li.className = 'leader-item';
@@ -151,6 +159,14 @@ function renderModalLeaderboard(mode: GameMode) {
 
   const entries = LeaderboardManager.getEntries(mode);
   modalLeaderboardList.innerHTML = '';
+
+  if (entries.length === 0) {
+    const emptyLi = document.createElement('li');
+    emptyLi.className = 'leader-empty';
+    emptyLi.innerText = '등록된 기록이 없습니다. 첫 번째 랭커에 도전하세요!';
+    modalLeaderboardList.appendChild(emptyLi);
+    return;
+  }
 
   entries.forEach((entry, index) => {
     const li = document.createElement('li');
