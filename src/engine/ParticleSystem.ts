@@ -13,8 +13,19 @@ export interface Particle {
   maxLife: number;
 }
 
+export interface FloatingText {
+  x: number;
+  y: number;
+  text: string;
+  color: string;
+  alpha: number;
+  life: number;
+  maxLife: number;
+}
+
 export class ParticleSystem {
   private particles: Particle[] = [];
+  private floatingTexts: FloatingText[] = [];
   private canvasElement: HTMLCanvasElement;
 
   constructor(canvasElement: HTMLCanvasElement) {
@@ -22,35 +33,50 @@ export class ParticleSystem {
   }
 
   public addLineExplosion(yRow: number, rowCellWidth: number, cellHeight: number, colors: string[]) {
-    const numParticles = 30;
+    const numParticles = 35;
     const yCenter = yRow * cellHeight + cellHeight / 2;
 
     for (let i = 0; i < numParticles; i++) {
       const x = Math.random() * (rowCellWidth * 10);
       const angle = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 6;
-      const color = colors[Math.floor(Math.random() * colors.length)] || '#FFB800';
+      const speed = 2 + Math.random() * 7;
+      const color = colors[Math.floor(Math.random() * colors.length)] || '#FEE500';
 
       this.particles.push({
         x,
         y: yCenter,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 1, // Slight upward bias
+        vy: Math.sin(angle) * speed - 1.5,
         color,
-        size: 3 + Math.random() * 5,
+        size: 3 + Math.random() * 6,
         alpha: 1,
         life: 0,
-        maxLife: 30 + Math.random() * 20
+        maxLife: 35 + Math.random() * 20
       });
     }
   }
 
-  public triggerScreenShake(intensity = 8) {
+  public addScoreText(score: number, yRow: number, cellHeight: number) {
+    const x = this.canvasElement.width / 2;
+    const y = yRow * cellHeight;
+
+    this.floatingTexts.push({
+      x,
+      y,
+      text: `+${score.toLocaleString()}점!`,
+      color: '#FEE500',
+      alpha: 1,
+      life: 0,
+      maxLife: 45
+    });
+  }
+
+  public triggerScreenShake(intensity = 10) {
     gsap.to(this.canvasElement, {
       x: `+=${(Math.random() - 0.5) * intensity}`,
       y: `+=${(Math.random() - 0.5) * intensity}`,
       duration: 0.04,
-      repeat: 5,
+      repeat: 6,
       yoyo: true,
       ease: 'sine.inOut',
       onComplete: () => {
@@ -61,14 +87,15 @@ export class ParticleSystem {
 
   public triggerConfetti() {
     confetti({
-      particleCount: 100,
-      spread: 70,
+      particleCount: 120,
+      spread: 80,
       origin: { y: 0.6 },
-      colors: ['#FFB800', '#FF69B4', '#FFA500', '#FFD700', '#1E90FF', '#00FA9A']
+      colors: ['#FEE500', '#FF69B4', '#FFA500', '#FFD700', '#1E90FF', '#00FA9A']
     });
   }
 
   public update() {
+    // Update Particles
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.life++;
@@ -81,10 +108,24 @@ export class ParticleSystem {
         this.particles.splice(i, 1);
       }
     }
+
+    // Update Floating Score Texts
+    for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+      const ft = this.floatingTexts[i];
+      ft.life++;
+      ft.y -= 1.2; // Float upwards
+      ft.alpha = 1 - ft.life / ft.maxLife;
+
+      if (ft.life >= ft.maxLife) {
+        this.floatingTexts.splice(i, 1);
+      }
+    }
   }
 
   public draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
+
+    // Draw Particles
     for (const p of this.particles) {
       ctx.globalAlpha = Math.max(0, p.alpha);
       ctx.fillStyle = p.color;
@@ -92,6 +133,19 @@ export class ParticleSystem {
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    // Draw Floating Score Texts
+    ctx.font = '800 20px "Pretendard", "Outfit", sans-serif';
+    ctx.textAlign = 'center';
+
+    for (const ft of this.floatingTexts) {
+      ctx.globalAlpha = Math.max(0, ft.alpha);
+      ctx.fillStyle = ft.color;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 8;
+      ctx.fillText(ft.text, ft.x, ft.y);
+    }
+
     ctx.restore();
   }
 }

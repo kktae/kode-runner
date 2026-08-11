@@ -93,7 +93,7 @@ const gameLoop = new GameLoop(tetrisCanvas, {
   },
   onGameOver: (finalStats) => {
     currentStats = finalStats;
-    gameoverTitle.innerText = selectedMode === 'timeattack' ? 'TIME OVER!' : 'GAME OVER!';
+    gameoverTitle.innerText = selectedMode === 'timeattack' ? '제한 시간 종료!' : '게임 종료!';
     resScore.innerText = finalStats.score.toLocaleString();
     resLines.innerText = finalStats.lines.toString();
     resCombo.innerText = finalStats.maxCombo.toString();

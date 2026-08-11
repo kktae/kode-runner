@@ -240,12 +240,17 @@ export class GameLoop {
         this.updateDropInterval();
       }
 
-      // Particle explosions & Audio
-      const colors = ['#FFB800', '#FF69B4', '#FFA500', '#FFD700', '#1E90FF', '#00FA9A'];
+      // Particle explosions, floating score text & Audio
+      const colors = ['#FEE500', '#FF69B4', '#FFA500', '#FFD700', '#1E90FF', '#00FA9A'];
+      const cellWidth = this.canvas.width / BOARD_WIDTH;
+      const cellHeight = this.canvas.height / BOARD_HEIGHT;
+
       for (const row of clearEvent.clearedRows) {
-        const cellWidth = this.canvas.width / BOARD_WIDTH;
-        const cellHeight = this.canvas.height / BOARD_HEIGHT;
         this.particles.addLineExplosion(row, cellWidth, cellHeight, colors);
+      }
+
+      if (clearEvent.clearedRows.length > 0) {
+        this.particles.addScoreText(earned, clearEvent.clearedRows[0], cellHeight);
       }
 
       this.soundManager.playLineClear(clearEvent.count, this.stats.combo);
