@@ -76,6 +76,10 @@ export class GameLoop {
 
     this.board.spawnPiece();
     this.updateQueueAndHold();
+    this.callbacks.onStatsUpdate(this.stats);
+
+    const wrapper = document.getElementById('canvas-wrapper');
+    if (wrapper) wrapper.classList.add('is-playing');
 
     this.lastTime = performance.now();
     this.loop(this.lastTime);
@@ -124,6 +128,9 @@ export class GameLoop {
     this.isRunning = false;
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
     if (this.timerIntervalId) clearInterval(this.timerIntervalId);
+
+    const wrapper = document.getElementById('canvas-wrapper');
+    if (wrapper) wrapper.classList.remove('is-playing');
 
     this.soundManager.playGameOver();
     this.callbacks.onGameOver(this.stats);
@@ -238,6 +245,14 @@ export class GameLoop {
       if (newLevel !== this.stats.level) {
         this.stats.level = newLevel;
         this.updateDropInterval();
+      }
+
+      // Trigger in-game board wrapper flash animation
+      const wrapper = document.getElementById('canvas-wrapper');
+      if (wrapper) {
+        wrapper.classList.remove('flash');
+        void wrapper.offsetWidth; // Force reflow
+        wrapper.classList.add('flash');
       }
 
       // Particle explosions, floating score text & Audio

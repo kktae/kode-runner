@@ -357,6 +357,21 @@ body {
   justify-content: center;
   align-items: center;
   position: relative;
+  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.board-wrapper.is-playing {
+  border-color: var(--kakao-yellow);
+  box-shadow: 0 0 20px rgba(254, 229, 0, 0.25), var(--shadow-main);
+}
+
+@keyframes boardFlash {
+  0% { border-color: #FFFFFF; box-shadow: 0 0 32px rgba(255, 255, 255, 0.9); }
+  100% { border-color: var(--kakao-yellow); box-shadow: 0 0 20px rgba(254, 229, 0, 0.25); }
+}
+
+.board-wrapper.flash {
+  animation: boardFlash 0.35s ease-out;
 }
 
 #tetris-canvas {
