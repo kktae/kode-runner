@@ -1,4 +1,4 @@
-import { MinoType, Point } from '../types/tetris';
+import type { MinoType, Point } from '../types/tetris';
 
 export interface MinoPiece {
   type: MinoType;
@@ -13,61 +13,157 @@ export const SHAPES: Record<MinoType, number[][]> = {
     [0, 0, 0, 0],
     [1, 1, 1, 1],
     [0, 0, 0, 0],
-    [0, 0, 0, 0]
+    [0, 0, 0, 0],
   ],
   J: [
     [1, 0, 0],
     [1, 1, 1],
-    [0, 0, 0]
+    [0, 0, 0],
   ],
   L: [
     [0, 0, 1],
     [1, 1, 1],
-    [0, 0, 0]
+    [0, 0, 0],
   ],
   O: [
     [1, 1],
-    [1, 1]
+    [1, 1],
   ],
   S: [
     [0, 1, 1],
     [1, 1, 0],
-    [0, 0, 0]
+    [0, 0, 0],
   ],
   T: [
     [0, 1, 0],
     [1, 1, 1],
-    [0, 0, 0]
+    [0, 0, 0],
   ],
   Z: [
     [1, 1, 0],
     [0, 1, 1],
-    [0, 0, 0]
-  ]
+    [0, 0, 0],
+  ],
 };
 
 // SRS Wall Kick Offsets for 3x3 minos
 export const JLSTZ_WALL_KICKS: Record<string, Point[]> = {
-  '0->1': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: -2 }, { x: -1, y: -2 }],
-  '1->0': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: 0, y: 2 }, { x: 1, y: 2 }],
-  '1->2': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: 0, y: 2 }, { x: 1, y: 2 }],
-  '2->1': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: -2 }, { x: -1, y: -2 }],
-  '2->3': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: -2 }, { x: 1, y: -2 }],
-  '3->2': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 0, y: 2 }, { x: -1, y: 2 }],
-  '3->0': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 0, y: 2 }, { x: -1, y: 2 }],
-  '0->3': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: -2 }, { x: 1, y: -2 }]
+  '0->1': [
+    { x: 0, y: 0 },
+    { x: -1, y: 0 },
+    { x: -1, y: 1 },
+    { x: 0, y: -2 },
+    { x: -1, y: -2 },
+  ],
+  '1->0': [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 1, y: -1 },
+    { x: 0, y: 2 },
+    { x: 1, y: 2 },
+  ],
+  '1->2': [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 1, y: -1 },
+    { x: 0, y: 2 },
+    { x: 1, y: 2 },
+  ],
+  '2->1': [
+    { x: 0, y: 0 },
+    { x: -1, y: 0 },
+    { x: -1, y: 1 },
+    { x: 0, y: -2 },
+    { x: -1, y: -2 },
+  ],
+  '2->3': [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 0, y: -2 },
+    { x: 1, y: -2 },
+  ],
+  '3->2': [
+    { x: 0, y: 0 },
+    { x: -1, y: 0 },
+    { x: -1, y: -1 },
+    { x: 0, y: 2 },
+    { x: -1, y: 2 },
+  ],
+  '3->0': [
+    { x: 0, y: 0 },
+    { x: -1, y: 0 },
+    { x: -1, y: -1 },
+    { x: 0, y: 2 },
+    { x: -1, y: 2 },
+  ],
+  '0->3': [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 0, y: -2 },
+    { x: 1, y: -2 },
+  ],
 };
 
 // SRS Wall Kick Offsets for I mino
 export const I_WALL_KICKS: Record<string, Point[]> = {
-  '0->1': [{ x: 0, y: 0 }, { x: -2, y: 0 }, { x: 1, y: 0 }, { x: -2, y: -1 }, { x: 1, y: 2 }],
-  '1->0': [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 1 }, { x: -1, y: -2 }],
-  '1->2': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }],
-  '2->1': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -2, y: 0 }, { x: 1, y: -2 }, { x: -2, y: 1 }],
-  '2->3': [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 1 }, { x: -1, y: -2 }],
-  '3->2': [{ x: 0, y: 0 }, { x: -2, y: 0 }, { x: 1, y: 0 }, { x: -2, y: -1 }, { x: 1, y: 2 }],
-  '3->0': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }],
-  '0->3': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -2, y: 0 }, { x: 1, y: -2 }, { x: -2, y: 1 }]
+  '0->1': [
+    { x: 0, y: 0 },
+    { x: -2, y: 0 },
+    { x: 1, y: 0 },
+    { x: -2, y: -1 },
+    { x: 1, y: 2 },
+  ],
+  '1->0': [
+    { x: 0, y: 0 },
+    { x: 2, y: 0 },
+    { x: -1, y: 0 },
+    { x: 2, y: 1 },
+    { x: -1, y: -2 },
+  ],
+  '1->2': [
+    { x: 0, y: 0 },
+    { x: -1, y: 0 },
+    { x: 2, y: 0 },
+    { x: -1, y: 2 },
+    { x: 2, y: -1 },
+  ],
+  '2->1': [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: -2, y: 0 },
+    { x: 1, y: -2 },
+    { x: -2, y: 1 },
+  ],
+  '2->3': [
+    { x: 0, y: 0 },
+    { x: 2, y: 0 },
+    { x: -1, y: 0 },
+    { x: 2, y: 1 },
+    { x: -1, y: -2 },
+  ],
+  '3->2': [
+    { x: 0, y: 0 },
+    { x: -2, y: 0 },
+    { x: 1, y: 0 },
+    { x: -2, y: -1 },
+    { x: 1, y: 2 },
+  ],
+  '3->0': [
+    { x: 0, y: 0 },
+    { x: -1, y: 0 },
+    { x: 2, y: 0 },
+    { x: -1, y: 2 },
+    { x: 2, y: -1 },
+  ],
+  '0->3': [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: -2, y: 0 },
+    { x: 1, y: -2 },
+    { x: -2, y: 1 },
+  ],
 };
 
 export class MinoFactory {
@@ -102,20 +198,22 @@ export class MinoFactory {
   }
 
   public createPiece(type: MinoType, boardWidth = 10): MinoPiece {
-    const shape = SHAPES[type].map(row => [...row]);
+    const shape = SHAPES[type].map((row) => [...row]);
     const startX = Math.floor((boardWidth - shape[0].length) / 2);
     return {
       type,
       shape,
       x: startX,
       y: type === 'I' ? -1 : 0,
-      rotation: 0
+      rotation: 0,
     };
   }
 
   public static rotateMatrix(matrix: number[][], clockwise = true): number[][] {
     const N = matrix.length;
-    const result: number[][] = Array.from({ length: N }, () => Array(N).fill(0));
+    const result: number[][] = Array.from({ length: N }, () =>
+      Array(N).fill(0),
+    );
     for (let r = 0; r < N; r++) {
       for (let c = 0; c < N; c++) {
         if (clockwise) {

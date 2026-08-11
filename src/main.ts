@@ -2,16 +2,24 @@ import { drawMinoCell } from './assets/characters';
 import { SoundManager } from './audio/SoundManager';
 import { GameLoop } from './engine/GameLoop';
 import { SHAPES } from './engine/MinoFactory';
-import { GameMode, GameStats, MinoType } from './types/tetris';
+import type { GameMode, GameStats, MinoType } from './types/tetris';
 import { ComboBanner } from './ui/ComboBanner';
 import { LeaderboardManager } from './ui/Leaderboard';
 
 // DOM Elements
-const tetrisCanvas = document.getElementById('tetris-canvas') as HTMLCanvasElement;
+const tetrisCanvas = document.getElementById(
+  'tetris-canvas',
+) as HTMLCanvasElement;
 const holdCanvas = document.getElementById('hold-canvas') as HTMLCanvasElement;
-const next1Canvas = document.getElementById('next1-canvas') as HTMLCanvasElement;
-const next2Canvas = document.getElementById('next2-canvas') as HTMLCanvasElement;
-const next3Canvas = document.getElementById('next3-canvas') as HTMLCanvasElement;
+const next1Canvas = document.getElementById(
+  'next1-canvas',
+) as HTMLCanvasElement;
+const next2Canvas = document.getElementById(
+  'next2-canvas',
+) as HTMLCanvasElement;
+const next3Canvas = document.getElementById(
+  'next3-canvas',
+) as HTMLCanvasElement;
 
 const scoreVal = document.getElementById('score-val')!;
 const linesVal = document.getElementById('lines-val')!;
@@ -34,7 +42,9 @@ const modeModal = document.getElementById('mode-modal')!;
 const selectTimeattack = document.getElementById('select-timeattack')!;
 const selectClassic = document.getElementById('select-classic')!;
 const startGameBtn = document.getElementById('start-game-btn')!;
-const modalViewLeaderboardBtn = document.getElementById('modal-view-leaderboard-btn')!;
+const modalViewLeaderboardBtn = document.getElementById(
+  'modal-view-leaderboard-btn',
+)!;
 
 const leaderboardModal = document.getElementById('leaderboard-modal')!;
 const modalTabTimeattack = document.getElementById('modal-tab-timeattack')!;
@@ -47,8 +57,12 @@ const gameoverTitle = document.getElementById('gameover-title')!;
 const resScore = document.getElementById('res-score')!;
 const resLines = document.getElementById('res-lines')!;
 const resCombo = document.getElementById('res-combo')!;
-const leaderboardForm = document.getElementById('leaderboard-form') as HTMLFormElement;
-const playerNameInput = document.getElementById('player-name') as HTMLInputElement;
+const leaderboardForm = document.getElementById(
+  'leaderboard-form',
+) as HTMLFormElement;
+const playerNameInput = document.getElementById(
+  'player-name',
+) as HTMLInputElement;
 const restartBtn = document.getElementById('restart-btn')!;
 
 // App State
@@ -93,13 +107,14 @@ const gameLoop = new GameLoop(tetrisCanvas, {
   },
   onGameOver: (finalStats) => {
     currentStats = finalStats;
-    gameoverTitle.innerText = selectedMode === 'timeattack' ? '제한 시간 종료!' : '게임 종료!';
+    gameoverTitle.innerText =
+      selectedMode === 'timeattack' ? '제한 시간 종료!' : '게임 종료!';
     resScore.innerText = finalStats.score.toLocaleString();
     resLines.innerText = finalStats.lines.toString();
     resCombo.innerText = finalStats.maxCombo.toString();
 
     gameoverModal.classList.remove('hidden');
-  }
+  },
 });
 
 // Helper for Preview Canvas Drawing
@@ -111,7 +126,10 @@ function drawMinoPreview(canvas: HTMLCanvasElement, type: MinoType | null) {
   const shape = SHAPES[type];
   const rows = shape.length;
   const cols = shape[0].length;
-  const cellSize = Math.min(canvas.width / (cols + 1), canvas.height / (rows + 1));
+  const cellSize = Math.min(
+    canvas.width / (cols + 1),
+    canvas.height / (rows + 1),
+  );
 
   const startX = (canvas.width - cols * cellSize) / 2;
   const startY = (canvas.height - rows * cellSize) / 2;
@@ -119,7 +137,14 @@ function drawMinoPreview(canvas: HTMLCanvasElement, type: MinoType | null) {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       if (shape[r][c]) {
-        drawMinoCell(ctx, startX + c * cellSize, startY + r * cellSize, cellSize, type, false);
+        drawMinoCell(
+          ctx,
+          startX + c * cellSize,
+          startY + r * cellSize,
+          cellSize,
+          type,
+          false,
+        );
       }
     }
   }
@@ -196,13 +221,21 @@ viewLeaderboardBtn.addEventListener('click', openLeaderboardModal);
 modalViewLeaderboardBtn.addEventListener('click', openLeaderboardModal);
 closeLeaderboardBtn.addEventListener('click', closeLeaderboardModal);
 
-modalTabTimeattack.addEventListener('click', () => renderModalLeaderboard('timeattack'));
-modalTabClassic.addEventListener('click', () => renderModalLeaderboard('classic'));
+modalTabTimeattack.addEventListener('click', () =>
+  renderModalLeaderboard('timeattack'),
+);
+modalTabClassic.addEventListener('click', () =>
+  renderModalLeaderboard('classic'),
+);
 
 // Keyboard Listeners
 window.addEventListener('keydown', (e) => {
   // Prevent scrolling
-  if (['ArrowUp', 'ArrowDown', 'Space', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+  if (
+    ['ArrowUp', 'ArrowDown', 'Space', 'ArrowLeft', 'ArrowRight'].includes(
+      e.code,
+    )
+  ) {
     e.preventDefault();
   }
 
@@ -273,7 +306,10 @@ pauseRestartBtn.addEventListener('click', () => {
 
 // Keyboard Shortcut for Pause (P or Escape)
 window.addEventListener('keydown', (e) => {
-  if ((e.key === 'p' || e.key === 'P' || e.key === 'Escape') && gameLoop.getIsRunning()) {
+  if (
+    (e.key === 'p' || e.key === 'P' || e.key === 'Escape') &&
+    gameLoop.getIsRunning()
+  ) {
     handleTogglePause();
   }
 });
@@ -303,9 +339,10 @@ startGameBtn.addEventListener('click', () => {
   leaderboardModal.classList.add('hidden');
   gameoverModal.classList.add('hidden');
 
-  modeDisplayTag.innerHTML = selectedMode === 'timeattack'
-    ? `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <span>90s TIME ATTACK</span>`
-    : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
+  modeDisplayTag.innerHTML =
+    selectedMode === 'timeattack'
+      ? `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <span>90s TIME ATTACK</span>`
+      : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
   gameLoop.setMode(selectedMode);
   gameLoop.start();
 
@@ -322,7 +359,12 @@ leaderboardForm.addEventListener('submit', (e) => {
   if (!currentStats) return;
 
   const name = playerNameInput.value.trim();
-  LeaderboardManager.addEntry(name, currentStats.score, currentStats.lines, selectedMode);
+  LeaderboardManager.addEntry(
+    name,
+    currentStats.score,
+    currentStats.lines,
+    selectedMode,
+  );
 
   playerNameInput.value = '';
   renderLeaderboard(selectedMode);
@@ -338,4 +380,3 @@ restartBtn.addEventListener('click', () => {
 
 // Initial Render
 renderLeaderboard('timeattack');
-

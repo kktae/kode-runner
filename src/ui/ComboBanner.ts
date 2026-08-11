@@ -14,7 +14,8 @@ export class ComboBanner {
 
     let text = '';
     let textColor = '#FEE500';
-    let textGlow = '0 4px 16px rgba(0,0,0,0.9), 0 0 20px rgba(254, 229, 0, 0.8)';
+    let textGlow =
+      '0 4px 16px rgba(0,0,0,0.9), 0 0 20px rgba(254, 229, 0, 0.8)';
 
     if (isTetris) {
       text = '4줄 퍼펙트 클리어!';
@@ -27,7 +28,8 @@ export class ComboBanner {
     } else if (combo >= 3) {
       text = `바이브 콤보 ${combo}연속!`;
       textColor = '#FF69B4';
-      textGlow = '0 4px 20px rgba(0,0,0,0.9), 0 0 25px rgba(255, 105, 180, 0.9)';
+      textGlow =
+        '0 4px 20px rgba(0,0,0,0.9), 0 0 25px rgba(255, 105, 180, 0.9)';
     } else {
       text = `${combo}연속 콤보!`;
       textColor = '#FEE500';
@@ -55,10 +57,10 @@ export class ComboBanner {
             scale: 0.95,
             delay: 0.5,
             duration: 0.3,
-            ease: 'power2.in'
+            ease: 'power2.in',
           });
-        }
-      }
+        },
+      },
     );
   }
 }

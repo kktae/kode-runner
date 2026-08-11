@@ -14,7 +14,12 @@ export interface CharacterInfo {
   secondaryColor: string;
   accentColor: string;
   description: string;
-  drawFace: (ctx: CanvasRenderingContext2D, x: number, y: number, size: number) => void;
+  drawFace: (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    size: number,
+  ) => void;
 }
 
 export interface MinoDefinition {

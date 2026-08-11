@@ -1,6 +1,6 @@
 import { drawMinoCell } from '../assets/characters';
 import { SoundManager } from '../audio/SoundManager';
-import { GameMode, GameStats, MinoType } from '../types/tetris';
+import type { GameMode, GameStats, MinoType } from '../types/tetris';
 import { MinoFactory } from './MinoFactory';
 import { ParticleSystem } from './ParticleSystem';
 import { BOARD_HEIGHT, BOARD_WIDTH, TetrisBoard } from './TetrisBoard';
@@ -37,10 +37,7 @@ export class GameLoop {
   private animationFrameId: number | null = null;
   private timerIntervalId: number | null = null;
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    callbacks: GameLoopCallbacks
-  ) {
+  constructor(canvas: HTMLCanvasElement, callbacks: GameLoopCallbacks) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
     this.factory = new MinoFactory();
@@ -61,7 +58,7 @@ export class GameLoop {
       maxCombo: 0,
       tetrisCount: 0,
       timeRemaining: 90,
-      elapsedTime: 0
+      elapsedTime: 0,
     };
   }
 
@@ -153,13 +150,15 @@ export class GameLoop {
   private updateDropInterval() {
     if (this.mode === 'classic') {
       // Exponential speed up per level
-      this.dropInterval = Math.max(50, 800 * Math.pow(0.85, this.stats.level - 1));
+      this.dropInterval = Math.max(50, 800 * 0.85 ** (this.stats.level - 1));
     } else {
       this.dropInterval = 600; // Fixed snappy speed for timeattack
     }
   }
 
-  public handleInput(action: 'left' | 'right' | 'down' | 'rotate' | 'hardDrop' | 'hold') {
+  public handleInput(
+    action: 'left' | 'right' | 'down' | 'rotate' | 'hardDrop' | 'hold',
+  ) {
     if (!this.isRunning || this.isPaused || !this.board.activePiece) return;
 
     switch (action) {
@@ -220,7 +219,7 @@ export class GameLoop {
     return this.board.checkCollision(
       this.board.activePiece.shape,
       this.board.activePiece.x,
-      this.board.activePiece.y + 1
+      this.board.activePiece.y + 1,
     );
   }
 
@@ -244,7 +243,9 @@ export class GameLoop {
 
       // Add Score
       const baseScores = [0, 100, 300, 500, 1200];
-      const earned = baseScores[clearEvent.count] * this.stats.level + (this.stats.combo - 1) * 100;
+      const earned =
+        baseScores[clearEvent.count] * this.stats.level +
+        (this.stats.combo - 1) * 100;
       this.stats.score += earned;
       this.stats.lines += clearEvent.count;
 
@@ -264,7 +265,14 @@ export class GameLoop {
       }
 
       // Particle explosions, floating score text & Audio
-      const colors = ['#FEE500', '#FF69B4', '#FFA500', '#FFD700', '#1E90FF', '#00FA9A'];
+      const colors = [
+        '#FEE500',
+        '#FF69B4',
+        '#FFA500',
+        '#FFD700',
+        '#1E90FF',
+        '#00FA9A',
+      ];
       const cellWidth = this.canvas.width / BOARD_WIDTH;
       const cellHeight = this.canvas.height / BOARD_HEIGHT;
 
@@ -273,7 +281,11 @@ export class GameLoop {
       }
 
       if (clearEvent.clearedRows.length > 0) {
-        this.particles.addScoreText(earned, clearEvent.clearedRows[0], cellHeight);
+        this.particles.addScoreText(
+          earned,
+          clearEvent.clearedRows[0],
+          cellHeight,
+        );
       }
 
       this.soundManager.playLineClear(clearEvent.count, this.stats.combo);
@@ -357,7 +369,7 @@ export class GameLoop {
             r * cellHeight,
             cellWidth,
             cell.characterType,
-            false
+            false,
           );
         }
       }
@@ -387,7 +399,14 @@ export class GameLoop {
             const drawX = (piece.x + c) * cellWidth;
             const drawY = (piece.y + r) * cellHeight;
             if (piece.y + r >= 0) {
-              drawMinoCell(this.ctx, drawX, drawY, cellWidth, piece.type, false);
+              drawMinoCell(
+                this.ctx,
+                drawX,
+                drawY,
+                cellWidth,
+                piece.type,
+                false,
+              );
             }
           }
         }

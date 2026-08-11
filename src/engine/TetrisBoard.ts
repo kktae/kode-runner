@@ -1,5 +1,10 @@
-import { CellState, MinoType, Point } from '../types/tetris';
-import { I_WALL_KICKS, JLSTZ_WALL_KICKS, MinoFactory, MinoPiece } from './MinoFactory';
+import type { CellState, MinoType, Point } from '../types/tetris';
+import {
+  I_WALL_KICKS,
+  JLSTZ_WALL_KICKS,
+  MinoFactory,
+  type MinoPiece,
+} from './MinoFactory';
 
 export const BOARD_WIDTH = 10;
 export const BOARD_HEIGHT = 20;
@@ -31,7 +36,10 @@ export class TetrisBoard {
 
   private createEmptyGrid(): CellState[][] {
     return Array.from({ length: BOARD_HEIGHT }, () =>
-      Array.from({ length: BOARD_WIDTH }, () => ({ filled: false, color: '#000000' }))
+      Array.from({ length: BOARD_WIDTH }, () => ({
+        filled: false,
+        color: '#000000',
+      })),
     );
   }
 
@@ -41,7 +49,13 @@ export class TetrisBoard {
     this.canHold = true;
 
     // Check game over on spawn
-    if (this.checkCollision(this.activePiece.shape, this.activePiece.x, this.activePiece.y)) {
+    if (
+      this.checkCollision(
+        this.activePiece.shape,
+        this.activePiece.x,
+        this.activePiece.y,
+      )
+    ) {
       return false; // Game Over
     }
     return true;
@@ -63,7 +77,11 @@ export class TetrisBoard {
     return true;
   }
 
-  public checkCollision(shape: number[][], offsetX: number, offsetY: number): boolean {
+  public checkCollision(
+    shape: number[][],
+    offsetX: number,
+    offsetY: number,
+  ): boolean {
     for (let r = 0; r < shape.length; r++) {
       for (let c = 0; c < shape[r].length; c++) {
         if (shape[r][c]) {
@@ -71,7 +89,11 @@ export class TetrisBoard {
           const targetY = offsetY + r;
 
           // Out of bounds horizontally or bottom
-          if (targetX < 0 || targetX >= BOARD_WIDTH || targetY >= BOARD_HEIGHT) {
+          if (
+            targetX < 0 ||
+            targetX >= BOARD_WIDTH ||
+            targetY >= BOARD_HEIGHT
+          ) {
             return true;
           }
 
@@ -87,7 +109,13 @@ export class TetrisBoard {
 
   public moveLeft(): boolean {
     if (!this.activePiece) return false;
-    if (!this.checkCollision(this.activePiece.shape, this.activePiece.x - 1, this.activePiece.y)) {
+    if (
+      !this.checkCollision(
+        this.activePiece.shape,
+        this.activePiece.x - 1,
+        this.activePiece.y,
+      )
+    ) {
       this.activePiece.x--;
       return true;
     }
@@ -96,7 +124,13 @@ export class TetrisBoard {
 
   public moveRight(): boolean {
     if (!this.activePiece) return false;
-    if (!this.checkCollision(this.activePiece.shape, this.activePiece.x + 1, this.activePiece.y)) {
+    if (
+      !this.checkCollision(
+        this.activePiece.shape,
+        this.activePiece.x + 1,
+        this.activePiece.y,
+      )
+    ) {
       this.activePiece.x++;
       return true;
     }
@@ -105,7 +139,13 @@ export class TetrisBoard {
 
   public moveDown(): boolean {
     if (!this.activePiece) return false;
-    if (!this.checkCollision(this.activePiece.shape, this.activePiece.x, this.activePiece.y + 1)) {
+    if (
+      !this.checkCollision(
+        this.activePiece.shape,
+        this.activePiece.x,
+        this.activePiece.y + 1,
+      )
+    ) {
       this.activePiece.y++;
       return true;
     }
@@ -115,7 +155,13 @@ export class TetrisBoard {
   public getGhostY(): number {
     if (!this.activePiece) return 0;
     let ghostY = this.activePiece.y;
-    while (!this.checkCollision(this.activePiece.shape, this.activePiece.x, ghostY + 1)) {
+    while (
+      !this.checkCollision(
+        this.activePiece.shape,
+        this.activePiece.x,
+        ghostY + 1,
+      )
+    ) {
       ghostY++;
     }
     return ghostY;
@@ -133,7 +179,10 @@ export class TetrisBoard {
   public rotate(clockwise = true): boolean {
     if (!this.activePiece || this.activePiece.type === 'O') return false;
 
-    const newShape = MinoFactory.rotateMatrix(this.activePiece.shape, clockwise);
+    const newShape = MinoFactory.rotateMatrix(
+      this.activePiece.shape,
+      clockwise,
+    );
     const oldRotation = this.activePiece.rotation;
     const newRotation = (oldRotation + (clockwise ? 1 : 3)) % 4;
 
@@ -167,11 +216,16 @@ export class TetrisBoard {
           const targetX = this.activePiece.x + c;
           const targetY = this.activePiece.y + r;
 
-          if (targetY >= 0 && targetY < BOARD_HEIGHT && targetX >= 0 && targetX < BOARD_WIDTH) {
+          if (
+            targetY >= 0 &&
+            targetY < BOARD_HEIGHT &&
+            targetX >= 0 &&
+            targetX < BOARD_WIDTH
+          ) {
             this.grid[targetY][targetX] = {
               filled: true,
               color: '',
-              characterType: this.activePiece.type
+              characterType: this.activePiece.type,
             };
           }
         }
@@ -188,18 +242,23 @@ export class TetrisBoard {
     const clearedRows: number[] = [];
 
     for (let r = 0; r < BOARD_HEIGHT; r++) {
-      if (this.grid[r].every(cell => cell.filled)) {
+      if (this.grid[r].every((cell) => cell.filled)) {
         clearedRows.push(r);
       }
     }
 
     if (clearedRows.length > 0) {
       // Filter out cleared rows
-      const remainingRows = this.grid.filter((_, idx) => !clearedRows.includes(idx));
+      const remainingRows = this.grid.filter(
+        (_, idx) => !clearedRows.includes(idx),
+      );
       const emptyRowsCount = BOARD_HEIGHT - remainingRows.length;
 
       const newEmptyRows = Array.from({ length: emptyRowsCount }, () =>
-        Array.from({ length: BOARD_WIDTH }, () => ({ filled: false, color: '#000000' }))
+        Array.from({ length: BOARD_WIDTH }, () => ({
+          filled: false,
+          color: '#000000',
+        })),
       );
 
       this.grid = [...newEmptyRows, ...remainingRows];
@@ -208,7 +267,7 @@ export class TetrisBoard {
     return {
       count: clearedRows.length,
       clearedRows,
-      isTetris: clearedRows.length === 4
+      isTetris: clearedRows.length === 4,
     };
   }
 }

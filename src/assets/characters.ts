@@ -1,4 +1,4 @@
-import { CharacterInfo, MinoType } from '../types/tetris';
+import type { CharacterInfo, MinoType } from '../types/tetris';
 
 // Helper for drawing rounded rect path
 function roundRectPath(
@@ -7,7 +7,7 @@ function roundRectPath(
   y: number,
   w: number,
   h: number,
-  r: number
+  r: number,
 ) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -30,7 +30,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#E6A100',
     accentColor: '#333333',
     description: '믿음직스러운 카카오프렌즈 조언자 라이언',
-    drawFace: () => {}
+    drawFace: () => {},
   },
   J: {
     name: 'Apeach',
@@ -39,7 +39,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#E04867',
     accentColor: '#FFFFFF',
     description: '장난기 가득한 아기 복숭아 어피치',
-    drawFace: () => {}
+    drawFace: () => {},
   },
   L: {
     name: 'Choonsik',
@@ -48,7 +48,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#D67B00',
     accentColor: '#8B4513',
     description: '고구마를 좋아하는 카와이 고양이 춘식이',
-    drawFace: () => {}
+    drawFace: () => {},
   },
   O: {
     name: 'Muzi',
@@ -57,7 +57,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#DAA520',
     accentColor: '#FFFFFF',
     description: '토끼 옷을 입은 단무지 무지',
-    drawFace: () => {}
+    drawFace: () => {},
   },
   S: {
     name: 'Frodo',
@@ -66,7 +66,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#A06B22',
     accentColor: '#FF0000',
     description: '부잣집 도시 개 프로도',
-    drawFace: () => {}
+    drawFace: () => {},
   },
   T: {
     name: 'Neo',
@@ -75,7 +75,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#104E8B',
     accentColor: '#FFFFFF',
     description: '단발머리 패셔니스타 고양이 네오',
-    drawFace: () => {}
+    drawFace: () => {},
   },
   Z: {
     name: 'Tube',
@@ -84,8 +84,8 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#00C78C',
     accentColor: '#FF9900',
     description: '겁많은 미카엘 오리 튜브',
-    drawFace: () => {}
-  }
+    drawFace: () => {},
+  },
 };
 
 /**
@@ -97,7 +97,7 @@ export function drawMinoCell(
   y: number,
   size: number,
   type: MinoType,
-  isGhost = false
+  isGhost = false,
 ) {
   const char = CHARACTERS[type];
   const radius = Math.max(4, size * 0.18);
@@ -155,7 +155,13 @@ export function drawMinoCell(
   // Center Shine Accent Spot
   ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
   ctx.beginPath();
-  ctx.arc(x + inset + inw * 0.28, y + inset + inw * 0.28, inw * 0.15, 0, Math.PI * 2);
+  ctx.arc(
+    x + inset + inw * 0.28,
+    y + inset + inw * 0.28,
+    inw * 0.15,
+    0,
+    Math.PI * 2,
+  );
   ctx.fill();
 
   // 5. Crisp White Outer Border

@@ -1,5 +1,5 @@
-import gsap from 'gsap';
 import confetti from 'canvas-confetti';
+import gsap from 'gsap';
 
 export interface Particle {
   x: number;
@@ -32,7 +32,12 @@ export class ParticleSystem {
     this.canvasElement = canvasElement;
   }
 
-  public addLineExplosion(yRow: number, rowCellWidth: number, cellHeight: number, colors: string[]) {
+  public addLineExplosion(
+    yRow: number,
+    rowCellWidth: number,
+    cellHeight: number,
+    colors: string[],
+  ) {
     const numParticles = 35;
     const yCenter = yRow * cellHeight + cellHeight / 2;
 
@@ -40,7 +45,8 @@ export class ParticleSystem {
       const x = Math.random() * (rowCellWidth * 10);
       const angle = Math.random() * Math.PI * 2;
       const speed = 2 + Math.random() * 7;
-      const color = colors[Math.floor(Math.random() * colors.length)] || '#FEE500';
+      const color =
+        colors[Math.floor(Math.random() * colors.length)] || '#FEE500';
 
       this.particles.push({
         x,
@@ -51,7 +57,7 @@ export class ParticleSystem {
         size: 3 + Math.random() * 6,
         alpha: 1,
         life: 0,
-        maxLife: 35 + Math.random() * 20
+        maxLife: 35 + Math.random() * 20,
       });
     }
   }
@@ -67,7 +73,7 @@ export class ParticleSystem {
       color: '#FEE500',
       alpha: 1,
       life: 0,
-      maxLife: 45
+      maxLife: 45,
     });
   }
 
@@ -81,7 +87,7 @@ export class ParticleSystem {
       ease: 'sine.inOut',
       onComplete: () => {
         gsap.set(this.canvasElement, { x: 0, y: 0 });
-      }
+      },
     });
   }
 
@@ -90,7 +96,14 @@ export class ParticleSystem {
       particleCount: 120,
       spread: 80,
       origin: { y: 0.6 },
-      colors: ['#FEE500', '#FF69B4', '#FFA500', '#FFD700', '#1E90FF', '#00FA9A']
+      colors: [
+        '#FEE500',
+        '#FF69B4',
+        '#FFA500',
+        '#FFD700',
+        '#1E90FF',
+        '#00FA9A',
+      ],
     });
   }
 

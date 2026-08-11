@@ -1,28 +1,28 @@
 :root {
-  --kakao-yellow: #FEE500;
-  --kakao-yellow-hover: #FADA00;
-  --con-green: #00C73C;
+  --kakao-yellow: #fee500;
+  --kakao-yellow-hover: #fada00;
+  --con-green: #00c73c;
   --bg-dark: #121011;
-  --surface-card: #1B1819;
+  --surface-card: #1b1819;
   --surface-modal: #161415;
-  --surface-item: #110F10;
+  --surface-item: #110f10;
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.16);
   --border-active: rgba(254, 229, 0, 0.6);
-  --text-main: #FFFFFF;
-  --text-muted: #8E8B8C;
+  --text-main: #ffffff;
+  --text-muted: #8e8b8c;
   --text-dark: #161415;
-  
+
   /* Precision Human Pro Optical Radius System */
   --radius-card: 12px;
   --radius-inner: 8px;
   --radius-btn: 8px;
   --radius-tag: 6px;
-  
+
   /* Crisp Precision Ambient Shadows */
   --shadow-main: 0 2px 12px rgba(0, 0, 0, 0.35);
   --shadow-modal: 0 16px 36px rgba(0, 0, 0, 0.55);
-  --font-family: 'Outfit', 'Pretendard', -apple-system, sans-serif;
+  --font-family: "Outfit", "Pretendard", -apple-system, sans-serif;
 }
 
 * {
@@ -103,7 +103,7 @@ body {
 .badge-title {
   font-weight: 700;
   font-size: 0.95rem;
-  color: #FFFFFF;
+  color: #ffffff;
   letter-spacing: -0.01em;
 }
 
@@ -128,12 +128,14 @@ body {
 .icon-btn {
   background: var(--surface-item);
   border: 1px solid var(--border-subtle);
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 7px 10px;
   border-radius: var(--radius-btn);
   cursor: pointer;
   font-size: 0.9rem;
-  transition: border-color 0.15s ease-out, background-color 0.15s ease-out;
+  transition:
+    border-color 0.15s ease-out,
+    background-color 0.15s ease-out;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -162,7 +164,7 @@ body {
 .pill-btn.secondary {
   background: var(--surface-item);
   border: 1px solid var(--border-subtle);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .pill-btn.secondary:hover {
@@ -273,7 +275,7 @@ body {
 .stat-value {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .stat-value.highlight {
@@ -323,10 +325,10 @@ body {
 }
 
 .timer-text {
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-weight: 800;
   font-size: 1.3rem;
-  color: #FFFFFF;
+  color: #ffffff;
   letter-spacing: 0.05em;
 }
 
@@ -357,17 +359,27 @@ body {
   justify-content: center;
   align-items: center;
   position: relative;
-  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+  transition:
+    border-color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
 }
 
 .board-wrapper.is-playing {
   border-color: var(--kakao-yellow);
-  box-shadow: 0 0 20px rgba(254, 229, 0, 0.25), var(--shadow-main);
+  box-shadow:
+    0 0 20px rgba(254, 229, 0, 0.25),
+    var(--shadow-main);
 }
 
 @keyframes boardFlash {
-  0% { border-color: #FFFFFF; box-shadow: 0 0 32px rgba(255, 255, 255, 0.9); }
-  100% { border-color: var(--kakao-yellow); box-shadow: 0 0 20px rgba(254, 229, 0, 0.25); }
+  0% {
+    border-color: #ffffff;
+    box-shadow: 0 0 32px rgba(255, 255, 255, 0.9);
+  }
+  100% {
+    border-color: var(--kakao-yellow);
+    box-shadow: 0 0 20px rgba(254, 229, 0, 0.25);
+  }
 }
 
 .board-wrapper.flash {
@@ -413,7 +425,9 @@ body {
   padding: 5px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.15s ease-out, color 0.15s ease-out;
+  transition:
+    background-color 0.15s ease-out,
+    color 0.15s ease-out;
 }
 
 .tab-btn.active {
@@ -466,7 +480,7 @@ body {
 .leader-name {
   flex: 1;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -493,7 +507,7 @@ kbd {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--border-subtle);
   border-radius: 4px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-family: inherit;
   font-size: 0.72rem;
   font-weight: 700;
@@ -507,7 +521,7 @@ kbd {
   top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-family: 'Outfit', 'Pretendard', sans-serif;
+  font-family: "Outfit", "Pretendard", sans-serif;
   font-size: 1.8rem;
   font-weight: 900;
   text-align: center;
@@ -564,7 +578,7 @@ kbd {
   border-radius: var(--radius-card);
   padding: 20px;
   box-shadow: var(--shadow-modal);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .modal-header {
@@ -587,7 +601,7 @@ kbd {
 .modal-header h2 {
   font-size: 1.35rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-top: 4px;
   letter-spacing: -0.02em;
 }
@@ -611,7 +625,9 @@ kbd {
   border-radius: var(--radius-inner);
   padding: 12px 14px;
   cursor: pointer;
-  transition: border-color 0.15s ease-out, background-color 0.15s ease-out;
+  transition:
+    border-color 0.15s ease-out,
+    background-color 0.15s ease-out;
   position: relative;
 }
 
@@ -639,7 +655,7 @@ kbd {
 .mode-card h3 {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-bottom: 2px;
 }
 
@@ -696,14 +712,16 @@ kbd {
 
 .secondary-btn {
   background: var(--surface-item);
-  color: #FFFFFF;
+  color: #ffffff;
   border: 1px solid var(--border-subtle);
   font-weight: 600;
   font-size: 0.85rem;
   height: 40px;
   border-radius: var(--radius-btn);
   cursor: pointer;
-  transition: border-color 0.15s ease-out, background-color 0.15s ease-out;
+  transition:
+    border-color 0.15s ease-out,
+    background-color 0.15s ease-out;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -742,7 +760,7 @@ kbd {
 .res-item strong {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* Form in Gameover */
@@ -755,7 +773,7 @@ kbd {
 .name-entry-form label {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .name-entry-form input {
@@ -763,7 +781,7 @@ kbd {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-btn);
   padding: 10px 12px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-family: inherit;
   font-size: 0.88rem;
   font-weight: 600;
