@@ -166,8 +166,8 @@ export class GameLoop {
           this.soundManager.playMove();
           this.dropCounter = 0;
         } else {
-          // Soft drop touching ground -> immediate lock & clear
-          this.lockAndNext();
+          // When soft drop reaches bottom, allow 500ms lock delay for sliding/rotating
+          this.resetLockDelayIfGrounded();
         }
         break;
       case 'rotate':
