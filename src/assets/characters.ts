@@ -32,42 +32,42 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       const cy = y + size / 2;
       const r = size * 0.38;
 
-      // Ears
+      // Ears (Round lion ears on top left/right)
       ctx.fillStyle = '#FFB800';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.7, cy - r * 0.7, r * 0.3, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.7, cy - r * 0.7, r * 0.3, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.72, cy - r * 0.68, r * 0.3, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.72, cy - r * 0.68, r * 0.3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Muzzle (white)
+      // White Muzzle (Two touching white ovals in center lower face)
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.22, cy + r * 0.15, r * 0.25, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.22, cy + r * 0.15, r * 0.25, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.22, cy + r * 0.16, r * 0.26, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.22, cy + r * 0.16, r * 0.26, 0, Math.PI * 2);
       ctx.fill();
 
-      // Eyes
+      // Black Nose (center between muzzles)
       ctx.fillStyle = '#222222';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.45, cy - r * 0.05, r * 0.12, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.45, cy - r * 0.05, r * 0.12, 0, Math.PI * 2);
+      ctx.arc(cx, cy + r * 0.04, r * 0.11, 0, Math.PI * 2);
       ctx.fill();
 
-      // Nose
+      // Black Dot Eyes
       ctx.beginPath();
-      ctx.arc(cx, cy + r * 0.05, r * 0.1, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.45, cy - r * 0.06, r * 0.11, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.45, cy - r * 0.06, r * 0.11, 0, Math.PI * 2);
       ctx.fill();
 
-      // Straight Eyebrows (Signature Ryan!)
+      // Straight Horizontal Eyebrows (Signature Ryan!)
       ctx.strokeStyle = '#222222';
       ctx.lineWidth = Math.max(2, size * 0.08);
       ctx.lineCap = 'round';
 
       ctx.beginPath();
-      ctx.moveTo(cx - r * 0.7, cy - r * 0.35);
-      ctx.lineTo(cx - r * 0.2, cy - r * 0.35);
-      ctx.moveTo(cx + r * 0.2, cy - r * 0.35);
-      ctx.lineTo(cx + r * 0.7, cy - r * 0.35);
+      ctx.moveTo(cx - r * 0.72, cy - r * 0.36);
+      ctx.lineTo(cx - r * 0.2, cy - r * 0.36);
+      ctx.moveTo(cx + r * 0.2, cy - r * 0.36);
+      ctx.lineTo(cx + r * 0.72, cy - r * 0.36);
       ctx.stroke();
     }
   },
@@ -76,41 +76,62 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
   J: {
     name: 'Apeach',
     koreanName: '어피치',
-    primaryColor: '#FF69B4',
-    secondaryColor: '#E0529C',
+    primaryColor: '#FFB6C1',
+    secondaryColor: '#FF69B4',
     accentColor: '#FF1493',
-    description: '애교 만점 아기 복숭아',
+    description: '장난기 가득한 아기 복숭아 어피치',
     drawFace: (ctx, x, y, size) => {
       const cx = x + size / 2;
       const cy = y + size / 2;
       const r = size * 0.38;
 
-      // Blush cheeks
-      ctx.fillStyle = 'rgba(255, 105, 180, 0.6)';
+      // Peach Head Contour (Soft pink background with peach cheeks)
+      // Bright Pink Blush Cheeks
+      ctx.fillStyle = '#FF1493';
+      ctx.globalAlpha = 0.45;
       ctx.beginPath();
-      ctx.arc(cx - r * 0.5, cy + r * 0.2, r * 0.2, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.5, cy + r * 0.2, r * 0.2, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.52, cy + r * 0.18, r * 0.24, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.52, cy + r * 0.18, r * 0.24, 0, Math.PI * 2);
       ctx.fill();
+      ctx.globalAlpha = 1.0;
 
-      // Winking Left Eye & Open Right Eye
+      // Winking Eye (Left) & Open Big Round Eye (Right)
       ctx.strokeStyle = '#222222';
       ctx.lineWidth = Math.max(2, size * 0.08);
       ctx.lineCap = 'round';
 
-      // Left Eye (Wink arc)
+      // Left Eye: Cute Winking Arc >v<
       ctx.beginPath();
-      ctx.arc(cx - r * 0.35, cy - r * 0.05, r * 0.15, Math.PI * 1.1, Math.PI * 1.9);
+      ctx.arc(cx - r * 0.36, cy - r * 0.08, r * 0.18, Math.PI * 1.15, Math.PI * 1.85);
       ctx.stroke();
 
-      // Right Eye (Dot)
+      // Right Eye: Black Oval Eye with White Sparkle
       ctx.fillStyle = '#222222';
       ctx.beginPath();
-      ctx.arc(cx + r * 0.35, cy - r * 0.05, r * 0.12, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.36, cy - r * 0.08, r * 0.15, 0, Math.PI * 2);
       ctx.fill();
 
-      // Cute Smile
+      // Eye Glare Dot
+      ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(cx, cy + r * 0.2, r * 0.25, 0, Math.PI);
+      ctx.arc(cx + r * 0.3, cy - r * 0.12, r * 0.05, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Signature Open Cute Apeach Tooth Smile!
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(cx, cy + r * 0.18, r * 0.28, 0, Math.PI);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = '#222222';
+      ctx.lineWidth = Math.max(1.5, size * 0.06);
+      ctx.stroke();
+
+      // Single Bucktooth line in the middle
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + r * 0.18);
+      ctx.lineTo(cx, cy + r * 0.32);
       ctx.stroke();
     }
   },
@@ -120,103 +141,166 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     name: 'Choonsik',
     koreanName: '춘식이',
     primaryColor: '#FFA500',
-    secondaryColor: '#CC8400',
+    secondaryColor: '#D2691E',
     accentColor: '#8B4513',
-    description: '고구마를 사랑하는 라이언의 반려묘',
+    description: '고구마를 좋아하는 라이언의 카와이 고양이 춘식이',
     drawFace: (ctx, x, y, size) => {
       const cx = x + size / 2;
       const cy = y + size / 2;
       const r = size * 0.38;
 
-      // Cat Ears
+      // Pointy Triangular Cat Ears
       ctx.fillStyle = '#FFA500';
       ctx.beginPath();
-      ctx.moveTo(cx - r * 0.8, cy - r * 0.2);
-      ctx.lineTo(cx - r * 0.5, cy - r * 0.8);
-      ctx.lineTo(cx - r * 0.2, cy - r * 0.3);
+      ctx.moveTo(cx - r * 0.82, cy - r * 0.15);
+      ctx.lineTo(cx - r * 0.5, cy - r * 0.85);
+      ctx.lineTo(cx - r * 0.18, cy - r * 0.25);
       ctx.fill();
 
       ctx.beginPath();
-      ctx.moveTo(cx + r * 0.2, cy - r * 0.3);
-      ctx.lineTo(cx + r * 0.5, cy - r * 0.8);
-      ctx.lineTo(cx + r * 0.8, cy - r * 0.2);
+      ctx.moveTo(cx + r * 0.18, cy - r * 0.25);
+      ctx.lineTo(cx + r * 0.5, cy - r * 0.85);
+      ctx.lineTo(cx + r * 0.82, cy - r * 0.15);
       ctx.fill();
 
-      // Muzzle (white oval)
-      ctx.fillStyle = '#FFF8DC';
+      // Inner Ear Pink
+      ctx.fillStyle = '#FFB6C1';
       ctx.beginPath();
-      ctx.ellipse(cx, cy + r * 0.15, r * 0.35, r * 0.25, 0, 0, Math.PI * 2);
+      ctx.moveTo(cx - r * 0.72, cy - r * 0.2);
+      ctx.lineTo(cx - r * 0.5, cy - r * 0.7);
+      ctx.lineTo(cx - r * 0.28, cy - r * 0.28);
       ctx.fill();
 
-      // Eyes
+      ctx.beginPath();
+      ctx.moveTo(cx + r * 0.28, cy - r * 0.28);
+      ctx.lineTo(cx + r * 0.5, cy - r * 0.7);
+      ctx.lineTo(cx + r * 0.72, cy - r * 0.2);
+      ctx.fill();
+
+      // White/Cream Snout Oval
+      ctx.fillStyle = '#FFFDD0';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + r * 0.18, r * 0.38, r * 0.28, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Small Black Dot Eyes
       ctx.fillStyle = '#222222';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.35, cy - r * 0.1, r * 0.1, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.35, cy - r * 0.1, r * 0.1, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.36, cy - r * 0.08, r * 0.11, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.36, cy - r * 0.08, r * 0.11, 0, Math.PI * 2);
       ctx.fill();
 
-      // Nose & Mouth
+      // Brown Nose
       ctx.fillStyle = '#8B4513';
       ctx.beginPath();
-      ctx.arc(cx, cy + r * 0.05, r * 0.08, 0, Math.PI * 2);
+      ctx.ellipse(cx, cy + r * 0.06, r * 0.09, r * 0.07, 0, 0, Math.PI * 2);
       ctx.fill();
 
+      // Cat 'w' Mouth
       ctx.strokeStyle = '#8B4513';
-      ctx.lineWidth = Math.max(1.5, size * 0.06);
+      ctx.lineWidth = Math.max(1.8, size * 0.06);
+      ctx.lineCap = 'round';
+
       ctx.beginPath();
-      ctx.arc(cx - r * 0.1, cy + r * 0.15, r * 0.1, 0, Math.PI);
-      ctx.arc(cx + r * 0.1, cy + r * 0.15, r * 0.1, 0, Math.PI);
+      ctx.arc(cx - r * 0.12, cy + r * 0.18, r * 0.11, 0, Math.PI);
+      ctx.arc(cx + r * 0.12, cy + r * 0.18, r * 0.11, 0, Math.PI);
+      ctx.stroke();
+
+      // Cat Whiskers (2 on each cheek!)
+      ctx.strokeStyle = '#8B4513';
+      ctx.lineWidth = Math.max(1.2, size * 0.05);
+
+      ctx.beginPath();
+      // Left whiskers
+      ctx.moveTo(cx - r * 0.45, cy + r * 0.12);
+      ctx.lineTo(cx - r * 0.78, cy + r * 0.06);
+      ctx.moveTo(cx - r * 0.45, cy + r * 0.22);
+      ctx.lineTo(cx - r * 0.75, cy + r * 0.28);
+
+      // Right whiskers
+      ctx.moveTo(cx + r * 0.45, cy + r * 0.12);
+      ctx.lineTo(cx + r * 0.78, cy + r * 0.06);
+      ctx.moveTo(cx + r * 0.45, cy + r * 0.22);
+      ctx.lineTo(cx + r * 0.75, cy + r * 0.28);
       ctx.stroke();
     }
   },
 
-  // O Mino - Muzi (무지 & 콘)
+  // O Mino - Muzi (무지)
   O: {
     name: 'Muzi',
-    koreanName: '무지&콘',
+    koreanName: '무지',
     primaryColor: '#FFD700',
-    secondaryColor: '#D4AF37',
-    accentColor: '#008000',
-    description: '토끼 옷을 입은 단무지 무지와 꼬마공룡 콘',
+    secondaryColor: '#DAA520',
+    accentColor: '#FFFFFF',
+    description: '토끼 옷을 입은 단무지 무지',
     drawFace: (ctx, x, y, size) => {
       const cx = x + size / 2;
       const cy = y + size / 2;
       const r = size * 0.38;
 
-      // Long Rabbit Ears (Hood)
+      // Long Rabbit Ears on top
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.ellipse(cx - r * 0.4, cy - r * 0.7, r * 0.18, r * 0.4, -0.2, 0, Math.PI * 2);
-      ctx.ellipse(cx + r * 0.4, cy - r * 0.7, r * 0.18, r * 0.4, 0.2, 0, Math.PI * 2);
+      ctx.ellipse(cx - r * 0.36, cy - r * 0.72, r * 0.18, r * 0.42, -0.15, 0, Math.PI * 2);
+      ctx.ellipse(cx + r * 0.36, cy - r * 0.72, r * 0.18, r * 0.42, 0.15, 0, Math.PI * 2);
       ctx.fill();
+
+      ctx.strokeStyle = '#E0E0E0';
+      ctx.lineWidth = 1;
+      ctx.stroke();
 
       // Pink Inner Ears
       ctx.fillStyle = '#FFB6C1';
       ctx.beginPath();
-      ctx.ellipse(cx - r * 0.4, cy - r * 0.7, r * 0.09, r * 0.25, -0.2, 0, Math.PI * 2);
-      ctx.ellipse(cx + r * 0.4, cy - r * 0.7, r * 0.09, r * 0.25, 0.2, 0, Math.PI * 2);
+      ctx.ellipse(cx - r * 0.36, cy - r * 0.72, r * 0.08, r * 0.28, -0.15, 0, Math.PI * 2);
+      ctx.ellipse(cx + r * 0.36, cy - r * 0.72, r * 0.08, r * 0.28, 0.15, 0, Math.PI * 2);
       ctx.fill();
 
-      // Rosy Cheeks
-      ctx.fillStyle = '#FF7F50';
-      ctx.beginPath();
-      ctx.arc(cx - r * 0.45, cy + r * 0.15, r * 0.15, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.45, cy + r * 0.15, r * 0.15, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Big Round Eyes
-      ctx.fillStyle = '#222222';
-      ctx.beginPath();
-      ctx.arc(cx - r * 0.3, cy - r * 0.05, r * 0.12, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.3, cy - r * 0.05, r * 0.12, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye Sparkle
+      // White Rabbit Hood Frame around Muzi's Yellow Face!
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.26, cy - r * 0.09, r * 0.04, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.34, cy - r * 0.09, r * 0.04, 0, Math.PI * 2);
+      ctx.arc(cx, cy + r * 0.05, r * 0.82, 0, Math.PI * 2);
       ctx.fill();
+
+      // Yellow Oval Face inside the hood
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(cx, cy + r * 0.08, r * 0.64, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Coral/Red Cheeks
+      ctx.fillStyle = '#FF6347';
+      ctx.beginPath();
+      ctx.arc(cx - r * 0.38, cy + r * 0.25, r * 0.14, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.38, cy + r * 0.25, r * 0.14, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Big Round Black Eyes
+      ctx.fillStyle = '#222222';
+      ctx.beginPath();
+      ctx.arc(cx - r * 0.26, cy, r * 0.13, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.26, cy, r * 0.13, 0, Math.PI * 2);
+      ctx.fill();
+
+      // White Eye Glare Dots
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(cx - r * 0.22, cy - r * 0.04, r * 0.05, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.30, cy - r * 0.04, r * 0.05, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Tiny Nose & Smile
+      ctx.fillStyle = '#222222';
+      ctx.beginPath();
+      ctx.arc(cx, cy + r * 0.12, r * 0.05, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#222222';
+      ctx.lineWidth = Math.max(1.5, size * 0.05);
+      ctx.beginPath();
+      ctx.arc(cx, cy + r * 0.18, r * 0.12, 0, Math.PI);
+      ctx.stroke();
     }
   },
 
@@ -233,35 +317,55 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       const cy = y + size / 2;
       const r = size * 0.38;
 
-      // Floppy Dog Ears
+      // Dark Brown Floppy Dog Ears hanging down on left/right
       ctx.fillStyle = '#5C2E0B';
       ctx.beginPath();
-      ctx.ellipse(cx - r * 0.7, cy - r * 0.2, r * 0.22, r * 0.35, -0.4, 0, Math.PI * 2);
-      ctx.ellipse(cx + r * 0.7, cy - r * 0.2, r * 0.22, r * 0.35, 0.4, 0, Math.PI * 2);
+      ctx.ellipse(cx - r * 0.72, cy, r * 0.24, r * 0.45, -0.2, 0, Math.PI * 2);
+      ctx.ellipse(cx + r * 0.72, cy, r * 0.24, r * 0.45, 0.2, 0, Math.PI * 2);
       ctx.fill();
 
-      // Red Bow/Collar Accent
+      // Cream/Tan Snout
+      ctx.fillStyle = '#F5DEB3';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + r * 0.18, r * 0.4, r * 0.28, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Black Dog Nose on top of Snout
+      ctx.fillStyle = '#222222';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + r * 0.06, r * 0.12, r * 0.09, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Black Oval Eyes with White Highlights
+      ctx.beginPath();
+      ctx.arc(cx - r * 0.32, cy - r * 0.12, r * 0.12, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.32, cy - r * 0.12, r * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(cx - r * 0.28, cy - r * 0.15, r * 0.04, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.36, cy - r * 0.15, r * 0.04, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Dog Mouth
+      ctx.strokeStyle = '#222222';
+      ctx.lineWidth = Math.max(1.8, size * 0.06);
+      ctx.beginPath();
+      ctx.arc(cx - r * 0.1, cy + r * 0.22, r * 0.1, 0, Math.PI);
+      ctx.arc(cx + r * 0.1, cy + r * 0.22, r * 0.1, 0, Math.PI);
+      ctx.stroke();
+
+      // Red Collar at bottom
       ctx.fillStyle = '#FF0000';
       ctx.beginPath();
-      ctx.arc(cx, cy + r * 0.65, r * 0.2, 0, Math.PI * 2);
+      roundRect(ctx, cx - r * 0.55, cy + r * 0.62, r * 1.1, r * 0.2, r * 0.08);
       ctx.fill();
 
-      // Eyes
-      ctx.fillStyle = '#222222';
+      // Gold Tag
+      ctx.fillStyle = '#FFD700';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.3, cy - r * 0.1, r * 0.11, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.3, cy - r * 0.1, r * 0.11, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Snout & Mouth
-      ctx.fillStyle = '#D2B48C';
-      ctx.beginPath();
-      ctx.ellipse(cx, cy + r * 0.18, r * 0.32, r * 0.22, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#222222';
-      ctx.beginPath();
-      ctx.arc(cx, cy + r * 0.08, r * 0.09, 0, Math.PI * 2);
+      ctx.arc(cx, cy + r * 0.72, r * 0.1, 0, Math.PI * 2);
       ctx.fill();
     }
   },
@@ -273,49 +377,68 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     primaryColor: '#1E90FF',
     secondaryColor: '#104E8B',
     accentColor: '#111111',
-    description: '패셔니스타 고양이 네오',
+    description: '단발머리 패셔니스타 고양이 네오',
     drawFace: (ctx, x, y, size) => {
       const cx = x + size / 2;
       const cy = y + size / 2;
       const r = size * 0.38;
 
-      // Chic Black Bob Wig/Hair
-      ctx.fillStyle = '#111111';
+      // Blue Cat Ears at top
+      ctx.fillStyle = '#1E90FF';
       ctx.beginPath();
-      ctx.arc(cx, cy - r * 0.1, r * 0.85, Math.PI * 0.8, Math.PI * 2.2);
-      ctx.lineTo(cx + r * 0.85, cy + r * 0.4);
-      ctx.lineTo(cx - r * 0.85, cy + r * 0.4);
+      ctx.moveTo(cx - r * 0.7, cy - r * 0.2);
+      ctx.lineTo(cx - r * 0.45, cy - r * 0.82);
+      ctx.lineTo(cx - r * 0.2, cy - r * 0.4);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(cx + r * 0.2, cy - r * 0.4);
+      ctx.lineTo(cx + r * 0.45, cy - r * 0.82);
+      ctx.lineTo(cx + r * 0.7, cy - r * 0.2);
+      ctx.fill();
+
+      // Signature Glossy Black Bob Wig (Hair framing face)
+      ctx.fillStyle = '#111111';
+      // Main Hair Helmet
+      ctx.beginPath();
+      ctx.arc(cx, cy - r * 0.05, r * 0.82, Math.PI * 0.82, Math.PI * 2.18);
+      ctx.lineTo(cx + r * 0.82, cy + r * 0.45);
+      ctx.lineTo(cx + r * 0.48, cy + r * 0.45);
+      ctx.lineTo(cx + r * 0.35, cy + r * 0.15); // Hair bangs cutout
+      ctx.lineTo(cx - r * 0.35, cy + r * 0.15);
+      ctx.lineTo(cx - r * 0.48, cy + r * 0.45);
+      ctx.lineTo(cx - r * 0.82, cy + r * 0.45);
       ctx.closePath();
       ctx.fill();
 
-      // Face cutout
-      ctx.fillStyle = '#1E90FF';
-      ctx.beginPath();
-      ctx.arc(cx, cy + r * 0.1, r * 0.6, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eyelashes & Eyes
+      // Cat Eyes with Lashes
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.ellipse(cx - r * 0.28, cy, r * 0.16, r * 0.12, 0, 0, Math.PI * 2);
-      ctx.ellipse(cx + r * 0.28, cy, r * 0.16, r * 0.12, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx - r * 0.28, cy + r * 0.05, r * 0.16, r * 0.13, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx + r * 0.28, cy + r * 0.05, r * 0.16, r * 0.13, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#111111';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.28, cy, r * 0.08, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.28, cy, r * 0.08, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.28, cy + r * 0.05, r * 0.08, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.28, cy + r * 0.05, r * 0.08, 0, Math.PI * 2);
       ctx.fill();
 
-      // Eyeliner flourish
+      // Eyeliner / Eyelashes
       ctx.strokeStyle = '#111111';
-      ctx.lineWidth = Math.max(1.5, size * 0.06);
+      ctx.lineWidth = Math.max(1.8, size * 0.06);
       ctx.beginPath();
-      ctx.moveTo(cx - r * 0.44, cy - r * 0.08);
-      ctx.lineTo(cx - r * 0.12, cy - r * 0.12);
-      ctx.moveTo(cx + r * 0.12, cy - r * 0.12);
-      ctx.lineTo(cx + r * 0.44, cy - r * 0.08);
+      ctx.moveTo(cx - r * 0.46, cy - r * 0.04);
+      ctx.lineTo(cx - r * 0.12, cy - r * 0.02);
+      ctx.moveTo(cx + r * 0.12, cy - r * 0.02);
+      ctx.lineTo(cx + r * 0.46, cy - r * 0.04);
       ctx.stroke();
+
+      // Small nose & mouth
+      ctx.fillStyle = '#FF1493';
+      ctx.beginPath();
+      ctx.arc(cx, cy + r * 0.24, r * 0.06, 0, Math.PI * 2);
+      ctx.fill();
     }
   },
 
@@ -325,41 +448,51 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     koreanName: '튜브',
     primaryColor: '#00FA9A',
     secondaryColor: '#00C78C',
-    accentColor: '#FFD700',
+    accentColor: '#FF9900',
     description: '겁많은 미카엘 오리 튜브',
     drawFace: (ctx, x, y, size) => {
       const cx = x + size / 2;
       const cy = y + size / 2;
       const r = size * 0.38;
 
-      // Small White Duck Head Base
+      // Tube is a WHITE DUCK!
+      // White Round Duck Head
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(cx, cy, r * 0.75, 0, Math.PI * 2);
+      ctx.arc(cx, cy, r * 0.82, 0, Math.PI * 2);
       ctx.fill();
 
-      // Yellow Duck Beak (Signature Tube Beak!)
-      ctx.fillStyle = '#FF8C00';
+      ctx.strokeStyle = '#E0E0E0';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Large Flat Yellow/Orange Duck Beak (Signature Tube Beak!)
+      ctx.fillStyle = '#FF9900';
       ctx.beginPath();
-      ctx.ellipse(cx, cy + r * 0.22, r * 0.45, r * 0.25, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, cy + r * 0.22, r * 0.52, r * 0.3, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.strokeStyle = '#D2691E';
       ctx.lineWidth = Math.max(1.5, size * 0.05);
       ctx.stroke();
 
-      // Beak Nostrils
+      // Beak Nostrils & Smile Line
       ctx.fillStyle = '#D2691E';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.1, cy + r * 0.15, r * 0.04, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.1, cy + r * 0.15, r * 0.04, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.12, cy + r * 0.12, r * 0.04, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.12, cy + r * 0.12, r * 0.04, 0, Math.PI * 2);
       ctx.fill();
 
-      // Expressive Eyes
+      ctx.beginPath();
+      ctx.moveTo(cx - r * 0.3, cy + r * 0.22);
+      ctx.lineTo(cx + r * 0.3, cy + r * 0.22);
+      ctx.stroke();
+
+      // Small Round Black Eyes
       ctx.fillStyle = '#222222';
       ctx.beginPath();
-      ctx.arc(cx - r * 0.3, cy - r * 0.12, r * 0.1, 0, Math.PI * 2);
-      ctx.arc(cx + r * 0.3, cy - r * 0.12, r * 0.1, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.3, cy - r * 0.16, r * 0.1, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.3, cy - r * 0.16, r * 0.1, 0, Math.PI * 2);
       ctx.fill();
     }
   }
