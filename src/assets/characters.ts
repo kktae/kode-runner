@@ -29,18 +29,18 @@ const imageCache: Record<MinoType, HTMLImageElement> = {
   Z: new Image()
 };
 
-const svgPaths: Record<MinoType, string> = {
-  I: '/assets/ryan.svg',
-  J: '/assets/apeach.svg',
-  L: '/assets/choonsik.svg',
-  O: '/assets/muzi.svg',
-  S: '/assets/frodo.svg',
-  T: '/assets/neo.svg',
-  Z: '/assets/tube.svg'
+const assetPaths: Record<MinoType, string> = {
+  I: '/assets/ryan.png',
+  J: '/assets/apeach.png',
+  L: '/assets/choonsik.png',
+  O: '/assets/muzi.png',
+  S: '/assets/frodo.png',
+  T: '/assets/neo.png',
+  Z: '/assets/tube.png'
 };
 
-(Object.keys(svgPaths) as MinoType[]).forEach((type) => {
-  imageCache[type].src = svgPaths[type];
+(Object.keys(assetPaths) as MinoType[]).forEach((type) => {
+  imageCache[type].src = assetPaths[type];
 });
 
 export const CHARACTERS: Record<MinoType, CharacterInfo> = {
