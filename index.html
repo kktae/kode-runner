@@ -25,6 +25,9 @@
         </div>
 
         <div class="header-controls">
+          <button id="view-leaderboard-btn" class="pill-btn secondary">
+            🏆 랭킹 보기
+          </button>
           <button id="sound-toggle-btn" class="icon-btn" title="음향 토글">
             🔊
           </button>
@@ -150,8 +153,37 @@
           </div>
         </div>
 
-        <button id="start-game-btn" class="primary-btn">
-          🚀 게임 시작하기
+        <div class="modal-btn-group">
+          <button id="start-game-btn" class="primary-btn">
+            🚀 게임 시작하기
+          </button>
+          <button id="modal-view-leaderboard-btn" class="secondary-btn">
+            🏆 명예의 전당 (랭킹 보기)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal-backdrop hidden">
+      <div class="modal-card glass-modal wide">
+        <div class="modal-header">
+          <span class="modal-kakaobank">kakaobank</span>
+          <h2>🏆 BOOTH TOP 5 명예의 전당</h2>
+          <p class="modal-sub">Kode Runner 2026 부스 최고 득점자 목록입니다</p>
+        </div>
+
+        <div class="tab-group modal-tabs">
+          <button id="modal-tab-timeattack" class="tab-btn active">⏱️ 타임어택 랭킹</button>
+          <button id="modal-tab-classic" class="tab-btn">♾️ 클래식 랭킹</button>
+        </div>
+
+        <ol id="modal-leaderboard-list" class="leaderboard-list full-list">
+          <!-- Rendered dynamically -->
+        </ol>
+
+        <button id="close-leaderboard-btn" class="primary-btn">
+          🎮 게임 시작 / 모드 선택으로 돌아가기
         </button>
       </div>
     </div>

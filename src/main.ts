@@ -21,6 +21,7 @@ const timerVal = document.getElementById('timer-val')!;
 const timerFill = document.getElementById('timer-progress-fill') as HTMLElement;
 const modeDisplayTag = document.getElementById('mode-display-tag')!;
 
+const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn')!;
 const soundToggleBtn = document.getElementById('sound-toggle-btn')!;
 const pauseBtn = document.getElementById('pause-btn')!;
 const modeChangeBtn = document.getElementById('mode-change-btn')!;
@@ -33,6 +34,13 @@ const modeModal = document.getElementById('mode-modal')!;
 const selectTimeattack = document.getElementById('select-timeattack')!;
 const selectClassic = document.getElementById('select-classic')!;
 const startGameBtn = document.getElementById('start-game-btn')!;
+const modalViewLeaderboardBtn = document.getElementById('modal-view-leaderboard-btn')!;
+
+const leaderboardModal = document.getElementById('leaderboard-modal')!;
+const modalTabTimeattack = document.getElementById('modal-tab-timeattack')!;
+const modalTabClassic = document.getElementById('modal-tab-classic')!;
+const modalLeaderboardList = document.getElementById('modal-leaderboard-list')!;
+const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn')!;
 
 const gameoverModal = document.getElementById('gameover-modal')!;
 const gameoverTitle = document.getElementById('gameover-title')!;
@@ -137,6 +145,44 @@ function renderLeaderboard(mode: GameMode) {
   });
 }
 
+function renderModalLeaderboard(mode: GameMode) {
+  modalTabTimeattack.classList.toggle('active', mode === 'timeattack');
+  modalTabClassic.classList.toggle('active', mode === 'classic');
+
+  const entries = LeaderboardManager.getEntries(mode);
+  modalLeaderboardList.innerHTML = '';
+
+  entries.forEach((entry, index) => {
+    const li = document.createElement('li');
+    li.className = 'leader-item';
+    li.innerHTML = `
+      <span class="leader-rank">${index + 1}</span>
+      <span class="leader-name">${entry.name}</span>
+      <span class="leader-score">${entry.score.toLocaleString()}점 (${entry.lines}줄)</span>
+    `;
+    modalLeaderboardList.appendChild(li);
+  });
+}
+
+// Open / Close Leaderboard Modal
+function openLeaderboardModal() {
+  renderModalLeaderboard(selectedMode);
+  modeModal.classList.add('hidden');
+  leaderboardModal.classList.remove('hidden');
+}
+
+function closeLeaderboardModal() {
+  leaderboardModal.classList.add('hidden');
+  modeModal.classList.remove('hidden');
+}
+
+viewLeaderboardBtn.addEventListener('click', openLeaderboardModal);
+modalViewLeaderboardBtn.addEventListener('click', openLeaderboardModal);
+closeLeaderboardBtn.addEventListener('click', closeLeaderboardModal);
+
+modalTabTimeattack.addEventListener('click', () => renderModalLeaderboard('timeattack'));
+modalTabClassic.addEventListener('click', () => renderModalLeaderboard('classic'));
+
 // Keyboard Listeners
 window.addEventListener('keydown', (e) => {
   // Prevent scrolling
@@ -201,6 +247,7 @@ selectClassic.addEventListener('click', () => {
 
 startGameBtn.addEventListener('click', () => {
   modeModal.classList.add('hidden');
+  leaderboardModal.classList.add('hidden');
   gameoverModal.classList.add('hidden');
 
   modeDisplayTag.innerText = selectedMode === 'timeattack' ? '⏱️ 90s TIME ATTACK' : '♾️ CLASSIC MODE';
@@ -226,7 +273,7 @@ leaderboardForm.addEventListener('submit', (e) => {
   renderLeaderboard(selectedMode);
 
   gameoverModal.classList.add('hidden');
-  modeModal.classList.remove('hidden');
+  openLeaderboardModal();
 });
 
 restartBtn.addEventListener('click', () => {
@@ -236,3 +283,4 @@ restartBtn.addEventListener('click', () => {
 
 // Initial Render
 renderLeaderboard('timeattack');
+
