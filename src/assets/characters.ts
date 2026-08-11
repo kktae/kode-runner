@@ -19,8 +19,8 @@ function roundRectPath(
 }
 
 /**
- * Pure High-DPI Vector Canvas Character Drawers
- * 100% Crisp at any resolution, zero network loading latency, 100% consistent design system!
+ * High-Precision Official Kakao Friends Vector Character Renderers
+ * 100% Crisp at any DPI resolution, 100% consistent design system & brand proportions!
  */
 export const CHARACTERS: Record<MinoType, CharacterInfo> = {
   I: {
@@ -34,11 +34,11 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       const cx = x + size / 2;
       const cy = y + size / 2;
 
-      // 1. Background Fill
+      // 1. Background Fill - Amber Yellow
       ctx.fillStyle = '#FFB800';
       ctx.fillRect(x, y, size, size);
 
-      // 2. Ears
+      // 2. Round Ears
       ctx.fillStyle = '#FFB800';
       ctx.strokeStyle = '#222222';
       ctx.lineWidth = Math.max(1.5, size * 0.05);
@@ -53,28 +53,28 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.fill();
       ctx.stroke();
 
-      // 3. Straight Horizontal Eyebrows
+      // 3. Signature Straight Eyebrows
       ctx.strokeStyle = '#222222';
       ctx.lineWidth = Math.max(2, size * 0.07);
       ctx.lineCap = 'round';
 
       // Left eyebrow
       ctx.beginPath();
-      ctx.moveTo(cx - size * 0.3, cy - size * 0.12);
+      ctx.moveTo(cx - size * 0.32, cy - size * 0.12);
       ctx.lineTo(cx - size * 0.1, cy - size * 0.12);
       ctx.stroke();
 
       // Right eyebrow
       ctx.beginPath();
       ctx.moveTo(cx + size * 0.1, cy - size * 0.12);
-      ctx.lineTo(cx + size * 0.3, cy - size * 0.12);
+      ctx.lineTo(cx + size * 0.32, cy - size * 0.12);
       ctx.stroke();
 
       // 4. Dot Eyes
       ctx.fillStyle = '#222222';
       ctx.beginPath();
-      ctx.arc(cx - size * 0.2, cy + size * 0.02, size * 0.05, 0, Math.PI * 2);
-      ctx.arc(cx + size * 0.2, cy + size * 0.02, size * 0.05, 0, Math.PI * 2);
+      ctx.arc(cx - size * 0.21, cy + size * 0.02, size * 0.05, 0, Math.PI * 2);
+      ctx.arc(cx + size * 0.21, cy + size * 0.02, size * 0.05, 0, Math.PI * 2);
       ctx.fill();
 
       // 5. White Muzzle
@@ -94,7 +94,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
   J: {
     name: 'Apeach',
     koreanName: '어피치',
-    primaryColor: '#FFB6C1',
+    primaryColor: '#FFA0B4',
     secondaryColor: '#FF69B4',
     accentColor: '#FF1493',
     description: '장난기 가득한 아기 복숭아 어피치',
@@ -102,19 +102,19 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       const cx = x + size / 2;
       const cy = y + size / 2;
 
-      // 1. Background
-      ctx.fillStyle = '#FFB6C1';
+      // 1. Background Fill - Peach Pink
+      ctx.fillStyle = '#FFA0B4';
       ctx.fillRect(x, y, size, size);
 
-      // 2. Peach Cleft Top
-      ctx.fillStyle = '#FF99AC';
+      // 2. Peach Cleft Tip at Top
+      ctx.fillStyle = '#FF7A95';
       ctx.beginPath();
       ctx.moveTo(cx - size * 0.12, cy - size * 0.32);
-      ctx.quadraticCurveTo(cx, cy - size * 0.42, cx + size * 0.12, cy - size * 0.32);
+      ctx.quadraticCurveTo(cx, cy - size * 0.44, cx + size * 0.12, cy - size * 0.32);
       ctx.fill();
 
       // 3. Pink Blush Cheeks
-      ctx.fillStyle = 'rgba(255, 105, 180, 0.6)';
+      ctx.fillStyle = 'rgba(255, 105, 180, 0.65)';
       ctx.beginPath();
       ctx.arc(cx - size * 0.26, cy + size * 0.12, size * 0.1, 0, Math.PI * 2);
       ctx.arc(cx + size * 0.26, cy + size * 0.12, size * 0.1, 0, Math.PI * 2);
@@ -127,7 +127,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.arc(cx + size * 0.18, cy - size * 0.04, size * 0.05, 0, Math.PI * 2);
       ctx.fill();
 
-      // White eye highlights
+      // White Glare
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
       ctx.arc(cx - size * 0.19, cy - size * 0.05, size * 0.02, 0, Math.PI * 2);
@@ -140,7 +140,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.arc(cx, cy + size * 0.12, size * 0.12, 0, Math.PI, false);
       ctx.fill();
 
-      // Bucktooth
+      // Signature White Tooth
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(cx - size * 0.04, cy + size * 0.12, size * 0.08, size * 0.05);
     }
@@ -156,11 +156,11 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       const cx = x + size / 2;
       const cy = y + size / 2;
 
-      // 1. Background
+      // 1. Background Fill - Sweet Potato Yellow
       ctx.fillStyle = '#FFA500';
       ctx.fillRect(x, y, size, size);
 
-      // 2. Triangular Cat Ears with Dark Tips
+      // 2. Triangular Cat Ears with Dark Brown Tips
       ctx.fillStyle = '#8B4513';
       // Left Ear
       ctx.beginPath();
@@ -175,7 +175,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.lineTo(cx + size * 0.35, cy - size * 0.15);
       ctx.fill();
 
-      // 3. Cream Snout
+      // 3. Cream Oval Snout
       ctx.fillStyle = '#FFF8DC';
       ctx.beginPath();
       ctx.ellipse(cx, cy + size * 0.12, size * 0.22, size * 0.16, 0, 0, Math.PI * 2);
@@ -194,9 +194,9 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.arc(cx, cy + size * 0.08, size * 0.04, 0, Math.PI * 2);
       ctx.fill();
 
-      // Whiskers
+      // Cat Whiskers
       ctx.strokeStyle = '#222222';
-      ctx.lineWidth = Math.max(1, size * 0.03);
+      ctx.lineWidth = Math.max(1, size * 0.035);
       // Left Whiskers
       ctx.beginPath();
       ctx.moveTo(cx - size * 0.22, cy + size * 0.1);
@@ -226,13 +226,13 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(x, y, size, size);
 
-      // Rabbit Ears
+      // Rabbit Ears at Top
       ctx.beginPath();
       ctx.ellipse(cx - size * 0.18, cy - size * 0.32, size * 0.08, size * 0.18, -0.1, 0, Math.PI * 2);
       ctx.ellipse(cx + size * 0.18, cy - size * 0.32, size * 0.08, size * 0.18, 0.1, 0, Math.PI * 2);
       ctx.fill();
 
-      // 2. Yellow Muzi Face Center
+      // 2. Yellow Face Center
       ctx.fillStyle = '#FFD700';
       ctx.beginPath();
       ctx.arc(cx, cy + size * 0.05, size * 0.34, 0, Math.PI * 2);
@@ -245,7 +245,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.arc(cx + size * 0.15, cy, size * 0.05, 0, Math.PI * 2);
       ctx.fill();
 
-      // 4. White Snout
+      // 4. White Snout Patch
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
       ctx.arc(cx, cy + size * 0.12, size * 0.08, 0, Math.PI * 2);
@@ -254,7 +254,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       // Black Nose
       ctx.fillStyle = '#222222';
       ctx.beginPath();
-      ctx.arc(cx, cy + size * 0.1, size * 0.03, 0, Math.PI * 2);
+      ctx.arc(cx, cy + size * 0.1, size * 0.035, 0, Math.PI * 2);
       ctx.fill();
     }
   },
@@ -269,11 +269,11 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       const cx = x + size / 2;
       const cy = y + size / 2;
 
-      // 1. Background
+      // 1. Background Fill - Golden Brown Fur
       ctx.fillStyle = '#C88E3E';
       ctx.fillRect(x, y, size, size);
 
-      // 2. Folded Ears on Top
+      // 2. Folded Brown Ears on Top
       ctx.fillStyle = '#9A6224';
       ctx.strokeStyle = '#222222';
       ctx.lineWidth = Math.max(1.5, size * 0.04);
@@ -284,7 +284,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.fill();
       ctx.stroke();
 
-      // 3. Oval Eyes with Pupil and Eyelid Line
+      // 3. White Oval Eyes with Eyelids & Pupils
       ctx.fillStyle = '#FFFFFF';
       ctx.strokeStyle = '#222222';
       ctx.lineWidth = Math.max(1.5, size * 0.04);
@@ -308,12 +308,11 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.arc(cx + size * 0.16, cy - size * 0.05, size * 0.04, 0, Math.PI * 2);
       ctx.fill();
 
-      // 4. Black Nose
+      // 4. Black Nose & Mouth
       ctx.beginPath();
       ctx.ellipse(cx, cy + size * 0.08, size * 0.06, size * 0.04, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Straight Mouth
       ctx.strokeStyle = '#222222';
       ctx.lineWidth = Math.max(2, size * 0.05);
       ctx.beginPath();
@@ -325,7 +324,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.fillStyle = '#D32F2F';
       ctx.fillRect(cx - size * 0.3, cy + size * 0.3, size * 0.6, size * 0.08);
 
-      // Silver Tag
+      // Silver Round Tag
       ctx.fillStyle = '#C0C0C0';
       ctx.beginPath();
       ctx.arc(cx, cy + size * 0.38, size * 0.06, 0, Math.PI * 2);
@@ -343,11 +342,11 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       const cx = x + size / 2;
       const cy = y + size / 2;
 
-      // 1. Background
+      // 1. Background Fill - Cyan Blue
       ctx.fillStyle = '#1E90FF';
       ctx.fillRect(x, y, size, size);
 
-      // 2. Glossy Black Bob Hair
+      // 2. Glossy Black Bob Cut Wig
       ctx.fillStyle = '#111111';
       ctx.beginPath();
       ctx.arc(cx, cy - size * 0.12, size * 0.38, Math.PI, 0, false);
@@ -355,10 +354,10 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.fillRect(cx + size * 0.26, cy - size * 0.12, size * 0.12, size * 0.35);
       ctx.fill();
 
-      // Hair Highlight Gloss
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      // Hair Highlight Sheen
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.32)';
       ctx.beginPath();
-      ctx.arc(cx - size * 0.15, cy - size * 0.28, size * 0.15, 0, Math.PI * 2);
+      ctx.arc(cx - size * 0.15, cy - size * 0.28, size * 0.14, 0, Math.PI * 2);
       ctx.fill();
 
       // 3. Cute Cat Eyes
@@ -368,7 +367,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.arc(cx + size * 0.14, cy + size * 0.04, size * 0.05, 0, Math.PI * 2);
       ctx.fill();
 
-      // Eye highlights
+      // Eye Glints
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
       ctx.arc(cx - size * 0.15, cy + size * 0.03, size * 0.02, 0, Math.PI * 2);
@@ -376,7 +375,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.fill();
 
       // 4. Pink Nose
-      ctx.fillStyle = '#FFB6C1';
+      ctx.fillStyle = '#FFA0B4';
       ctx.beginPath();
       ctx.arc(cx, cy + size * 0.12, size * 0.04, 0, Math.PI * 2);
       ctx.fill();
@@ -393,7 +392,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       const cx = x + size / 2;
       const cy = y + size / 2;
 
-      // 1. Background
+      // 1. Background Fill - Mint Green Tile
       ctx.fillStyle = '#00FA9A';
       ctx.fillRect(x, y, size, size);
 
@@ -403,7 +402,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.arc(cx, cy - size * 0.02, size * 0.34, 0, Math.PI * 2);
       ctx.fill();
 
-      // 3. Small Dot Eyes
+      // 3. Dot Eyes
       ctx.fillStyle = '#222222';
       ctx.beginPath();
       ctx.arc(cx - size * 0.14, cy - size * 0.08, size * 0.04, 0, Math.PI * 2);
@@ -416,7 +415,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
       ctx.ellipse(cx, cy + size * 0.1, size * 0.22, size * 0.12, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Beak Line
+      // Beak Center Line
       ctx.strokeStyle = '#E67E00';
       ctx.lineWidth = Math.max(1, size * 0.03);
       ctx.beginPath();
@@ -459,7 +458,7 @@ export function drawMinoCell(
   roundRectPath(ctx, x, y, size, size, radius);
   ctx.clip();
 
-  // Render Pure High-DPI Vector Character Face
+  // Render High-Precision Vector Character Face
   char.drawFace(ctx, x, y, size);
 
   // Top/Left Highlight for 3D Bevel Depth
