@@ -1,7 +1,7 @@
 import { CharacterInfo, MinoType } from '../types/tetris';
 
-// Helper for drawing rounded rect
-function roundRect(
+// Helper for drawing rounded rect path
+function roundRectPath(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
@@ -18,8 +18,8 @@ function roundRect(
   ctx.closePath();
 }
 
-// Preload Vector SVG assets
-const imageCache: Record<MinoType, HTMLImageElement> = {
+// Preload Character Tile Assets
+export const imageCache: Record<MinoType, HTMLImageElement> = {
   I: new Image(),
   J: new Image(),
   L: new Image(),
@@ -144,7 +144,7 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
   }
 };
 
-// Render a single cell with character face SVG
+// Render a single cell with rounded clipping, character face, 3D bevel, and border
 export function drawMinoCell(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -154,14 +154,15 @@ export function drawMinoCell(
   isGhost = false
 ) {
   const char = CHARACTERS[type];
-  const radius = Math.max(3, size * 0.18);
+  const radius = Math.max(4, size * 0.18);
 
   ctx.save();
 
+  // Ghost Block rendering
   if (isGhost) {
     ctx.globalAlpha = 0.35;
     ctx.fillStyle = char.primaryColor;
-    roundRect(ctx, x + 1, y + 1, size - 2, size - 2, radius);
+    roundRectPath(ctx, x + 1, y + 1, size - 2, size - 2, radius);
     ctx.fill();
 
     ctx.strokeStyle = '#FFFFFF';
@@ -171,21 +172,44 @@ export function drawMinoCell(
     return;
   }
 
-  // Draw Preloaded Vector Image directly on Cell
+  // Create rounded clipping region so image conforms to Tetris tile
+  roundRectPath(ctx, x, y, size, size, radius);
+  ctx.clip();
+
+  // Draw Character PNG Tile
   const img = imageCache[type];
   if (img.complete && img.naturalWidth !== 0) {
     ctx.drawImage(img, x, y, size, size);
   } else {
-    // Fallback while loading
+    // Fallback solid color while loading
     ctx.fillStyle = char.primaryColor;
-    roundRect(ctx, x, y, size, size, radius);
-    ctx.fill();
+    ctx.fillRect(x, y, size, size);
   }
 
-  // Subtle Outer Border
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  // Top/Left Highlight for 3D Bevel
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + size, y);
+  ctx.lineTo(x + size - size * 0.12, y + size * 0.12);
+  ctx.lineTo(x + size * 0.12, y + size * 0.12);
+  ctx.closePath();
+  ctx.fill();
+
+  // Bottom/Right Shadow for 3D Depth
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+  ctx.beginPath();
+  ctx.moveTo(x + size, y);
+  ctx.lineTo(x + size, y + size);
+  ctx.lineTo(x + size * 0.88, y + size - size * 0.12);
+  ctx.lineTo(x + size * 0.88, y + size * 0.12);
+  ctx.closePath();
+  ctx.fill();
+
+  // Outer Border Line
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
   ctx.lineWidth = 1;
-  roundRect(ctx, x, y, size, size, radius);
+  roundRectPath(ctx, x, y, size, size, radius);
   ctx.stroke();
 
   ctx.restore();
