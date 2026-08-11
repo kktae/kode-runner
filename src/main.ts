@@ -218,7 +218,9 @@ window.addEventListener('keydown', (e) => {
 // Sound Toggle Event
 soundToggleBtn.addEventListener('click', () => {
   const isMuted = soundManager.toggleMute();
-  soundToggleBtn.innerText = isMuted ? '🔇' : '🔊';
+  soundToggleBtn.innerHTML = isMuted
+    ? `<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`
+    : `<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
 });
 
 // Pause Event
@@ -250,7 +252,9 @@ startGameBtn.addEventListener('click', () => {
   leaderboardModal.classList.add('hidden');
   gameoverModal.classList.add('hidden');
 
-  modeDisplayTag.innerText = selectedMode === 'timeattack' ? '⏱️ 90s TIME ATTACK' : '♾️ CLASSIC MODE';
+  modeDisplayTag.innerHTML = selectedMode === 'timeattack'
+    ? `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <span>90s TIME ATTACK</span>`
+    : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
   gameLoop.setMode(selectedMode);
   gameLoop.start();
 

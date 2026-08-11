@@ -135,6 +135,9 @@ body {
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .pill-btn.secondary {
@@ -146,6 +149,49 @@ body {
 .pill-btn:hover {
   background: var(--kakao-yellow);
   color: var(--kakao-black);
+}
+
+.btn-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.inline-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.flex-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.flex-title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.mode-icon-svg {
+  color: var(--kakao-yellow);
+  margin-bottom: 8px;
+}
+
+.celebration-badge {
+  display: inline-block;
+  background: rgba(254, 229, 0, 0.15);
+  border: 1px solid var(--kakao-yellow);
+  color: var(--kakao-yellow);
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
 }
 
 /* Grid Layout */

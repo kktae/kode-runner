@@ -16,13 +16,13 @@ export class ComboBanner {
     let textColor = '#FFB800';
 
     if (isTetris) {
-      text = '🎉 KODE RUNNER 4-LINE CLEAR!';
+      text = 'KODE RUNNER 4-LINE CLEAR!';
       textColor = '#FFD700';
     } else if (combo >= 5) {
-      text = `🔥 VIBE MASTER x${combo}!`;
+      text = `VIBE MASTER x${combo}!`;
       textColor = '#FF4500';
     } else if (combo >= 3) {
-      text = `⚡ VIBE COMBO x${combo}!`;
+      text = `VIBE COMBO x${combo}!`;
       textColor = '#FF69B4';
     } else {
       text = `COMBO x${combo}!`;
