@@ -124,6 +124,14 @@ export class GameLoop {
     this.isPaused = !this.isPaused;
   }
 
+  public getIsRunning(): boolean {
+    return this.isRunning;
+  }
+
+  public getIsPaused(): boolean {
+    return this.isPaused;
+  }
+
   private gameOver() {
     this.isRunning = false;
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);

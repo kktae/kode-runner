@@ -239,13 +239,48 @@ soundToggleBtn.addEventListener('click', () => {
     : `<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
 });
 
-// Pause Event
-pauseBtn.addEventListener('click', () => {
+const pauseModal = document.getElementById('pause-modal')!;
+const resumeBtn = document.getElementById('resume-btn')!;
+const pauseRestartBtn = document.getElementById('pause-restart-btn')!;
+
+function handleTogglePause() {
+  if (!gameLoop.getIsRunning()) return;
   gameLoop.togglePause();
+  const isPaused = gameLoop.getIsPaused();
+
+  if (isPaused) {
+    pauseModal.classList.remove('hidden');
+    pauseBtn.classList.add('active');
+    pauseBtn.setAttribute('title', '게임 재개');
+    pauseBtn.innerHTML = `<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+  } else {
+    pauseModal.classList.add('hidden');
+    pauseBtn.classList.remove('active');
+    pauseBtn.setAttribute('title', '일시정지');
+    pauseBtn.innerHTML = `<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+  }
+}
+
+// Pause Event
+pauseBtn.addEventListener('click', handleTogglePause);
+resumeBtn.addEventListener('click', handleTogglePause);
+
+pauseRestartBtn.addEventListener('click', () => {
+  pauseModal.classList.add('hidden');
+  gameLoop.reset();
+  modeModal.classList.remove('hidden');
+});
+
+// Keyboard Shortcut for Pause (P or Escape)
+window.addEventListener('keydown', (e) => {
+  if ((e.key === 'p' || e.key === 'P' || e.key === 'Escape') && gameLoop.getIsRunning()) {
+    handleTogglePause();
+  }
 });
 
 // Mode Change / Open Modal Event
 modeChangeBtn.addEventListener('click', () => {
+  pauseModal.classList.add('hidden');
   gameLoop.reset();
   modeModal.classList.remove('hidden');
 });
