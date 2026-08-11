@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>카카오뱅크 Kode Runner 2026 : 바이브 코딩 테트리스</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app" class="booth-container">
+      <!-- Top Header -->
+      <header class="booth-header">
+        <div class="brand-badge">
+          <div class="kakaobank-logo">
+            <span class="logo-yellow">kakaobank</span>
+          </div>
+          <div class="divider"></div>
+          <span class="badge-title">Kode Runner 2026</span>
+          <span class="badge-vibe">VIBE CODING BOOTH</span>
+        </div>
+
+        <div class="header-controls">
+          <button id="sound-toggle-btn" class="icon-btn" title="음향 토글">
+            🔊
+          </button>
+          <button id="pause-btn" class="icon-btn" title="일시정지">
+            ⏸️
+          </button>
+          <button id="mode-change-btn" class="pill-btn">
+            🔄 모드 변경
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Layout Grid -->
+      <main class="game-grid">
+        <!-- Left Panel: HOLD & Stats -->
+        <section class="side-panel left-panel">
+          <div class="glass-card panel-hold">
+            <h3 class="panel-title">HOLD</h3>
+            <div class="preview-box">
+              <canvas id="hold-canvas" width="100" height="100"></canvas>
+            </div>
+            <span class="key-hint">[Shift / C]</span>
+          </div>
+
+          <div class="glass-card panel-stats">
+            <div class="stat-item">
+              <span class="stat-label">SCORE</span>
+              <span id="score-val" class="stat-value highlight">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">LINES</span>
+              <span id="lines-val" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">LEVEL</span>
+              <span id="level-val" class="stat-value">1</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">MAX COMBO</span>
+              <span id="combo-val" class="stat-value accent">0</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Center Panel: Main Canvas & Timer -->
+        <section class="center-panel">
+          <!-- Mode Status / Timer Bar -->
+          <div class="timer-bar-container glass-card">
+            <div class="timer-info">
+              <span id="mode-display-tag" class="mode-tag">⏱️ 90s TIME ATTACK</span>
+              <span id="timer-val" class="timer-text">01:30</span>
+            </div>
+            <div class="timer-progress-track">
+              <div id="timer-progress-fill" class="timer-progress-fill"></div>
+            </div>
+          </div>
+
+          <!-- Tetris Board Wrapper -->
+          <div id="canvas-wrapper" class="board-wrapper glass-card">
+            <canvas id="tetris-canvas" width="300" height="600"></canvas>
+          </div>
+        </section>
+
+        <!-- Right Panel: NEXT Queue & Leaderboard -->
+        <section class="side-panel right-panel">
+          <div class="glass-card panel-next">
+            <h3 class="panel-title">NEXT</h3>
+            <div class="next-queue">
+              <div class="preview-box mini"><canvas id="next1-canvas" width="80" height="80"></canvas></div>
+              <div class="preview-box mini"><canvas id="next2-canvas" width="80" height="80"></canvas></div>
+              <div class="preview-box mini"><canvas id="next3-canvas" width="80" height="80"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Leaderboard Card -->
+          <div class="glass-card panel-leaderboard">
+            <div class="leaderboard-header">
+              <h3 class="panel-title">🏆 BOOTH TOP 5</h3>
+              <div class="tab-group">
+                <button id="tab-timeattack" class="tab-btn active">타임어택</button>
+                <button id="tab-classic" class="tab-btn">클래식</button>
+              </div>
+            </div>
+            <ol id="leaderboard-list" class="leaderboard-list">
+              <!-- Rendered dynamically -->
+            </ol>
+          </div>
+        </section>
+      </main>
+
+      <!-- Key Controls Banner Footer -->
+      <footer class="controls-footer glass-card">
+        <div class="key-item"><kbd>←</kbd><kbd>→</kbd> 이동</div>
+        <div class="key-item"><kbd>↓</kbd> 천천히 하강</div>
+        <div class="key-item"><kbd>Space</kbd> 즉시 하드드롭</div>
+        <div class="key-item"><kbd>↑</kbd> / <kbd>Z</kbd><kbd>X</kbd> 회전</div>
+        <div class="key-item"><kbd>Shift</kbd> / <kbd>C</kbd> HOLD</div>
+      </footer>
+    </div>
+
+    <!-- Mode Selection Modal -->
+    <div id="mode-modal" class="modal-backdrop">
+      <div class="modal-card glass-modal">
+        <div class="modal-header">
+          <span class="modal-kakaobank">kakaobank</span>
+          <h2>Kode Runner 2026 : Vibe Coding</h2>
+          <p class="modal-sub">부스 게임 모드를 선택해 주세요</p>
+        </div>
+
+        <div class="mode-options">
+          <div id="select-timeattack" class="mode-card active">
+            <div class="mode-icon">⏱️</div>
+            <h3>타임어택 모드 (90초)</h3>
+            <p>1분 30초 동안 집중하여 최고 점수를 달성하는 부스 전용 스피드 모드입니다.</p>
+            <span class="mode-badge">부스 권장</span>
+          </div>
+
+          <div id="select-classic" class="mode-card">
+            <div class="mode-icon">♾️</div>
+            <h3>클래식 가속 모드</h3>
+            <p>10줄마다 레벨업 및 속도가 점진적으로 가속되는 무제한 오리지널 모드입니다.</p>
+            <span class="mode-badge secondary">도전 모드</span>
+          </div>
+        </div>
+
+        <button id="start-game-btn" class="primary-btn">
+          🚀 게임 시작하기
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Over / Leaderboard Entry Modal -->
+    <div id="gameover-modal" class="modal-backdrop hidden">
+      <div class="modal-card glass-modal">
+        <div class="modal-header">
+          <div class="celebration-emoji">🏆</div>
+          <h2 id="gameover-title">GAME OVER!</h2>
+          <p class="modal-sub">멋진 플레이였습니다! 부스 리더보드에 등록하세요.</p>
+        </div>
+
+        <div class="result-summary">
+          <div class="res-item">
+            <span>최종 점수</span>
+            <strong id="res-score">0</strong>
+          </div>
+          <div class="res-item">
+            <span>클리어 라인</span>
+            <strong id="res-lines">0</strong>
+          </div>
+          <div class="res-item">
+            <span>최대 콤보</span>
+            <strong id="res-combo">0</strong>
+          </div>
+        </div>
+
+        <form id="leaderboard-form" class="name-entry-form">
+          <label for="player-name">관람객 닉네임 / 소속</label>
+          <input
+            type="text"
+            id="player-name"
+            placeholder="예: 라이언_개발팀"
+            maxlength="10"
+            required
+            autocomplete="off"
+          />
+          <button type="submit" class="primary-btn">
+            ✨ 리더보드 등재
+          </button>
+        </form>
+
+        <button id="restart-btn" class="secondary-btn">
+          🔄 다음 플레이어 시작
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
