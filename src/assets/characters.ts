@@ -18,73 +18,37 @@ function roundRectPath(
   ctx.closePath();
 }
 
-// Preload Official Kakao Friends High-Res Character Image Assets
-export const imageCache: Record<MinoType, HTMLImageElement> = {
-  I: new Image(),
-  J: new Image(),
-  L: new Image(),
-  O: new Image(),
-  S: new Image(),
-  T: new Image(),
-  Z: new Image()
-};
-
-const assetPaths: Record<MinoType, string> = {
-  I: '/assets/ryan.png',
-  J: '/assets/apeach.png',
-  L: '/assets/choonsik.png',
-  O: '/assets/muzi.png',
-  S: '/assets/frodo.png',
-  T: '/assets/neo.png',
-  Z: '/assets/tube.png'
-};
-
-(Object.keys(assetPaths) as MinoType[]).forEach((type) => {
-  imageCache[type].src = assetPaths[type];
-});
-
+/**
+ * Clean, High-Contrast 3D Arcade Gem Block Renderers
+ * ZERO image asset dependencies, 100% crisp performance at any DPI!
+ */
 export const CHARACTERS: Record<MinoType, CharacterInfo> = {
   I: {
     name: 'Ryan',
     koreanName: '라이언',
     primaryColor: '#FFB800',
     secondaryColor: '#E6A100',
-    accentColor: '#222222',
+    accentColor: '#333333',
     description: '믿음직스러운 카카오프렌즈 조언자 라이언',
-    drawFace: (ctx, x, y, size) => {
-      const img = imageCache['I'];
-      if (img.complete && img.naturalWidth !== 0) {
-        ctx.drawImage(img, x, y, size, size);
-      }
-    }
+    drawFace: () => {}
   },
   J: {
     name: 'Apeach',
     koreanName: '어피치',
-    primaryColor: '#FFA0B4',
-    secondaryColor: '#FF69B4',
-    accentColor: '#FF1493',
+    primaryColor: '#FF6B81',
+    secondaryColor: '#E04867',
+    accentColor: '#FFFFFF',
     description: '장난기 가득한 아기 복숭아 어피치',
-    drawFace: (ctx, x, y, size) => {
-      const img = imageCache['J'];
-      if (img.complete && img.naturalWidth !== 0) {
-        ctx.drawImage(img, x, y, size, size);
-      }
-    }
+    drawFace: () => {}
   },
   L: {
     name: 'Choonsik',
     koreanName: '춘식이',
-    primaryColor: '#FFA500',
-    secondaryColor: '#D2691E',
+    primaryColor: '#FF9500',
+    secondaryColor: '#D67B00',
     accentColor: '#8B4513',
     description: '고구마를 좋아하는 카와이 고양이 춘식이',
-    drawFace: (ctx, x, y, size) => {
-      const img = imageCache['L'];
-      if (img.complete && img.naturalWidth !== 0) {
-        ctx.drawImage(img, x, y, size, size);
-      }
-    }
+    drawFace: () => {}
   },
   O: {
     name: 'Muzi',
@@ -93,40 +57,25 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#DAA520',
     accentColor: '#FFFFFF',
     description: '토끼 옷을 입은 단무지 무지',
-    drawFace: (ctx, x, y, size) => {
-      const img = imageCache['O'];
-      if (img.complete && img.naturalWidth !== 0) {
-        ctx.drawImage(img, x, y, size, size);
-      }
-    }
+    drawFace: () => {}
   },
   S: {
     name: 'Frodo',
     koreanName: '프로도',
     primaryColor: '#C88E3E',
-    secondaryColor: '#5C2E0B',
+    secondaryColor: '#A06B22',
     accentColor: '#FF0000',
     description: '부잣집 도시 개 프로도',
-    drawFace: (ctx, x, y, size) => {
-      const img = imageCache['S'];
-      if (img.complete && img.naturalWidth !== 0) {
-        ctx.drawImage(img, x, y, size, size);
-      }
-    }
+    drawFace: () => {}
   },
   T: {
     name: 'Neo',
     koreanName: '네오',
     primaryColor: '#1E90FF',
     secondaryColor: '#104E8B',
-    accentColor: '#111111',
+    accentColor: '#FFFFFF',
     description: '단발머리 패셔니스타 고양이 네오',
-    drawFace: (ctx, x, y, size) => {
-      const img = imageCache['T'];
-      if (img.complete && img.naturalWidth !== 0) {
-        ctx.drawImage(img, x, y, size, size);
-      }
-    }
+    drawFace: () => {}
   },
   Z: {
     name: 'Tube',
@@ -135,16 +84,13 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     secondaryColor: '#00C78C',
     accentColor: '#FF9900',
     description: '겁많은 미카엘 오리 튜브',
-    drawFace: (ctx, x, y, size) => {
-      const img = imageCache['Z'];
-      if (img.complete && img.naturalWidth !== 0) {
-        ctx.drawImage(img, x, y, size, size);
-      }
-    }
+    drawFace: () => {}
   }
 };
 
-// Render a single cell with rounded clipping, official character PNG image, 3D bevel, and border
+/**
+ * Render a single high-contrast 3D Arcade Gem cell
+ */
 export function drawMinoCell(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -172,43 +118,49 @@ export function drawMinoCell(
     return;
   }
 
-  // Create rounded clipping region so image conforms to Tetris tile
+  // 1. Base Tile Fill with Character Primary Color
   roundRectPath(ctx, x, y, size, size, radius);
-  ctx.clip();
+  ctx.fillStyle = char.primaryColor;
+  ctx.fill();
 
-  // Draw Official Character Image Asset
-  const img = imageCache[type];
-  if (img.complete && img.naturalWidth !== 0) {
-    ctx.drawImage(img, x, y, size, size);
-  } else {
-    // Fallback solid color while loading
-    ctx.fillStyle = char.primaryColor;
-    ctx.fillRect(x, y, size, size);
-  }
-
-  // Top/Left Highlight for 3D Bevel Depth
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+  // 2. Inner Gem Bevel Highlight (Top/Left)
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
   ctx.beginPath();
   ctx.moveTo(x, y);
   ctx.lineTo(x + size, y);
-  ctx.lineTo(x + size - size * 0.12, y + size * 0.12);
-  ctx.lineTo(x + size * 0.12, y + size * 0.12);
+  ctx.lineTo(x + size - size * 0.15, y + size * 0.15);
+  ctx.lineTo(x + size * 0.15, y + size * 0.15);
   ctx.closePath();
   ctx.fill();
 
-  // Bottom/Right Shadow for 3D Depth
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+  // 3. Inner Gem Bevel Shadow (Bottom/Right)
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
   ctx.beginPath();
   ctx.moveTo(x + size, y);
   ctx.lineTo(x + size, y + size);
-  ctx.lineTo(x + size * 0.88, y + size - size * 0.12);
-  ctx.lineTo(x + size * 0.88, y + size * 0.12);
+  ctx.lineTo(x + size * 0.85, y + size - size * 0.15);
+  ctx.lineTo(x + size * 0.85, y + size * 0.15);
   ctx.closePath();
   ctx.fill();
 
-  // Outer Border Line
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
-  ctx.lineWidth = 1;
+  // 4. Center Glossy Gem Inset Tile
+  const inset = size * 0.18;
+  const inw = size - inset * 2;
+  const inr = Math.max(3, inw * 0.15);
+
+  roundRectPath(ctx, x + inset, y + inset, inw, inw, inr);
+  ctx.fillStyle = char.secondaryColor;
+  ctx.fill();
+
+  // Center Shine Accent Spot
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.beginPath();
+  ctx.arc(x + inset + inw * 0.28, y + inset + inw * 0.28, inw * 0.15, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 5. Crisp White Outer Border
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.lineWidth = 1.2;
   roundRectPath(ctx, x, y, size, size, radius);
   ctx.stroke();
 
