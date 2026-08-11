@@ -5,6 +5,7 @@ import { SHAPES } from './engine/MinoFactory';
 import type { GameMode, GameStats, MinoType } from './types/tetris';
 import { ComboBanner } from './ui/ComboBanner';
 import { LeaderboardManager } from './ui/Leaderboard';
+import { TouchController } from './ui/TouchController';
 
 // DOM Elements
 const tetrisCanvas = document.getElementById(
@@ -51,9 +52,15 @@ const modalTabTimeattack = document.getElementById('modal-tab-timeattack')!;
 const modalTabClassic = document.getElementById('modal-tab-classic')!;
 const modalLeaderboardList = document.getElementById('modal-leaderboard-list')!;
 const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn')!;
+const leaderboardSearch = document.getElementById(
+  'leaderboard-search',
+) as HTMLInputElement;
 
 const gameoverModal = document.getElementById('gameover-modal')!;
 const gameoverTitle = document.getElementById('gameover-title')!;
+const celebrationBadge = document.querySelector(
+  '.celebration-badge',
+) as HTMLElement;
 const resScore = document.getElementById('res-score')!;
 const resLines = document.getElementById('res-lines')!;
 const resCombo = document.getElementById('res-combo')!;
@@ -68,11 +75,22 @@ const restartBtn = document.getElementById('restart-btn')!;
 // App State
 let selectedMode: GameMode = 'timeattack';
 let currentStats: GameStats | null = null;
+let currentModalMode: GameMode = 'timeattack';
 
-// Initialize Banner Overlay
+// Initialize Banner Overlay & Audio
 const canvasWrapper = document.getElementById('canvas-wrapper')!;
 const comboBanner = new ComboBanner(canvasWrapper);
 const soundManager = SoundManager.getInstance();
+
+// Initialize Touch D-Pad Controller for Mobile/Tablet Booth Guests
+new TouchController(canvasWrapper, {
+  onLeft: () => gameLoop.handleInput('left'),
+  onRight: () => gameLoop.handleInput('right'),
+  onSoftDrop: () => gameLoop.handleInput('down'),
+  onHardDrop: () => gameLoop.handleInput('hardDrop'),
+  onRotateCW: () => gameLoop.handleInput('rotate'),
+  onHold: () => gameLoop.handleInput('hold'),
+});
 
 // Game Loop Setup
 const gameLoop = new GameLoop(tetrisCanvas, {
@@ -107,8 +125,16 @@ const gameLoop = new GameLoop(tetrisCanvas, {
   },
   onGameOver: (finalStats) => {
     currentStats = finalStats;
+    soundManager.stopBGM();
+
     gameoverTitle.innerText =
       selectedMode === 'timeattack' ? '제한 시간 종료!' : '게임 종료!';
+    if (celebrationBadge) {
+      celebrationBadge.innerText = LeaderboardManager.getPercentileBadge(
+        finalStats.score,
+        selectedMode,
+      );
+    }
     resScore.innerText = finalStats.score.toLocaleString();
     resLines.innerText = finalStats.lines.toString();
     resCombo.innerText = finalStats.maxCombo.toString();
@@ -178,17 +204,20 @@ function renderLeaderboard(mode: GameMode) {
   });
 }
 
-function renderModalLeaderboard(mode: GameMode) {
+function renderModalLeaderboard(mode: GameMode, searchQuery = '') {
+  currentModalMode = mode;
   modalTabTimeattack.classList.toggle('active', mode === 'timeattack');
   modalTabClassic.classList.toggle('active', mode === 'classic');
 
-  const entries = LeaderboardManager.getEntries(mode);
+  const entries = LeaderboardManager.searchEntries(searchQuery, mode);
   modalLeaderboardList.innerHTML = '';
 
   if (entries.length === 0) {
     const emptyLi = document.createElement('li');
     emptyLi.className = 'leader-empty';
-    emptyLi.innerText = '등록된 기록이 없습니다. 첫 번째 랭커에 도전하세요!';
+    emptyLi.innerText = searchQuery
+      ? '검색된 기록이 없습니다.'
+      : '등록된 기록이 없습니다.';
     modalLeaderboardList.appendChild(emptyLi);
     return;
   }
@@ -199,72 +228,44 @@ function renderModalLeaderboard(mode: GameMode) {
     li.innerHTML = `
       <span class="leader-rank">${index + 1}</span>
       <span class="leader-name">${entry.name}</span>
-      <span class="leader-score">${entry.score.toLocaleString()}점 (${entry.lines}줄)</span>
+      <span class="leader-score">${entry.score.toLocaleString()}</span>
     `;
     modalLeaderboardList.appendChild(li);
   });
 }
 
-// Open / Close Leaderboard Modal
+// Leaderboard Modal Open
 function openLeaderboardModal() {
   renderModalLeaderboard(selectedMode);
-  modeModal.classList.add('hidden');
   leaderboardModal.classList.remove('hidden');
 }
 
-function closeLeaderboardModal() {
-  leaderboardModal.classList.add('hidden');
-  modeModal.classList.remove('hidden');
-}
-
 viewLeaderboardBtn.addEventListener('click', openLeaderboardModal);
-modalViewLeaderboardBtn.addEventListener('click', openLeaderboardModal);
-closeLeaderboardBtn.addEventListener('click', closeLeaderboardModal);
-
-modalTabTimeattack.addEventListener('click', () =>
-  renderModalLeaderboard('timeattack'),
-);
-modalTabClassic.addEventListener('click', () =>
-  renderModalLeaderboard('classic'),
-);
-
-// Keyboard Listeners
-window.addEventListener('keydown', (e) => {
-  // Prevent scrolling
-  if (
-    ['ArrowUp', 'ArrowDown', 'Space', 'ArrowLeft', 'ArrowRight'].includes(
-      e.code,
-    )
-  ) {
-    e.preventDefault();
-  }
-
-  switch (e.code) {
-    case 'ArrowLeft':
-      gameLoop.handleInput('left');
-      break;
-    case 'ArrowRight':
-      gameLoop.handleInput('right');
-      break;
-    case 'ArrowDown':
-      gameLoop.handleInput('down');
-      break;
-    case 'ArrowUp':
-    case 'KeyX':
-      gameLoop.handleInput('rotate');
-      break;
-    case 'Space':
-      gameLoop.handleInput('hardDrop');
-      break;
-    case 'ShiftLeft':
-    case 'ShiftRight':
-    case 'KeyC':
-      gameLoop.handleInput('hold');
-      break;
-  }
+modalViewLeaderboardBtn.addEventListener('click', () => {
+  modeModal.classList.add('hidden');
+  openLeaderboardModal();
 });
 
-// Sound Toggle Event
+closeLeaderboardBtn.addEventListener('click', () => {
+  leaderboardModal.classList.add('hidden');
+  modeModal.classList.remove('hidden');
+});
+
+modalTabTimeattack.addEventListener('click', () =>
+  renderModalLeaderboard('timeattack', leaderboardSearch.value),
+);
+modalTabClassic.addEventListener('click', () =>
+  renderModalLeaderboard('classic', leaderboardSearch.value),
+);
+
+if (leaderboardSearch) {
+  leaderboardSearch.addEventListener('input', (e) => {
+    const query = (e.target as HTMLInputElement).value;
+    renderModalLeaderboard(currentModalMode, query);
+  });
+}
+
+// Sound Toggle
 soundToggleBtn.addEventListener('click', () => {
   const isMuted = soundManager.toggleMute();
   soundToggleBtn.innerHTML = isMuted
@@ -282,11 +283,13 @@ function handleTogglePause() {
   const isPaused = gameLoop.getIsPaused();
 
   if (isPaused) {
+    soundManager.stopBGM();
     pauseModal.classList.remove('hidden');
     pauseBtn.classList.add('active');
     pauseBtn.setAttribute('title', '게임 재개');
     pauseBtn.innerHTML = `<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
   } else {
+    soundManager.startBGM();
     pauseModal.classList.add('hidden');
     pauseBtn.classList.remove('active');
     pauseBtn.setAttribute('title', '일시정지');
@@ -299,6 +302,7 @@ pauseBtn.addEventListener('click', handleTogglePause);
 resumeBtn.addEventListener('click', handleTogglePause);
 
 pauseRestartBtn.addEventListener('click', () => {
+  soundManager.stopBGM();
   pauseModal.classList.add('hidden');
   gameLoop.reset();
   modeModal.classList.remove('hidden');
@@ -316,6 +320,7 @@ window.addEventListener('keydown', (e) => {
 
 // Mode Change / Open Modal Event
 modeChangeBtn.addEventListener('click', () => {
+  soundManager.stopBGM();
   pauseModal.classList.add('hidden');
   gameLoop.reset();
   modeModal.classList.remove('hidden');
@@ -345,6 +350,7 @@ startGameBtn.addEventListener('click', () => {
       : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
   gameLoop.setMode(selectedMode);
   gameLoop.start();
+  soundManager.startBGM();
 
   renderLeaderboard(selectedMode);
 });

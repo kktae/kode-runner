@@ -805,6 +805,80 @@ kbd {
   letter-spacing: 0.05em;
 }
 
+/* Leaderboard Search Box */
+.search-box input {
+  width: 100%;
+  background: var(--surface-item);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-btn);
+  padding: 8px 12px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.15s ease-out;
+}
+
+.search-box input:focus {
+  border-color: var(--kakao-yellow);
+}
+
+/* Touch Controller for Mobile/Tablet */
+.touch-controller-container {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+  margin: 10px auto 0 auto;
+  gap: 12px;
+}
+
+.touch-dpad,
+.touch-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.touch-btn {
+  background: var(--surface-item);
+  border: 1px solid var(--border-subtle);
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.touch-btn:active {
+  background: var(--kakao-yellow);
+  color: var(--text-dark);
+}
+
+.touch-btn.secondary {
+  font-size: 0.68rem;
+}
+
+.touch-btn.accent {
+  background: var(--con-green);
+  color: #ffffff;
+  border: none;
+  font-size: 0.68rem;
+}
+
+.touch-btn.primary {
+  background: var(--kakao-yellow);
+  color: var(--text-dark);
+  border: none;
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 900px) {
   .game-grid {
@@ -815,5 +889,8 @@ kbd {
   }
   .side-panel > div {
     flex: 1;
+  }
+  .touch-controller-container {
+    display: flex;
   }
 }

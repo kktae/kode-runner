@@ -16,7 +16,7 @@ export class LeaderboardManager {
     }
     try {
       const parsed = JSON.parse(data) as LeaderboardEntry[];
-      // Filter out any leftover dummy entries from previous builds
+      // Filter out any leftover dummy entries
       const filtered = parsed.filter(
         (e) => !['1', '2', '3', '4', '5'].includes(e.id),
       );
@@ -24,6 +24,30 @@ export class LeaderboardManager {
     } catch {
       return [];
     }
+  }
+
+  public static searchEntries(
+    query: string,
+    mode: GameMode,
+  ): LeaderboardEntry[] {
+    const entries = LeaderboardManager.getEntries(mode);
+    if (!query.trim()) return entries;
+    return entries.filter((e) =>
+      e.name.toLowerCase().includes(query.trim().toLowerCase()),
+    );
+  }
+
+  public static getPercentileBadge(score: number, mode: GameMode): string {
+    const entries = LeaderboardManager.getEntries(mode);
+    if (entries.length === 0) return '부스 TOP 1% 파이오니어!';
+    const lowerCount = entries.filter((e) => score >= e.score).length;
+    const percentile = Math.max(
+      1,
+      Math.round((1 - lowerCount / (entries.length + 1)) * 100),
+    );
+    if (percentile <= 5) return `부스 TOP ${percentile}% 마스터 코더!`;
+    if (percentile <= 20) return `상위 ${percentile}% 바이비 우수작!`;
+    return `부스 상위 ${percentile}% 참가자!`;
   }
 
   public static isHighScore(score: number, mode: GameMode): boolean {
@@ -41,7 +65,7 @@ export class LeaderboardManager {
     const entries = LeaderboardManager.getEntries(mode);
     const newEntry: LeaderboardEntry = {
       id: Date.now().toString(),
-      name: name.trim() || '무명 관람객',
+      name: name.trim() || '관람객',
       score,
       lines,
       mode,
