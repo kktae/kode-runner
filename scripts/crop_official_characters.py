@@ -1,77 +1,62 @@
-import os
-from PIL import Image, ImageDraw, ImageFilter
+import math
+from PIL import Image, ImageDraw
 
-src_path = '/Users/whales/.gemini/antigravity-cli/brain/6108503c-a112-4eff-9c90-8ce99ee81b30/.user_uploaded/uploaded_media_1786438668370.png'
-img = Image.open(src_path).convert('RGBA')
-w, h = img.size
+src_banner = '/Users/whales/.gemini/antigravity-cli/brain/6108503c-a112-4eff-9c90-8ce99ee81b30/.user_uploaded/uploaded_media_1786438668370.png'
+src_frodo = '/Users/whales/.gemini/antigravity-cli/brain/6108503c-a112-4eff-9c90-8ce99ee81b30/.user_uploaded/uploaded_media_1786446983353.png'
 
-# Precise Bounding Boxes (left, upper, right, lower) from the official reference image (1000x562)
-boxes = {
-    'ryan': (75, 250, 205, 385),
-    'apeach': (175, 320, 295, 435),
-    'tube': (290, 310, 410, 435),
-    'muzi': (405, 255, 535, 435),
-    'frodo': (525, 260, 645, 410),
-    'neo': (645, 275, 765, 420)
+img_banner = Image.open(src_banner).convert('RGB')
+img_frodo = Image.open(src_frodo).convert('RGB')
+
+# Character configuration: (source_image, crop_box, bg_hex)
+# crop_box format: (left, upper, right, lower)
+char_config = {
+    'ryan': (img_banner, (120, 110, 290, 280), (255, 184, 0)),     # Ryan Amber Yellow #FFB800
+    'apeach': (img_banner, (270, 140, 440, 310), (255, 160, 180)),  # Apeach Pink #FFA0B4
+    'choonsik': (img_banner, (420, 160, 580, 320), (255, 165, 0)),  # Choonsik Orange #FFA500
+    'tube': (img_banner, (560, 130, 720, 290), (0, 250, 154)),      # Tube Mint #00FA9A
+    'muzi': (img_banner, (680, 110, 850, 280), (255, 215, 0)),      # Muzi Gold #FFD700
+    'frodo': (img_frodo, (200, 100, 804, 684), (200, 142, 62)),     # Frodo Golden Brown #C88E3E
+    'neo': (img_banner, (800, 150, 960, 310), (30, 144, 255))       # Neo Cyan Blue #1E90FF
 }
 
-bg_colors = {
-    'ryan': '#FFB800',
-    'apeach': '#FFB6C1',
-    'tube': '#00FA9A',
-    'muzi': '#FFD700',
-    'frodo': '#8B4513',
-    'neo': '#5B84B1',
-    'choonsik': '#FFA500'
-}
+tile_size = 512
 
-os.makedirs('public/assets', exist_ok=True)
-
-for name, box in boxes.items():
-    crop = img.crop(box)
-    
-    # Remove background yellow color
-    datas = crop.getdata()
-    new_data = []
-    for item in datas:
-        r, g, b, a = item
-        # If pixel is yellow background
-        if r > 220 and g > 180 and b < 90:
-            new_data.append((0, 0, 0, 0))
-        else:
-            new_data.append((r, g, b, a))
-            
-    crop.putdata(new_data)
-    
-    # Resize to high-res tile size (200x200)
-    tile_size = 200
-    tile = Image.new('RGBA', (tile_size, tile_size), (0, 0, 0, 0))
-    
-    # Draw rounded square background tile
-    draw = ImageDraw.Draw(tile)
-    draw.rounded_rectangle([0, 0, tile_size, tile_size], radius=24, fill=bg_colors[name])
-    
-    # Scale crop to fit inside tile
+for name, (src_img, crop_box, bg_color) in char_config.items():
+    crop = src_img.crop(crop_box)
     crop_w, crop_h = crop.size
-    scale = min((tile_size * 0.82) / crop_w, (tile_size * 0.82) / crop_h)
+
+    # Create high-res square tile with character's primary background color
+    tile = Image.new('RGB', (tile_size, tile_size), bg_color)
+
+    # Scale crop to fill tile nicely
+    scale = (tile_size * 0.88) / max(crop_w, crop_h)
     new_w, new_h = int(crop_w * scale), int(crop_h * scale)
-    resized_crop = crop.resize((new_w, new_h), Image.Resampling.LANCZOS)
-    
-    # Paste centered
+    resized = crop.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
+    # If from banner, smooth yellow background replacement
+    if src_img == img_banner:
+        pixels = resized.load()
+        bg_target_r, bg_target_g, bg_target_b = 254, 218, 48 # Banner yellow background
+        for y in range(new_h):
+            for x in range(new_w):
+                r, g, b = pixels[x, y]
+                dist = math.sqrt((r - bg_target_r)**2 + (g - bg_target_g)**2 + (b - bg_target_b)**2)
+                if dist < 45:
+                    pixels[x, y] = bg_color
+                elif dist < 90:
+                    t = (dist - 45) / 45.0
+                    nr = int(bg_color[0] * (1 - t) + r * t)
+                    ng = int(bg_color[1] * (1 - t) + g * t)
+                    nb = int(bg_color[2] * (1 - t) + b * t)
+                    pixels[x, y] = (nr, ng, nb)
+
+    # Paste centered onto tile
     offset_x = (tile_size - new_w) // 2
     offset_y = (tile_size - new_h) // 2
-    tile.paste(resized_crop, (offset_x, offset_y), resized_crop)
-    
-    tile.save(f'public/assets/{name}.png')
-    print(f'Saved public/assets/{name}.png from official reference image crop.')
+    tile.paste(resized, (offset_x, offset_y))
 
-# Create Choonsik tile using Apeach/Ryan style composite or official crop
-choonsik_tile = Image.new('RGBA', (200, 200), (0, 0, 0, 0))
-draw = ImageDraw.Draw(choonsik_tile)
-draw.rounded_rectangle([0, 0, 200, 200], radius=24, fill=bg_colors['choonsik'])
+    dst_path = f'public/assets/{name}.png'
+    tile.save(dst_path)
+    print(f'Cropped & blended official artwork for {name} -> {dst_path}')
 
-# Load Ryan crop as base shape for Choonsik face structure
-ryan_crop = Image.open('public/assets/ryan.png')
-choonsik_tile.paste(ryan_crop, (0, 0), ryan_crop)
-choonsik_tile.save('public/assets/choonsik.png')
-print('Saved public/assets/choonsik.png.')
+print('All 7 official Kakao Friends character assets generated successfully!')
