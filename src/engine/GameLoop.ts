@@ -73,6 +73,10 @@ export class GameLoop {
     this.mode = mode;
   }
 
+  public getMode(): GameMode {
+    return this.mode;
+  }
+
   public start() {
     this.reset();
     this.isRunning = true;
