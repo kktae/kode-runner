@@ -115,21 +115,25 @@
       <!-- Main In-Game View (Hidden when on Home Screen) -->
       <div id="game-view" class="game-screen-view hidden">
         <main class="game-grid">
-          <!-- Left Panel: HOLD & Stats -->
+          <!-- Left Console Panel: HOLD & Score Hero Card -->
           <section class="side-panel left-panel">
+            <!-- HOLD Box -->
             <div class="glass-card panel-hold">
-              <h3 class="panel-title">HOLD</h3>
+              <div class="panel-header-badge">HOLD</div>
               <div class="preview-box">
                 <canvas id="hold-canvas" width="100" height="100"></canvas>
               </div>
               <span class="key-hint">[Shift / C]</span>
             </div>
 
+            <!-- Main Score Hero Card -->
+            <div class="glass-card score-hero-card">
+              <span class="score-label">CURRENT SCORE</span>
+              <div id="score-val" class="score-hero-value">0</div>
+            </div>
+
+            <!-- Stats HUD Grid -->
             <div class="glass-card panel-stats">
-              <div class="stat-item">
-                <span class="stat-label">SCORE</span>
-                <span id="score-val" class="stat-value highlight">0</span>
-              </div>
               <div class="stat-item">
                 <span class="stat-label">LINES</span>
                 <span id="lines-val" class="stat-value">0</span>
@@ -145,9 +149,9 @@
             </div>
           </section>
 
-          <!-- Center Panel: Main Canvas & Timer -->
+          <!-- Center Panel: Main Arena & HUD Status Rack -->
           <section class="center-panel">
-            <!-- Mode Status / Timer Bar -->
+            <!-- HUD Status / Timer Bar -->
             <div class="timer-bar-container glass-card">
               <div class="timer-info">
                 <span id="mode-display-tag" class="mode-tag">
@@ -178,10 +182,10 @@
             </div>
           </section>
 
-          <!-- Right Panel: NEXT Queue & Leaderboard -->
+          <!-- Right Console Panel: NEXT Queue & Leaderboard -->
           <section class="side-panel right-panel">
             <div class="glass-card panel-next">
-              <h3 class="panel-title">NEXT</h3>
+              <div class="panel-header-badge">NEXT</div>
               <div class="next-queue">
                 <div class="preview-box mini"><canvas id="next1-canvas" width="80" height="80"></canvas></div>
                 <div class="preview-box mini"><canvas id="next2-canvas" width="80" height="80"></canvas></div>
@@ -211,10 +215,11 @@
         <!-- Key Controls Banner Footer -->
         <footer class="controls-footer glass-card">
           <div class="key-item"><kbd>←</kbd><kbd>→</kbd> 이동</div>
-          <div class="key-item"><kbd>↓</kbd> 천천히 하강</div>
-          <div class="key-item"><kbd>Space</kbd> 즉시 하드드롭</div>
-          <div class="key-item"><kbd>↑</kbd> / <kbd>Z</kbd><kbd>X</kbd> 회전</div>
+          <div class="key-item"><kbd>↓</kbd> 하강</div>
+          <div class="key-item"><kbd>Space</kbd> 하드드롭</div>
+          <div class="key-item"><kbd>↑</kbd> 회전</div>
           <div class="key-item"><kbd>Shift</kbd> / <kbd>C</kbd> HOLD</div>
+          <div class="key-item"><kbd>P</kbd> / <kbd>Esc</kbd> 일시정지</div>
         </footer>
       </div>
 

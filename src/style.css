@@ -296,6 +296,46 @@ body {
   text-transform: uppercase;
 }
 
+.panel-header-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin-bottom: 8px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.score-hero-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--surface-item);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-inner);
+  text-align: center;
+}
+
+.score-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.score-hero-value {
+  font-family: "Outfit", sans-serif;
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: var(--kakao-yellow);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
 .preview-box {
   display: flex;
   justify-content: center;
