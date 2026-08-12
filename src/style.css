@@ -1307,15 +1307,42 @@ kbd {
 }
 
 .mode-card {
-  padding: 12px 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  border-radius: var(--radius-card);
+  background: var(--surface-item);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-card.active {
+  border-color: var(--kakao-yellow);
+  background: rgba(254, 229, 0, 0.04);
+}
+
+.mode-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .mode-card h3 {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
 }
 
 .mode-card p {
   font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
 }
 
 .home-quick-controls {

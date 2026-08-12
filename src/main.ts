@@ -142,22 +142,30 @@ function showHomeView() {
   if (modeChangeBtn) modeChangeBtn.style.display = 'none';
 }
 
-function showGameView() {
+function showGameView(isMultiplayer = false) {
   homeView.classList.add('hidden');
   gameView.classList.remove('hidden');
 
   if (pauseBtn) pauseBtn.style.display = 'inline-flex';
   if (modeChangeBtn) modeChangeBtn.style.display = 'inline-flex';
 
-  modeDisplayTag.innerHTML =
-    selectedMode === 'timeattack'
-      ? `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <span>90s TIME ATTACK</span>`
-      : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
-  gameLoop.setMode(selectedMode);
+  if (isMultiplayer) {
+    modeDisplayTag.innerHTML = `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span>1v1 REALTIME PvP</span>`;
+    gameLoop.setMode('timeattack');
+  } else {
+    modeDisplayTag.innerHTML =
+      selectedMode === 'timeattack'
+        ? `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <span>90s TIME ATTACK</span>`
+        : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
+    gameLoop.setMode(selectedMode);
+  }
+
   gameLoop.start();
   soundManager.startBGM();
 
-  renderLeaderboard(selectedMode);
+  if (!isMultiplayer) {
+    renderLeaderboard(selectedMode);
+  }
 }
 
 // Initialize Banner Overlay & Audio
@@ -569,7 +577,9 @@ selectClassic.addEventListener('click', () => {
 });
 
 startGameBtn.addEventListener('click', () => {
-  showGameView();
+  if (opponentPanel) opponentPanel.classList.add('hidden');
+  if (singleLeaderboardPanel) singleLeaderboardPanel.classList.remove('hidden');
+  showGameView(false);
 });
 
 // Leaderboard Tabs
@@ -664,7 +674,7 @@ function startMultiplayerGame(roomId: string) {
   if (opponentPanel) opponentPanel.classList.remove('hidden');
   if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
 
-  showGameView();
+  showGameView(true);
 }
 
 if (quickMatchBtn) {
