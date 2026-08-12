@@ -25,9 +25,10 @@ ENV PORT=8080
 COPY package.json bun.lock ./
 RUN bun install --production --frozen-lockfile
 
-# Copy compiled dist and server code
+# Copy compiled dist, server, and src types
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server ./server
+COPY --from=builder /app/src ./src
 
 EXPOSE 8080
 
