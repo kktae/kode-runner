@@ -1,4 +1,3 @@
-import hotkeys from 'hotkeys-js';
 import { drawMinoCell } from './assets/characters';
 import { SoundManager } from './audio/SoundManager';
 import { GameLoop } from './engine/GameLoop';
@@ -340,88 +339,127 @@ pauseRestartBtn.addEventListener('click', () => {
   modeModal.classList.remove('hidden');
 });
 
-// Configure Hotkeys-js filter to ignore input fields (e.g. Leaderboard name input)
-hotkeys.filter = (event) => {
-  const target = (event.target || event.srcElement) as HTMLElement;
-  const tagName = target?.tagName;
-  return !(
-    tagName === 'INPUT' ||
-    tagName === 'SELECT' ||
-    tagName === 'TEXTAREA'
-  );
-};
+// Unified, Single-Dispatch Keyboard Event Listener
+window.addEventListener('keydown', (e) => {
+  if (!gameLoop.getIsRunning()) return;
 
-// Global Pause Shortcut (P or Escape)
-hotkeys('p, p, escape', (e) => {
-  if (gameLoop.getIsRunning()) {
+  // Ignore input elements when typing player name in modals
+  const target = e.target as HTMLElement;
+  if (
+    target &&
+    (target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.tagName === 'SELECT')
+  ) {
+    return;
+  }
+
+  // Global Pause Shortcut (P or Escape)
+  if (
+    e.key === 'p' ||
+    e.key === 'P' ||
+    e.key === 'Escape' ||
+    e.code === 'KeyP'
+  ) {
     e.preventDefault();
     handleTogglePause();
-  }
-});
-
-// Register Game Action Shortcuts via Hotkeys-js
-hotkeys('left, a, A, ㅁ', (e) => {
-  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
-  e.preventDefault();
-  gameLoop.handleInput('left');
-});
-
-hotkeys('right, d, D, ㅇ', (e) => {
-  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
-  e.preventDefault();
-  gameLoop.handleInput('right');
-});
-
-hotkeys('down, s, S, ㄴ', (e) => {
-  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
-  e.preventDefault();
-  gameLoop.handleInput('down');
-});
-
-hotkeys('up, w, W, z, Z, x, X, ㅈ, ㅋ, ㅌ', (e) => {
-  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
-  e.preventDefault();
-  gameLoop.handleInput('rotate');
-});
-
-hotkeys('space', (e) => {
-  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
-  e.preventDefault();
-  gameLoop.handleInput('hardDrop');
-});
-
-hotkeys('shift, c, C, ㅊ', (e) => {
-  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
-  e.preventDefault();
-  gameLoop.handleInput('hold');
-});
-
-// Additional Fallback for KeyboardEvent.code (KeyC, KeyZ, KeyX, Shift) for 100% IME/Keyboard Layout Safety
-window.addEventListener('keydown', (e) => {
-  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
-  const target = e.target as HTMLElement;
-  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'))
     return;
+  }
 
-  if (e.code === 'KeyC' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
-    if (!e.repeat) {
-      e.preventDefault();
-      gameLoop.handleInput('hold');
-    }
-  } else if (e.code === 'Space') {
-    if (!e.repeat) {
-      e.preventDefault();
-      gameLoop.handleInput('hardDrop');
-    }
-  } else if (
-    e.code === 'KeyZ' ||
-    e.code === 'KeyX' ||
-    e.code === 'KeyW' ||
-    e.code === 'ArrowUp'
+  if (gameLoop.getIsPaused()) return;
+
+  const key = e.key;
+  const code = e.code;
+
+  // Prevent browser window scroll/actions on game keys
+  const keysToPrevent = [
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowDown',
+    'ArrowUp',
+    ' ',
+    'Spacebar',
+    'Shift',
+    'c',
+    'C',
+    'ㅊ',
+  ];
+  if (keysToPrevent.includes(key) || code === 'Space' || code === 'KeyC') {
+    e.preventDefault();
+  }
+
+  // 1. Left: ArrowLeft, A, KeyA, ㅁ
+  if (
+    code === 'ArrowLeft' ||
+    key === 'ArrowLeft' ||
+    code === 'KeyA' ||
+    key === 'a' ||
+    key === 'A' ||
+    key === 'ㅁ'
+  ) {
+    gameLoop.handleInput('left');
+  }
+  // 2. Right: ArrowRight, D, KeyD, ㅇ
+  else if (
+    code === 'ArrowRight' ||
+    key === 'ArrowRight' ||
+    code === 'KeyD' ||
+    key === 'd' ||
+    key === 'D' ||
+    key === 'ㅇ'
+  ) {
+    gameLoop.handleInput('right');
+  }
+  // 3. Soft Drop: ArrowDown, S, KeyS, ㄴ
+  else if (
+    code === 'ArrowDown' ||
+    key === 'ArrowDown' ||
+    code === 'KeyS' ||
+    key === 's' ||
+    key === 'S' ||
+    key === 'ㄴ'
+  ) {
+    gameLoop.handleInput('down');
+  }
+  // 4. Rotate: ArrowUp, W, Z, X, KeyW, KeyZ, KeyX, ㅈ, ㅋ, ㅌ
+  else if (
+    code === 'ArrowUp' ||
+    key === 'ArrowUp' ||
+    code === 'KeyW' ||
+    key === 'w' ||
+    key === 'W' ||
+    key === 'ㅈ' ||
+    code === 'KeyX' ||
+    key === 'x' ||
+    key === 'X' ||
+    key === 'ㅌ' ||
+    code === 'KeyZ' ||
+    key === 'z' ||
+    key === 'Z' ||
+    key === 'ㅋ'
   ) {
     if (!e.repeat) {
-      e.preventDefault();
       gameLoop.handleInput('rotate');
+    }
+  }
+  // 5. Hard Drop: Space
+  else if (code === 'Space' || key === ' ' || key === 'Spacebar') {
+    if (!e.repeat) {
+      gameLoop.handleInput('hardDrop');
+    }
+  }
+  // 6. Hold: Shift, C, KeyC, ShiftLeft, ShiftRight, ㅊ
+  else if (
+    code === 'KeyC' ||
+    key === 'c' ||
+    key === 'C' ||
+    key === 'ㅊ' ||
+    code === 'ShiftLeft' ||
+    code === 'ShiftRight' ||
+    key === 'Shift'
+  ) {
+    if (!e.repeat) {
+      gameLoop.handleInput('hold');
     }
   }
 });
