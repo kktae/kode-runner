@@ -174,22 +174,42 @@ const gameLoop = new GameLoop(tetrisCanvas, {
   },
 });
 
-// Helper for Preview Canvas Drawing
+// Helper for Preview Canvas Drawing with DPR scaling
 function drawMinoPreview(canvas: HTMLCanvasElement, type: MinoType | null) {
   const ctx = canvas.getContext('2d')!;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (!type) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const displayWidth = Math.floor(rect.width) || canvas.width;
+  const displayHeight = Math.floor(rect.height) || canvas.height;
+
+  if (
+    canvas.width !== displayWidth * dpr ||
+    canvas.height !== displayHeight * dpr
+  ) {
+    canvas.width = displayWidth * dpr;
+    canvas.height = displayHeight * dpr;
+  }
+
+  ctx.save();
+  ctx.resetTransform();
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, displayWidth, displayHeight);
+
+  if (!type) {
+    ctx.restore();
+    return;
+  }
 
   const shape = SHAPES[type];
   const rows = shape.length;
   const cols = shape[0].length;
   const cellSize = Math.min(
-    canvas.width / (cols + 1),
-    canvas.height / (rows + 1),
+    displayWidth / (cols + 1),
+    displayHeight / (rows + 1),
   );
 
-  const startX = (canvas.width - cols * cellSize) / 2;
-  const startY = (canvas.height - rows * cellSize) / 2;
+  const startX = (displayWidth - cols * cellSize) / 2;
+  const startY = (displayHeight - rows * cellSize) / 2;
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -205,6 +225,7 @@ function drawMinoPreview(canvas: HTMLCanvasElement, type: MinoType | null) {
       }
     }
   }
+  ctx.restore();
 }
 
 // Render Leaderboard Items
