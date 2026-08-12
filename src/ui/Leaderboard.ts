@@ -39,15 +39,15 @@ export class LeaderboardManager {
 
   public static getPercentileBadge(score: number, mode: GameMode): string {
     const entries = LeaderboardManager.getEntries(mode);
-    if (entries.length === 0) return '부스 TOP 1% 파이오니어!';
+    if (entries.length === 0) return 'BOOTH TOP 1%';
     const lowerCount = entries.filter((e) => score >= e.score).length;
     const percentile = Math.max(
       1,
       Math.round((1 - lowerCount / (entries.length + 1)) * 100),
     );
-    if (percentile <= 5) return `부스 TOP ${percentile}% 마스터 코더!`;
-    if (percentile <= 20) return `상위 ${percentile}% 바이비 우수작!`;
-    return `부스 상위 ${percentile}% 참가자!`;
+    if (percentile <= 5) return `BOOTH TOP ${percentile}%`;
+    if (percentile <= 20) return `상위 ${percentile}%`;
+    return `상위 ${percentile}%`;
   }
 
   public static isHighScore(score: number, mode: GameMode): boolean {

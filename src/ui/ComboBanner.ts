@@ -24,17 +24,17 @@ export class ComboBanner {
       '0 4px 16px rgba(0,0,0,0.9), 0 0 20px rgba(254, 229, 0, 0.8)';
 
     if (isTetris) {
-      text = '4줄 퍼펙트 TETRIS!';
+      text = '4줄 클리어 TETRIS!';
       textColor = '#FFD700';
       textGlow = '0 4px 20px rgba(0,0,0,0.9), 0 0 25px rgba(255, 215, 0, 0.9)';
-      this.showCutIn('RYAN SPECIAL', '4줄 퍼펙트 클리어!', '#FEE500');
+      this.showCutIn('TETRIS CLEAR', '4줄 퍼펙트 클리어!', '#FEE500');
     } else if (combo >= 5) {
-      text = `바이브 마스터 ${combo}연속 콤보!`;
+      text = `MAX STREAK ${combo}연속 콤보!`;
       textColor = '#FF4500';
       textGlow = '0 4px 20px rgba(0,0,0,0.9), 0 0 25px rgba(255, 69, 0, 0.9)';
       this.showCutIn('ULTRA COMBO', `${combo} COMBO STREAK!`, '#FF4500');
     } else if (combo >= 3) {
-      text = `바이브 콤보 ${combo}연속!`;
+      text = `${combo}연속 콤보!`;
       textColor = '#FF69B4';
       textGlow =
         '0 4px 20px rgba(0,0,0,0.9), 0 0 25px rgba(255, 105, 180, 0.9)';
@@ -73,7 +73,7 @@ export class ComboBanner {
   }
 
   public showFeverStart() {
-    this.showCutIn('VIBE FEVER MODE', '점수 2배 폭주 발동!', '#FEE500', true);
+    this.showCutIn('FEVER MODE', '점수 2배 가속 발동!', '#FEE500', true);
   }
 
   public showCutIn(
