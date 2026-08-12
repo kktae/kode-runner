@@ -9,16 +9,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@remotion/cli": "^4.0.508",
+    "@remotion/media-utils": "^4.0.508",
     "canvas-confetti": "^1.9.4",
     "gsap": "^3.15.0",
     "hotkeys-js": "^4.0.4",
     "howler": "^2.2.4",
-    "lucide": "^1.31.0"
+    "lucide": "^1.31.0",
+    "lucide-react": "^1.31.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remotion": "^4.0.508"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
     "@types/howler": "^2.2.13",
-    "typescript": "^7.0.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "typescript": "~5.7.3",
     "vite": "^8.2.1"
   }
 }

@@ -3,6 +3,20 @@ node_modules/
 
 # Build outputs
 dist/
+out/
+output.mp4
+*.mp4
+
+# Agent & Skill configurations
+.agents/
+.claude/
+.gemini/
+skills-lock.json
+
+# Scratch & Temporary media files
+scratch/
+.tempmediaStorage/
+.remotion/
 
 # Environment variables & secrets
 .env
