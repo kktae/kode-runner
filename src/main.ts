@@ -830,6 +830,34 @@ useMultiplayerStore.subscribe((state) => {
     }
   }
 
+  if (chatPanel) {
+    if (state.roomId !== null) {
+      chatPanel.classList.remove('hidden');
+    } else {
+      chatPanel.classList.add('hidden');
+    }
+  }
+
+  // Render Realtime Chat Messages
+  if (chatMessagesBox && state.chatMessages) {
+    const curSocket = state.socket;
+    const mySocketId = curSocket ? curSocket.id : '';
+    chatMessagesBox.innerHTML = state.chatMessages.length === 0
+      ? '<div class="chat-system-msg">채팅방에 연결되었습니다.</div>'
+      : state.chatMessages
+          .map((msg) => {
+            const isMe = msg.socketId === mySocketId;
+            return `
+              <div class="chat-msg-row ${isMe ? 'me' : 'opponent'}">
+                <span class="chat-msg-sender">${isMe ? '나' : msg.sender}</span>
+                <div class="chat-msg-bubble">${msg.message}</div>
+              </div>
+            `;
+          })
+          .join('');
+    chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+  }
+
   if (garbageCountTag) {
     garbageCountTag.innerText = state.pendingGarbageLines.toString();
   }
@@ -837,5 +865,31 @@ useMultiplayerStore.subscribe((state) => {
   if (opponentRenderer) {
     opponentRenderer.render(state.opponentState, state.opponentNickname);
   }
+});
+
+// Chat UI Controls
+const chatPanel = document.getElementById('chat-panel');
+const chatMessagesBox = document.getElementById('chat-messages-box');
+const chatForm = document.getElementById('chat-form') as HTMLFormElement | null;
+const chatInput = document.getElementById('chat-input') as HTMLInputElement | null;
+const chatShortcutBtns = document.querySelectorAll('.chat-shortcut-btn');
+
+if (chatForm) {
+  chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (chatInput && chatInput.value.trim().length > 0) {
+      useMultiplayerStore.getState().sendChatMessage(chatInput.value.trim());
+      chatInput.value = '';
+    }
+  });
+}
+
+chatShortcutBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const emoji = btn.getAttribute('data-emoji');
+    if (emoji) {
+      useMultiplayerStore.getState().sendChatMessage(emoji);
+    }
+  });
 });
 

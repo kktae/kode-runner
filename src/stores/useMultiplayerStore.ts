@@ -4,6 +4,13 @@ import { PlayerGameState } from '../types/network';
 
 export type RoomStatus = 'IDLE' | 'CONNECTING' | 'WAITING' | 'PLAYING' | 'GAME_OVER';
 
+export interface ChatMessage {
+  sender: string;
+  socketId: string;
+  message: string;
+  timestamp: number;
+}
+
 interface MultiplayerStore {
   roomId: string | null;
   status: RoomStatus;
@@ -15,6 +22,7 @@ interface MultiplayerStore {
   pendingGarbageLines: number;
   gameSeed: number | null;
   gameWinner: 'ME' | 'OPPONENT' | null;
+  chatMessages: ChatMessage[];
 
   socket: Socket | null;
 
@@ -26,6 +34,7 @@ interface MultiplayerStore {
   sendStateSync: (state: PlayerGameState) => void;
   sendGarbageAttack: (linesCount: number, holePosition: number) => void;
   sendGameOver: (finalScore: number, survivedTime: number) => void;
+  sendChatMessage: (message: string) => void;
   clearPendingGarbage: () => void;
 }
 
@@ -40,6 +49,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   pendingGarbageLines: 0,
   gameSeed: null,
   gameWinner: null,
+  chatMessages: [],
   socket: null,
 
   connectSocket: () => {
@@ -101,6 +111,10 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
         set((s) => ({ pendingGarbageLines: s.pendingGarbageLines + data.linesCount }));
       });
 
+      socket.on('chat_message', (msg: ChatMessage) => {
+        set((s) => ({ chatMessages: [...s.chatMessages, msg] }));
+      });
+
       socket.on('opponent_left', () => {
         if (get().status === 'PLAYING') {
           set({ gameWinner: 'ME', status: 'GAME_OVER', opponentNickname: null, opponentState: null, opponentReady: false });
@@ -120,7 +134,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   },
 
   requestQuickMatch: (nickname: string) => {
-    set({ nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false, gameWinner: null });
+    set({ nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false, gameWinner: null, chatMessages: [] });
     const socket = get().connectSocket();
 
     const doRequest = () => {
@@ -135,7 +149,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   },
 
   joinRoom: (roomId: string, nickname: string) => {
-    set({ roomId, nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false, gameWinner: null });
+    set({ roomId, nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false, gameWinner: null, chatMessages: [] });
     const socket = get().connectSocket();
 
     const doJoin = () => {
@@ -174,6 +188,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       pendingGarbageLines: 0,
       gameWinner: null,
       gameSeed: null,
+      chatMessages: [],
     });
   },
 
@@ -196,6 +211,13 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
     set({ status: 'GAME_OVER', gameWinner: 'OPPONENT' });
     if (socket && socket.connected) {
       socket.emit('game_over', { finalScore, survivedTime });
+    }
+  },
+
+  sendChatMessage: (message: string) => {
+    const { socket } = get();
+    if (socket && socket.connected && message.trim().length > 0) {
+      socket.emit('chat_message', { message: message.trim() });
     }
   },
 

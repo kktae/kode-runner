@@ -144,7 +144,19 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
-  // 6. Game Over
+  // 6. Realtime 1v1 Chat Message
+  socket.on('chat_message', (data: { message: string }) => {
+    if (currentRoomId && data.message && data.message.trim().length > 0) {
+      io.in(currentRoomId).emit('chat_message', {
+        message: data.message.trim().slice(0, 100), // Max 100 chars
+        sender: currentNickname,
+        socketId: socket.id,
+        timestamp: Date.now(),
+      });
+    }
+  });
+
+  // 7. Game Over
   socket.on('game_over', (data: any) => {
     if (currentRoomId) {
       socket.to(currentRoomId).emit('game_over', data);
