@@ -152,6 +152,14 @@ function showGameView(isMultiplayer = false) {
   if (isMultiplayer) {
     modeDisplayTag.innerHTML = `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span>1v1 REALTIME PvP</span>`;
     gameLoop.setMode('timeattack');
+
+    const mpStatus = useMultiplayerStore.getState().status;
+    if (mpStatus === 'PLAYING') {
+      gameLoop.start();
+      soundManager.startBGM();
+    } else {
+      gameLoop.reset();
+    }
   } else {
     modeDisplayTag.innerHTML =
       selectedMode === 'timeattack'
@@ -249,14 +257,31 @@ const gameLoop = new GameLoop(tetrisCanvas, {
     currentStats = finalStats;
     soundManager.stopBGM();
 
-    gameoverTitle.innerText =
-      selectedMode === 'timeattack' ? '제한 시간 종료!' : '게임 종료!';
-    if (celebrationBadge) {
-      celebrationBadge.innerText = LeaderboardManager.getPercentileBadge(
-        finalStats.score,
-        selectedMode,
-      );
+    const isMulti = useMultiplayerStore.getState().roomId !== null;
+    const multiActions = document.getElementById('multi-gameover-actions');
+    const singleForm = document.getElementById('leaderboard-form');
+    const singleRestartBtn = document.getElementById('restart-btn');
+
+    if (isMulti) {
+      gameoverTitle.innerText = '멀티 플레이 대전 종료!';
+      if (celebrationBadge) celebrationBadge.innerText = '1v1 MATCH';
+      if (multiActions) multiActions.classList.remove('hidden');
+      if (singleForm) singleForm.classList.add('hidden');
+      if (singleRestartBtn) singleRestartBtn.classList.add('hidden');
+    } else {
+      gameoverTitle.innerText =
+        selectedMode === 'timeattack' ? '제한 시간 종료!' : '게임 종료!';
+      if (celebrationBadge) {
+        celebrationBadge.innerText = LeaderboardManager.getPercentileBadge(
+          finalStats.score,
+          selectedMode,
+        );
+      }
+      if (multiActions) multiActions.classList.add('hidden');
+      if (singleForm) singleForm.classList.remove('hidden');
+      if (singleRestartBtn) singleRestartBtn.classList.remove('hidden');
     }
+
     resScore.innerText = finalStats.score.toLocaleString();
     resLines.innerText = finalStats.lines.toString();
     resCombo.innerText = finalStats.maxCombo.toString();
@@ -703,14 +728,53 @@ if (createRoomBtn) {
   });
 }
 
+const toggleReadyBtn = document.getElementById('toggle-ready-btn');
+const multiRematchBtn = document.getElementById('multi-rematch-btn');
+const multiLeaveBtn = document.getElementById('multi-leave-btn');
+
+if (toggleReadyBtn) {
+  toggleReadyBtn.addEventListener('click', () => {
+    useMultiplayerStore.getState().toggleReady();
+  });
+}
+
+if (multiRematchBtn) {
+  multiRematchBtn.addEventListener('click', () => {
+    gameoverModal.classList.add('hidden');
+    useMultiplayerStore.getState().toggleReady();
+  });
+}
+
+if (multiLeaveBtn) {
+  multiLeaveBtn.addEventListener('click', () => {
+    useMultiplayerStore.getState().leaveRoom();
+    showHomeView();
+  });
+}
+
+let lastMultiStatus = 'IDLE';
+
 // Subscribe to Multiplayer Store Updates
 useMultiplayerStore.subscribe((state) => {
   if (state.roomId && multiRoomIdInput) {
     multiRoomIdInput.value = state.roomId;
   }
 
+  // Transition to Game View on BOTH PLAYERS READY -> PLAYING
+  if (state.status === 'PLAYING' && lastMultiStatus !== 'PLAYING') {
+    gameoverModal.classList.add('hidden');
+    showGameView(true);
+  }
+  lastMultiStatus = state.status;
+
+  if (toggleReadyBtn) {
+    toggleReadyBtn.innerText = state.isReady ? '준비 완료! (취소)' : '게임 준비 (READY)';
+    toggleReadyBtn.style.background = state.isReady ? '#00c73c' : '';
+  }
+
   if (opponentNameTag) {
-    opponentNameTag.innerText = state.opponentNickname || (state.status === 'WAITING' ? `방 코드 [${state.roomId}] 대기중...` : '상대방 연결 대기');
+    const oppStatus = state.opponentReady ? ' [준비완료!]' : '';
+    opponentNameTag.innerText = state.opponentNickname ? `${state.opponentNickname}${oppStatus}` : (state.status === 'WAITING' ? `방 코드 [${state.roomId}] 대기중...` : '상대방 연결 대기');
   }
 
   if (garbageCountTag) {

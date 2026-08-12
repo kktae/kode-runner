@@ -9,6 +9,8 @@ interface MultiplayerStore {
   status: RoomStatus;
   nickname: string;
   opponentNickname: string | null;
+  isReady: boolean;
+  opponentReady: boolean;
   opponentState: PlayerGameState | null;
   pendingGarbageLines: number;
 
@@ -17,6 +19,7 @@ interface MultiplayerStore {
   connectSocket: () => Socket;
   requestQuickMatch: (nickname: string) => void;
   joinRoom: (roomId: string, nickname: string) => void;
+  toggleReady: () => void;
   leaveRoom: () => void;
   sendStateSync: (state: PlayerGameState) => void;
   sendGarbageAttack: (linesCount: number, holePosition: number) => void;
@@ -28,6 +31,8 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   status: 'IDLE',
   nickname: '',
   opponentNickname: null,
+  isReady: false,
+  opponentReady: false,
   opponentState: null,
   pendingGarbageLines: 0,
   socket: null,
@@ -41,13 +46,17 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
         autoConnect: true,
       });
 
-      socket.on('room_info', (data: { roomId: string; players: { nickname: string; socketId: string }[] }) => {
+      socket.on('room_info', (data: { roomId: string; players: { nickname: string; socketId: string; isReady: boolean }[] }) => {
         const myNick = get().nickname;
+        const me = data.players.find((p) => p.nickname === myNick);
         const opponent = data.players.find((p) => p.nickname !== myNick);
+
         set({
           roomId: data.roomId,
           opponentNickname: opponent ? opponent.nickname : null,
-          status: data.players.length >= 2 ? 'PLAYING' : 'WAITING',
+          isReady: me ? me.isReady : false,
+          opponentReady: opponent ? opponent.isReady : false,
+          status: get().status === 'PLAYING' ? 'PLAYING' : 'WAITING',
         });
       });
 
@@ -56,6 +65,8 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
         const opponent = data.players.find((p) => p.nickname !== myNick);
         set({
           status: 'PLAYING',
+          isReady: false,
+          opponentReady: false,
           pendingGarbageLines: 0,
           opponentNickname: opponent ? opponent.nickname : get().opponentNickname,
         });
@@ -70,7 +81,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       });
 
       socket.on('opponent_left', () => {
-        set({ opponentNickname: null, opponentState: null, status: 'GAME_OVER' });
+        set({ opponentNickname: null, opponentState: null, opponentReady: false, status: 'WAITING' });
       });
 
       socket.on('quick_match_assigned', (data: { roomId: string }) => {
@@ -84,7 +95,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   },
 
   requestQuickMatch: (nickname: string) => {
-    set({ nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null });
+    set({ nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false });
     const socket = get().connectSocket();
 
     const doRequest = () => {
@@ -99,7 +110,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   },
 
   joinRoom: (roomId: string, nickname: string) => {
-    set({ roomId, nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null });
+    set({ roomId, nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false });
     const socket = get().connectSocket();
 
     const doJoin = () => {
@@ -114,6 +125,15 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
     }
   },
 
+  toggleReady: () => {
+    const { socket, isReady } = get();
+    const nextReady = !isReady;
+    set({ isReady: nextReady });
+    if (socket && socket.connected) {
+      socket.emit('player_ready', { isReady: nextReady });
+    }
+  },
+
   leaveRoom: () => {
     const { socket } = get();
     if (socket) {
@@ -124,6 +144,8 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       status: 'IDLE',
       opponentNickname: null,
       opponentState: null,
+      isReady: false,
+      opponentReady: false,
       pendingGarbageLines: 0,
     });
   },

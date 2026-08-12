@@ -44,10 +44,11 @@ try {
   console.warn('Redis Adapter initialization error:', e);
 }
 
-// Room Session Manager
+// Room Session Manager with Ready States
 interface PlayerSession {
   socketId: string;
   nickname: string;
+  isReady: boolean;
 }
 
 const roomSessions = new Map<string, PlayerSession[]>();
@@ -76,7 +77,7 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
-  // 2. Join Room (Handles nickname exchange & 2-player game start)
+  // 2. Join Room (Manual Ready required before start)
   socket.on('join_room', (data: { roomId: string; nickname: string }) => {
     const { roomId, nickname } = data;
     currentRoomId = roomId;
@@ -86,21 +87,42 @@ io.on('connection', (socket: Socket) => {
 
     let sessionList = roomSessions.get(roomId) || [];
     sessionList = sessionList.filter((s) => s.socketId !== socket.id);
-    sessionList.push({ socketId: socket.id, nickname: currentNickname });
+    sessionList.push({ socketId: socket.id, nickname: currentNickname, isReady: false });
     roomSessions.set(roomId, sessionList);
 
-    const players = sessionList.map((s) => ({ nickname: s.nickname, socketId: s.socketId }));
-    
-    // Notify all clients in the room with full member list
+    const players = sessionList.map((s) => ({
+      nickname: s.nickname,
+      socketId: s.socketId,
+      isReady: s.isReady,
+    }));
+
     io.in(roomId).emit('room_info', { roomId, players });
+  });
 
-    // When 2 players match, start game immediately
-    if (sessionList.length >= 2) {
-      if (waitingRoomId === roomId) {
-        waitingRoomId = null;
-      }
+  // 3. Toggle Ready State / Start Game when BOTH players ready
+  socket.on('player_ready', (data: { isReady: boolean }) => {
+    if (!currentRoomId) return;
 
-      io.in(roomId).emit('game_start', {
+    let sessionList = roomSessions.get(currentRoomId) || [];
+    const player = sessionList.find((s) => s.socketId === socket.id);
+    if (player) {
+      player.isReady = data.isReady;
+    }
+
+    const players = sessionList.map((s) => ({
+      nickname: s.nickname,
+      socketId: s.socketId,
+      isReady: s.isReady,
+    }));
+
+    io.in(currentRoomId).emit('room_info', { roomId: currentRoomId, players });
+
+    // Start Game when at least 2 players are present and ALL are ready
+    if (sessionList.length >= 2 && sessionList.every((s) => s.isReady)) {
+      // Reset ready states for next round
+      sessionList.forEach((s) => (s.isReady = false));
+
+      io.in(currentRoomId).emit('game_start', {
         seed: Math.floor(Math.random() * 1000000),
         startTime: Date.now(),
         players,
@@ -108,28 +130,28 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
-  // 3. Realtime State Sync
+  // 4. Realtime State Sync
   socket.on('state_sync', (data: any) => {
     if (currentRoomId) {
       socket.to(currentRoomId).emit('state_sync', data);
     }
   });
 
-  // 4. Attack Garbage Line
+  // 5. Attack Garbage Line
   socket.on('attack_garbage', (data: { linesCount: number; holePosition: number }) => {
     if (currentRoomId) {
       socket.to(currentRoomId).emit('attack_garbage', data);
     }
   });
 
-  // 5. Game Over
+  // 6. Game Over
   socket.on('game_over', (data: any) => {
     if (currentRoomId) {
       socket.to(currentRoomId).emit('game_over', data);
     }
   });
 
-  // 6. Disconnect or Leave Room
+  // 7. Leave Room or Disconnect
   socket.on('leave_room', () => {
     if (currentRoomId) {
       socket.leave(currentRoomId);
