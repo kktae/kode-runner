@@ -38,10 +38,10 @@ export class GameLoop {
   private animationFrameId: number | null = null;
   private timerIntervalId: number | null = null;
 
-  private resizeObserver: ResizeObserver | null = null;
-
   constructor(canvas: HTMLCanvasElement, callbacks: GameLoopCallbacks) {
     this.canvas = canvas;
+    this.canvas.width = 300;
+    this.canvas.height = 600;
     this.ctx = canvas.getContext('2d')!;
     this.factory = new MinoFactory();
     this.board = new TetrisBoard(this.factory);
@@ -50,39 +50,6 @@ export class GameLoop {
     this.callbacks = callbacks;
 
     this.stats = this.createInitialStats();
-    this.setupResponsiveCanvas();
-  }
-
-  private setupResponsiveCanvas() {
-    this.updateCanvasSize();
-
-    if (typeof ResizeObserver !== 'undefined') {
-      this.resizeObserver = new ResizeObserver(() => {
-        this.updateCanvasSize();
-      });
-      this.resizeObserver.observe(this.canvas.parentElement || this.canvas);
-    } else {
-      window.addEventListener('resize', () => this.updateCanvasSize());
-    }
-  }
-
-  public updateCanvasSize() {
-    const parent = this.canvas.parentElement || this.canvas;
-    const rect = parent.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-
-    const displayWidth = Math.floor(rect.width) || 300;
-    const displayHeight = Math.floor(rect.height) || 600;
-
-    if (
-      this.canvas.width !== displayWidth * dpr ||
-      this.canvas.height !== displayHeight * dpr
-    ) {
-      this.canvas.width = displayWidth * dpr;
-      this.canvas.height = displayHeight * dpr;
-    }
-
-    this.render();
   }
 
   private createInitialStats(): GameStats {
@@ -420,13 +387,7 @@ export class GameLoop {
   }
 
   private render() {
-    const dpr = window.devicePixelRatio || 1;
-    const width = this.canvas.width / dpr;
-    const height = this.canvas.height / dpr;
-
-    this.ctx.save();
-    this.ctx.resetTransform();
-    this.ctx.scale(dpr, dpr);
+    const { width, height } = this.canvas;
     this.ctx.clearRect(0, 0, width, height);
 
     const cellWidth = width / BOARD_WIDTH;
@@ -506,6 +467,5 @@ export class GameLoop {
 
     // Particles Overlay
     this.particles.draw(this.ctx);
-    this.ctx.restore();
   }
 }
