@@ -1,127 +1,97 @@
-# 카카오뱅크 Kode Runner 2026 - 바이브 코딩 테트리스 (Vibe Coding Tetris)
+# 카카오뱅크 x 메가존클라우드 Kode Runner 2026 - 바이브 코딩 테트리스
 
-카카오 기업 파트너 부스 방문자를 위해 제작된 웹 기반 아케이드 테트리스 게임 프로젝트입니다. HTML5 Canvas 2D API와 Web Audio API를 활용하여 외부 미디어 자원 의존성 없이 고성능 60fps 게임 플레이 환경을 제공합니다.
+카카오뱅크 및 메가존클라우드 테크 부스 방문자를 위해 제작된 웹 기반 아케이드 테트리스 게임 프로젝트입니다. HTML5 Canvas 2D API, Web Audio API, Socket.io 네트워크 프로토콜을 활용하여 외부 미디어 자원 의존성 없이 높은 성능의 60fps 싱글 및 실시간 1v1 PvP 대전 환경을 제공합니다.
 
 ---
 
-## 주요 기능 (Core Features)
+## 주요 기능
 
-### 게임 모드 (Game Modes)
-- **90초 타임어택 모드**: 정해진 제한 시간 동안 최고 점수를 목표로 하는 부스 이벤트 전용 모드입니다.
+### 1. 실시간 1v1 PvP 멀티플레이 대전 (Realtime PvP Multiplayer)
+- **실시간 상호작용**: Socket.io 및 Redis Adapter 기반 네트워크 동기화를 통해 상대방의 테트리스 보드 상태, 낙하 블록, 콤보 이펙트를 실시간 관전할 수 있습니다.
+- **방 생성 및 입장**: 4자리 자동 생성 난수 방 코드를 통한 비공개/공개 매칭 시스템 및 한국어 임의 닉네임 자동 생성을 지원합니다.
+- **가비지 타격 메커니즘**: 연속 콤보 및 테트리스(4줄) 달성 시 상대방 보드 하단에 공격 가비지 줄을 실시간으로 발송합니다.
+- **서바이벌 진검승부**: 게임 시작 후 한 유저가 블록 한계선을 초과하여 KO될 때까지 진검승부를 펼치는 클래식 서바이벌 모드가 적용되어 있습니다.
+
+### 2. 싱글 플레이어 게임 모드 (Single Player Modes)
+- **90초 타임어택 모드**: 정해진 제한 시간 동안 최고 점수를 목표로 대전을 펼치는 모드입니다.
 - **클래식 가속 모드**: 10줄 클리어마다 낙하 속도가 점진적으로 가속되는 오리지널 테트리스 모드입니다.
 
-### 비주얼 및 게임 엔진 (Visual & Engine)
-- **High-DPI Canvas 렌더링**: 레티나 및 고해상도 디스플레이에 최적화된 3D Gem 타일 그래픽 및 파티클 시스템을 탑재했습니다.
-- **카카오프렌즈 캐릭터 블록**: 테트리스 테트리미노 7종(I, J, L, O, S, T, Z)에 라이언, 어피치, 춘식이, 무지, 프로도, 네오, 튜브 테마 컬러를 적용했습니다.
-- **GSAP 애니메이션 모션**: 콤보 연속 달성 시 화면 쉐이크 및 타이포그래피 모션 효과를 연출합니다.
+### 3. 클린 실시간 채팅 & 도배 방지 (Clean Chat & Anti-Spam)
+- **한국어 비속어 필터링**: badwords-ko 엔진 기반 이중 순화 필터링을 탑재하여 욕설 및 비속어를 자동 감지 및 마스킹 처리합니다.
+- **도배 방지 쿨다운**: 1초 전송 제한 메커니즘을 적용하여 연속 메시지 및 이모지 도배를 방지합니다.
+- **퀵 이모지 숏컷**: 한 번의 클릭으로 응원 및 인사를 전달할 수 있는 감정 표현 버튼을 제공합니다.
 
-### 오디오 엔진 (Audio Engine)
-- **Web Audio API 합성 사운드**: 외부 오디오 파일 없이 브라우저 내장 신디사이저로 동적 BGM 및 가속 피치 효과음을 실시간 생성합니다.
-
-### 사용자 편의성 (User Experience)
-- **리더보드 관리**: LocalStorage 기반으로 모드별 최고 점수 TOP 5를 기록하며, 닉네임 검색 및 순위 조회가 가능합니다.
-- **모바일/터치 지원**: 반응형 인터페이스 및 모바일 터치 패드 컨트롤러를 지원합니다.
+### 4. 비주얼 및 오디오 엔진 (Visual & Audio Engine)
+- **7-Bag 생성 알고리즘**: 오리지널 테트리스 가이드라인 7-Bag 주머니 알고리즘(MinoFactory)을 준수하여 블록 편차 없는 공정한 대전 환경을 보장합니다.
+- **High-DPI Canvas 렌더링**: 고해상도 디스플레이에 최적화된 3D 타일 그래픽 및 GSAP 기반 파티클 시스템을 탑재했습니다.
+- **카카오 브랜드 비주얼**: 카카오프렌즈 테마 블록 컬러 및 Kakao Yellow 기반 UI 레이아웃을 제공합니다.
+- **Web Audio API 합성 사운드**: 외부 오디오 파일 없이 브라우저 내장 신디사이저로 동적 BGM 및 효과음을 실시간 생성합니다.
 
 ---
 
-## 프로젝트 구조 (Project Structure)
+## 기술 스택
+
+- **Runtime & Package Manager**: Bun
+- **Frontend Framework & Bundler**: Vite, TypeScript, HTML5 Canvas 2D API
+- **Realtime Networking**: Socket.io, Socket.io-client, Redis (ioredis)
+- **Profanity Filtering**: badwords-ko
+- **Animation & Audio**: GSAP, Web Audio API Synthesis
+- **Container & Infrastructure**: Docker, Docker Compose
+
+---
+
+## 프로젝트 구조
 
 ```
 kode-runner/
 ├── src/
-│   ├── assets/        # 캐릭터 정보 및 Canvas 타일 렌더러
+│   ├── assets/        # 캐릭터 브랜드 자원 및 Canvas 타일 렌더러
 │   ├── audio/         # Web Audio API 사운드 신디사이저 엔진
-│   ├── engine/        # 게임 루프, 테트리스 보드 로직, 파티클 엔진
-│   ├── types/         # TypeScript 타입 정의
-│   ├── ui/            # 리더보드, 콤보 배너, 모바일 터치 컨트롤러
-│   ├── main.ts        # 애플리케이션 진입점 및 이벤트 바인딩
-│   └── style.css      # CSS 시스템 스타일시트
-├── docs/              # 설계 문서 및 개발 계획서
+│   ├── engine/        # 게임 루프, 테트리스 보드 로직, 7-Bag MinoFactory, 파티클
+│   ├── stores/        # Zustand 기반 멀티플레이어 대전 상태 관리 스토어
+│   ├── types/         # TypeScript 모듈 및 타입 선언
+│   ├── ui/            # 상대방 보드 렌더러, 리더보드, 콤보 배너, 모바일 컨트롤러
+│   ├── utils/         # 한국어 비속어 필터, 닉네임 생성기, 리더보드 유틸
+│   ├── main.ts        # 애플리케이션 메인 컨트롤러 및 DOM 이벤트 핸들러
+│   └── style.css      # E-Sports 3열 832px 정밀 그리드 디자인 시스템
+├── server/            # Socket.io 멀티플레이 대전 및 Redis 아키텍처 서버
+├── Dockerfile         # 컨테이너 멀티스테이지 빌드 명세
+├── docker-compose.yml # 애플리케이션 및 Redis 컨테이너 연동 설정
 ├── index.html         # 메인 HTML 구조
 ├── package.json       # 프로젝트 의존성 및 스크립트
-├── tsconfig.json      # TypeScript 설정
+├── tsconfig.json      # TypeScript 컴파일 설정
 └── vite.config.ts     # Vite 번들러 설정
 ```
 
 ---
 
-## 기술 스택 (Tech Stack)
+## 실행 및 배포 가이드
 
-- **Runtime & Bundler**: Bun, Vite
-- **Language**: TypeScript
-- **Graphics Engine**: HTML5 Canvas 2D API
-- **Audio Engine**: Web Audio API Synthesis
-- **Animation**: GSAP (GreenSock Animation Platform)
+### 개발 환경 실행 (Bun)
 
----
-
-## 개발 및 빌드 환경 (Getting Started)
-
-### 요구 사항
-- Bun 1.0 이상 또는 Node.js 18 이상
-
-### 의존성 설치
+1. **의존성 패키지 설치**
 ```bash
 bun install
 ```
-또는 npm 사용 시:
-```bash
-npm install
-```
 
-### 개발 서버 실행
+2. **개발 서버 실행**
 ```bash
 bun run dev
 ```
-브라우저에서 `http://localhost:5173` 접속하여 실행 확인이 가능합니다.
+브라우저에서 `http://localhost:5173` 접속하여 실행을 확인합니다.
 
-### 프로덕션 빌드
+3. **프로덕션 번들 빌드**
 ```bash
 bun run build
 ```
-빌드 결과물은 `dist/` 디렉토리에 생성됩니다.
 
 ---
 
-## 미구현 기능 및 향후 개선 방향 (Future Roadmap & Unimplemented Features)
+### Docker 컨테이너 배포
 
-현재 클라이언트 중심 단일 데모 버전에서 확장하여, 엔터프라이즈 운영 및 높은 트래픽 환경을 고려한 아키텍처 개선 로드맵입니다.
+Docker Compose를 사용하여 Socket.io 게임 서버, 웹 클라이언트, Redis 인메모리 데이터베이스를 한 번에 컨테이너로 배포할 수 있습니다.
 
-### 1. 실시간 1v1 멀티플레이어 대전 (Realtime PvP Multiplayer)
-- **양방향 실시간 네트워크 프로토콜 도입**:
-  - 유저 간 실시간 대전 화면 동기화 및 콤보 공격 메커니즘 구축.
-  - 클라이언트 사이드 예측(Client Prediction) 및 결정론적(Deterministic) 상태 동기화 처리.
-
-### 2. 분산 데이터베이스 기반 리더보드 실시간 동기화 (Distributed Leaderboard Sync)
-- **인메모리 데이터베이스 및 분산 키-값 저장소 연동**:
-  - 기존 단일 브라우저 로컬 저장 방식에서 중앙 분산 데이터베이스 기반 아키텍처로 전환.
-  - 전체 사용자 통합 실시간 랭킹 집계 및 이벤트 스트리밍 기반 전광판 스코어 자동 연동.
-
-### 3. 서버리스 아키텍처 및 수평 확장 (Serverless Horizontal Scaling)
-- **엣지 컴퓨팅 기반 서버리스 백엔드 배포**:
-  - API 백엔드를 분산 엣지 환경에 배치하여 트래픽 응답 지연 시간 최적화.
-  - 대규모 동시 접속 환경에서도 인프라 관리 부담 없이 자동 수평 확장(Auto-scaling) 대응.
-
-### 4. 무결성 검증 및 보안 강화 (Anti-Cheat & Validation System)
-- **서버 사이드 플레이 세션 검증**:
-  - 클라이언트 제출 데이터의 위변조 방지.
-  - 세션 기반 검증 토큰 발행 및 플레이 조작 시퀀스에 대한 백엔드 유효성 검증.
-
----
-
-## 환경 설정 및 보안 (Security & Config)
-
-- **환경 변수**: 개발 환경 설정이 필요한 경우 `.env.example` 파일을 복사하여 `.env` 또는 `.env.local`로 사용합니다.
-- **보안 규칙**: API 키, 개인 보안 키(`*.pem`, `*.key`), `.env` 파일 및 빌드 아티팩트(`dist/`)는 Git 추적 대상에서 제외되어 있습니다.
-
----
-
-## 상표권 명시 및 면책 조항 (Trademark & Legal Disclaimer)
-
-### 1. 상표권 및 저작권 명시 (Trademark & Copyright Notice)
-- '카카오(Kakao)', '카카오뱅크(kakaobank)', '카카오프렌즈(Kakao Friends)' 및 해당 캐릭터(라이언, 어피치, 춘식이, 무지, 프로도, 네오, 튜브 등)의 명칭, 브랜드 로고, 상표권 및 지적 재산권은 **주식회사 카카오** 및 **주식회사 카카오뱅크**에 귀속되어 있습니다.
-- 본 프로젝트는 비상업적 부스 체험 및 기술 시연 목적으로 제작된 데모 프로젝트이며, 카카오 공식 보증을 의미하지 않습니다.
-
-### 2. 면책 조항 (Disclaimer of Liability)
-- 본 소프트웨어는 어떠한 명시적 또는 묵시적 보증 없이 **"있는 그대로(AS IS)"** 제공됩니다.
-- 개발자 및 기여자는 본 소프트웨어의 사용, 미사용 또는 작동으로 인해 발생하는 어떠한 직·간접적 손해, 데이터 손실, 서비스 중단 또는 법적 분쟁에 대해 일체의 책임을 지지 않습니다.
+```bash
+docker compose up -d --build
+```
+서비스가 실행되면 `http://localhost:3000` 접속을 통해 완벽하게 연동된 실시간 멀티플레이 테트리스를 이용할 수 있습니다.
