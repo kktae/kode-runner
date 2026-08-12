@@ -847,6 +847,9 @@ useMultiplayerStore.subscribe((state) => {
       ? '<div class="chat-system-msg">채팅방에 연결되었습니다.</div>'
       : state.chatMessages
           .map((msg) => {
+            if (msg.socketId === 'system') {
+              return `<div class="chat-system-msg warn">${msg.message}</div>`;
+            }
             const isMe = msg.socketId === mySocketId;
             return `
               <div class="chat-msg-row ${isMe ? 'me' : 'opponent'}">
@@ -879,13 +882,17 @@ function sendUserChat(text: string) {
   if (!text || text.trim().length === 0) return;
   const cooldown = checkChatCooldown();
   if (!cooldown.allowed) {
-    if (chatMessagesBox) {
-      const warnMsg = document.createElement('div');
-      warnMsg.className = 'chat-system-msg warn';
-      warnMsg.innerText = '메시지는 1초에 한 번만 전송할 수 있습니다.';
-      chatMessagesBox.appendChild(warnMsg);
-      chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
-    }
+    useMultiplayerStore.setState((s) => ({
+      chatMessages: [
+        ...s.chatMessages,
+        {
+          sender: '시스템',
+          socketId: 'system',
+          message: '⚠️ 메시지는 1초에 한 번만 전송할 수 있습니다.',
+          timestamp: Date.now(),
+        },
+      ],
+    }));
     return;
   }
 
