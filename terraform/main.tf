@@ -1,3 +1,12 @@
+# Local labels map following Google Cloud Architecture Framework best practices
+locals {
+  common_labels = {
+    managed-by  = "terraform"
+    environment = var.environment
+    app         = var.app_name
+  }
+}
+
 # Enable required GCP APIs
 resource "google_project_service" "enabled_apis" {
   for_each = toset([
@@ -5,7 +14,8 @@ resource "google_project_service" "enabled_apis" {
     "redis.googleapis.com",
     "artifactregistry.googleapis.com",
     "vpcaccess.googleapis.com",
-    "compute.googleapis.com"
+    "compute.googleapis.com",
+    "iam.googleapis.com"
   ])
 
   service            = each.key
@@ -19,6 +29,7 @@ resource "google_artifact_registry_repository" "app_repo" {
   repository_id = "${var.app_name}-repo"
   description   = "Docker repository for Kode Runner application"
   format        = "DOCKER"
+  labels        = local.common_labels
 }
 
 # VPC Network
@@ -47,7 +58,6 @@ resource "google_vpc_access_connector" "vpc_connector" {
   max_instances = 10
   machine_type  = "e2-micro"
 
-  # Ignore changes for throughput attributes auto-calculated by GCP backend
   lifecycle {
     ignore_changes = [
       min_throughput,
@@ -66,6 +76,7 @@ resource "google_redis_instance" "redis_instance" {
   authorized_network = google_compute_network.vpc_network.id
   redis_version      = "REDIS_7_0"
   display_name       = "Kode Runner Redis Instance"
+  labels             = local.common_labels
 
   redis_configs = {
     maxmemory-policy = "allkeys-lru"
@@ -73,19 +84,24 @@ resource "google_redis_instance" "redis_instance" {
   }
 }
 
-# Cloud Run v2 Service (Scaled & Sized for Max 400 CCU)
+# Cloud Run v2 Service (Scaled & Sized for Max 400 CCU with Dedicated Service Account)
 resource "google_cloud_run_v2_service" "cloud_run_app" {
   depends_on = [
     google_project_service.enabled_apis,
     google_redis_instance.redis_instance,
-    google_vpc_access_connector.vpc_connector
+    google_vpc_access_connector.vpc_connector,
+    google_service_account.cloud_run_sa
   ]
 
   name     = "${var.app_name}-service"
   location = var.gcp_region
   ingress  = "INGRESS_TRAFFIC_ALL"
+  labels   = local.common_labels
 
   template {
+    # Dedicated Service Account adhering to least privilege principle
+    service_account = google_service_account.cloud_run_sa.email
+
     # Set max 100 concurrent WebSocket connections per Cloud Run container
     max_instance_request_concurrency = 100
 
