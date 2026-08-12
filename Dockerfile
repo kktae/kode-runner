@@ -1,10 +1,10 @@
 # ==========================================
 # Stage 1: Build Frontend Assets & Prepare
 # ==========================================
-FROM oven/bun:latest AS builder
+FROM oven/bun:alpine AS builder
 WORKDIR /app
 
-# Cache dependencies
+# Cache all dependencies (including devDependencies)
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
@@ -13,22 +13,21 @@ COPY . .
 RUN bun run build
 
 # ==========================================
-# Stage 2: Production Runner (Optimized)
+# Stage 2: Production Runner (Ultra Lightweight)
 # ==========================================
-FROM oven/bun:latest AS runner
+FROM oven/bun:alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Install production dependencies only
+# Install production server dependencies only
 COPY package.json bun.lock ./
 RUN bun install --production --frozen-lockfile
 
-# Copy compiled dist, server, and src types
+# Copy compiled frontend dist and server logic
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server ./server
-COPY --from=builder /app/src ./src
 
 EXPOSE 8080
 

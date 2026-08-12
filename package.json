@@ -9,35 +9,35 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@socket.io/redis-adapter": "^8.3.0",
+    "badwords-ko": "^1.0.4",
+    "ioredis": "^6.0.0",
+    "korean-random-words": "^1.0.3",
+    "sirv": "^3.0.2",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
     "@remotion/cli": "^4.0.508",
     "@remotion/media-utils": "^4.0.508",
     "@remotion/player": "^4.0.508",
-    "@socket.io/redis-adapter": "^8.3.0",
     "@tanstack/react-query": "^5.101.4",
-    "badwords-ko": "^1.0.4",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/howler": "^2.2.13",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "canvas-confetti": "^1.9.4",
     "gsap": "^3.15.0",
     "hotkeys-js": "^4.0.4",
     "howler": "^2.2.4",
-    "ioredis": "^6.0.0",
-    "korean-random-words": "^1.0.3",
     "lucide": "^1.31.0",
     "lucide-react": "^1.31.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "remotion": "^4.0.508",
-    "sirv": "^3.0.2",
-    "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"
-  },
-  "devDependencies": {
-    "@types/canvas-confetti": "^1.9.0",
-    "@types/howler": "^2.2.13",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
-    "typescript": "^7.0.2",
-    "vite": "^8.2.1"
   }
 }
