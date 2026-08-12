@@ -42,109 +42,162 @@
         </div>
       </header>
 
-      <!-- Main Layout Grid -->
-      <main class="game-grid">
-        <!-- Left Panel: HOLD & Stats -->
-        <section class="side-panel left-panel">
-          <div class="glass-card panel-hold">
-            <h3 class="panel-title">HOLD</h3>
-            <div class="preview-box">
-              <canvas id="hold-canvas" width="100" height="100"></canvas>
-            </div>
-            <span class="key-hint">[Shift / C]</span>
+      <!-- Full-Screen Home View Screen -->
+      <section id="home-view" class="home-screen-view">
+        <div class="home-hero-card glass-modal">
+          <div class="home-brand-hero">
+            <span class="home-kakaobank-badge">kakaobank</span>
+            <h1 class="home-title">Kode Runner 2026</h1>
+            <p class="home-subtitle">바이브 코딩으로 제작된 레트로 3D 테트리스 테크 부스</p>
           </div>
 
-          <div class="glass-card panel-stats">
-            <div class="stat-item">
-              <span class="stat-label">SCORE</span>
-              <span id="score-val" class="stat-value highlight">0</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">LINES</span>
-              <span id="lines-val" class="stat-value">0</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">LEVEL</span>
-              <span id="level-val" class="stat-value">1</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">MAX COMBO</span>
-              <span id="combo-val" class="stat-value accent">0</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Center Panel: Main Canvas & Timer -->
-        <section class="center-panel">
-          <!-- Mode Status / Timer Bar -->
-          <div class="timer-bar-container glass-card">
-            <div class="timer-info">
-              <span id="mode-display-tag" class="mode-tag">
-                <svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
-                <span>90s TIME ATTACK</span>
-              </span>
-              <span id="timer-val" class="timer-text">01:30</span>
-            </div>
-            <div class="timer-progress-track">
-              <div id="timer-progress-fill" class="timer-progress-fill"></div>
-            </div>
-
-            <!-- Fever Gauge Track -->
-            <div class="fever-gauge-container">
-              <div class="fever-label">
-                <span class="fever-title">VIBE FEVER</span>
-                <span id="fever-status-text" class="fever-percent">0%</span>
+          <div class="home-mode-section">
+            <div id="select-timeattack" class="mode-card active">
+              <div class="mode-icon-svg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
               </div>
-              <div class="fever-progress-track">
-                <div id="fever-progress-fill" class="fever-progress-fill"></div>
+              <h3>⚡ 90초 타임어택 (Time Attack)</h3>
+              <p>1분 30초 동안 스피드하게 바이브 피버 모드를 발동하여 최고 점수에 도전하세요.</p>
+              <span class="mode-badge">부스 권장</span>
+            </div>
+
+            <div id="select-classic" class="mode-card">
+              <div class="mode-icon-svg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               </div>
+              <h3>🎮 클래식 가속 모드 (Classic Mode)</h3>
+              <p>10줄마다 레벨업 및 블록 낙하 속도가 가속되는 오리지널 무제한 모드입니다.</p>
+              <span class="mode-badge secondary">도전 모드</span>
             </div>
           </div>
 
-          <!-- Tetris Board Wrapper -->
-          <div id="canvas-wrapper" class="board-wrapper glass-card">
-            <canvas id="tetris-canvas" width="300" height="600"></canvas>
-          </div>
-        </section>
+          <div class="home-action-group">
+            <button id="start-game-btn" class="primary-btn home-start-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>게임 시작하기 (START GAME)</span>
+            </button>
 
-        <!-- Right Panel: NEXT Queue & Leaderboard -->
-        <section class="side-panel right-panel">
-          <div class="glass-card panel-next">
-            <h3 class="panel-title">NEXT</h3>
-            <div class="next-queue">
-              <div class="preview-box mini"><canvas id="next1-canvas" width="80" height="80"></canvas></div>
-              <div class="preview-box mini"><canvas id="next2-canvas" width="80" height="80"></canvas></div>
-              <div class="preview-box mini"><canvas id="next3-canvas" width="80" height="80"></canvas></div>
+            <button id="modal-view-leaderboard-btn" class="secondary-btn home-sub-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+              <span>명예의 전당 (BOOTH TOP 5)</span>
+            </button>
+          </div>
+
+          <div class="home-quick-controls">
+            <div class="control-tag"><kbd>←</kbd><kbd>→</kbd> 이동</div>
+            <div class="control-tag"><kbd>↓</kbd> 하강</div>
+            <div class="control-tag"><kbd>Space</kbd> 하드드롭</div>
+            <div class="control-tag"><kbd>↑</kbd> 회전</div>
+            <div class="control-tag"><kbd>Shift</kbd>/<kbd>C</kbd> 홀드</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main In-Game View (Hidden when on Home Screen) -->
+      <div id="game-view" class="game-screen-view hidden">
+        <main class="game-grid">
+          <!-- Left Panel: HOLD & Stats -->
+          <section class="side-panel left-panel">
+            <div class="glass-card panel-hold">
+              <h3 class="panel-title">HOLD</h3>
+              <div class="preview-box">
+                <canvas id="hold-canvas" width="100" height="100"></canvas>
+              </div>
+              <span class="key-hint">[Shift / C]</span>
             </div>
-          </div>
 
-          <!-- Leaderboard Card -->
-          <div class="glass-card panel-leaderboard">
-            <div class="leaderboard-header">
-              <h3 class="panel-title flex-title">
-                <svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
-                <span>BOOTH TOP 5</span>
-              </h3>
-              <div class="tab-group">
-                <button id="tab-timeattack" class="tab-btn active">타임어택</button>
-                <button id="tab-classic" class="tab-btn">클래식</button>
+            <div class="glass-card panel-stats">
+              <div class="stat-item">
+                <span class="stat-label">SCORE</span>
+                <span id="score-val" class="stat-value highlight">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">LINES</span>
+                <span id="lines-val" class="stat-value">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">LEVEL</span>
+                <span id="level-val" class="stat-value">1</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">MAX COMBO</span>
+                <span id="combo-val" class="stat-value accent">0</span>
               </div>
             </div>
-            <ol id="leaderboard-list" class="leaderboard-list">
-              <!-- Rendered dynamically -->
-            </ol>
-          </div>
-        </section>
-      </main>
+          </section>
 
-      <!-- Key Controls Banner Footer -->
-      <footer class="controls-footer glass-card">
-        <div class="key-item"><kbd>←</kbd><kbd>→</kbd> 이동</div>
-        <div class="key-item"><kbd>↓</kbd> 천천히 하강</div>
-        <div class="key-item"><kbd>Space</kbd> 즉시 하드드롭</div>
-        <div class="key-item"><kbd>↑</kbd> / <kbd>Z</kbd><kbd>X</kbd> 회전</div>
-        <div class="key-item"><kbd>Shift</kbd> / <kbd>C</kbd> HOLD</div>
-      </footer>
+          <!-- Center Panel: Main Canvas & Timer -->
+          <section class="center-panel">
+            <!-- Mode Status / Timer Bar -->
+            <div class="timer-bar-container glass-card">
+              <div class="timer-info">
+                <span id="mode-display-tag" class="mode-tag">
+                  <svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
+                  <span>90s TIME ATTACK</span>
+                </span>
+                <span id="timer-val" class="timer-text">01:30</span>
+              </div>
+              <div class="timer-progress-track">
+                <div id="timer-progress-fill" class="timer-progress-fill"></div>
+              </div>
+
+              <!-- Fever Gauge Track -->
+              <div class="fever-gauge-container">
+                <div class="fever-label">
+                  <span class="fever-title">VIBE FEVER</span>
+                  <span id="fever-status-text" class="fever-percent">0%</span>
+                </div>
+                <div class="fever-progress-track">
+                  <div id="fever-progress-fill" class="fever-progress-fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tetris Board Wrapper -->
+            <div id="canvas-wrapper" class="board-wrapper glass-card">
+              <canvas id="tetris-canvas" width="300" height="600"></canvas>
+            </div>
+          </section>
+
+          <!-- Right Panel: NEXT Queue & Leaderboard -->
+          <section class="side-panel right-panel">
+            <div class="glass-card panel-next">
+              <h3 class="panel-title">NEXT</h3>
+              <div class="next-queue">
+                <div class="preview-box mini"><canvas id="next1-canvas" width="80" height="80"></canvas></div>
+                <div class="preview-box mini"><canvas id="next2-canvas" width="80" height="80"></canvas></div>
+                <div class="preview-box mini"><canvas id="next3-canvas" width="80" height="80"></canvas></div>
+              </div>
+            </div>
+
+            <!-- Leaderboard Card -->
+            <div class="glass-card panel-leaderboard">
+              <div class="leaderboard-header">
+                <h3 class="panel-title flex-title">
+                  <svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+                  <span>BOOTH TOP 5</span>
+                </h3>
+                <div class="tab-group">
+                  <button id="tab-timeattack" class="tab-btn active">타임어택</button>
+                  <button id="tab-classic" class="tab-btn">클래식</button>
+                </div>
+              </div>
+              <ol id="leaderboard-list" class="leaderboard-list">
+                <!-- Rendered dynamically -->
+              </ol>
+            </div>
+          </section>
+        </main>
+
+        <!-- Key Controls Banner Footer -->
+        <footer class="controls-footer glass-card">
+          <div class="key-item"><kbd>←</kbd><kbd>→</kbd> 이동</div>
+          <div class="key-item"><kbd>↓</kbd> 천천히 하강</div>
+          <div class="key-item"><kbd>Space</kbd> 즉시 하드드롭</div>
+          <div class="key-item"><kbd>↑</kbd> / <kbd>Z</kbd><kbd>X</kbd> 회전</div>
+          <div class="key-item"><kbd>Shift</kbd> / <kbd>C</kbd> HOLD</div>
+        </footer>
+      </div>
 
       <!-- Legal & Trademark Disclaimer Notice -->
       <div class="legal-disclaimer">

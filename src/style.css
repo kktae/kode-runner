@@ -1067,6 +1067,126 @@ kbd {
   border: none;
 }
 
+/* Full-Screen Home Screen View Styling */
+.home-screen-view {
+  width: 100%;
+  max-width: 680px;
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-screen-view.hidden,
+.game-screen-view.hidden {
+  display: none;
+}
+
+.game-screen-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.home-hero-card {
+  width: 100%;
+  background: var(--surface-modal);
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius-card);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-modal);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  text-align: center;
+}
+
+.home-brand-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-kakaobank-badge {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+  background: var(--kakao-yellow);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  letter-spacing: -0.01em;
+  box-shadow: 0 0 12px rgba(254, 229, 0, 0.4);
+}
+
+.home-title {
+  font-family: "Outfit", "Pretendard", sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.home-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.home-mode-section {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.home-action-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home-start-btn {
+  height: 52px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: var(--radius-btn);
+  box-shadow: 0 4px 20px rgba(254, 229, 0, 0.3);
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.15s ease-out;
+}
+
+.home-start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(254, 229, 0, 0.45);
+}
+
+.home-sub-btn {
+  height: 44px;
+  font-size: 0.9rem;
+}
+
+.home-quick-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  width: 100%;
+}
+
+.control-tag {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 900px) {
   .game-grid {
@@ -1080,5 +1200,8 @@ kbd {
   }
   .touch-controller-container {
     display: flex;
+  }
+  .home-mode-section {
+    grid-template-columns: 1fr;
   }
 }

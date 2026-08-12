@@ -39,7 +39,9 @@ const tabTimeattack = document.getElementById('tab-timeattack')!;
 const tabClassic = document.getElementById('tab-classic')!;
 const leaderboardList = document.getElementById('leaderboard-list')!;
 
-const modeModal = document.getElementById('mode-modal')!;
+const homeView = document.getElementById('home-view')!;
+const gameView = document.getElementById('game-view')!;
+
 const selectTimeattack = document.getElementById('select-timeattack')!;
 const selectClassic = document.getElementById('select-classic')!;
 const startGameBtn = document.getElementById('start-game-btn')!;
@@ -76,6 +78,39 @@ const restartBtn = document.getElementById('restart-btn')!;
 let selectedMode: GameMode = 'timeattack';
 let currentStats: GameStats | null = null;
 let currentModalMode: GameMode = 'timeattack';
+
+// View Navigation Manager
+function showHomeView() {
+  soundManager.stopBGM();
+  pauseModal.classList.add('hidden');
+  leaderboardModal.classList.add('hidden');
+  gameoverModal.classList.add('hidden');
+  gameLoop.reset();
+
+  homeView.classList.remove('hidden');
+  gameView.classList.add('hidden');
+
+  if (pauseBtn) pauseBtn.style.display = 'none';
+  if (modeChangeBtn) modeChangeBtn.style.display = 'none';
+}
+
+function showGameView() {
+  homeView.classList.add('hidden');
+  gameView.classList.remove('hidden');
+
+  if (pauseBtn) pauseBtn.style.display = 'inline-flex';
+  if (modeChangeBtn) modeChangeBtn.style.display = 'inline-flex';
+
+  modeDisplayTag.innerHTML =
+    selectedMode === 'timeattack'
+      ? `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <span>90s TIME ATTACK</span>`
+      : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
+  gameLoop.setMode(selectedMode);
+  gameLoop.start();
+  soundManager.startBGM();
+
+  renderLeaderboard(selectedMode);
+}
 
 // Initialize Banner Overlay & Audio
 const canvasWrapper = document.getElementById('canvas-wrapper')!;
@@ -273,13 +308,12 @@ function openLeaderboardModal() {
 
 viewLeaderboardBtn.addEventListener('click', openLeaderboardModal);
 modalViewLeaderboardBtn.addEventListener('click', () => {
-  modeModal.classList.add('hidden');
   openLeaderboardModal();
 });
 
 closeLeaderboardBtn.addEventListener('click', () => {
   leaderboardModal.classList.add('hidden');
-  modeModal.classList.remove('hidden');
+  showHomeView();
 });
 
 modalTabTimeattack.addEventListener('click', () =>
@@ -335,8 +369,7 @@ resumeBtn.addEventListener('click', handleTogglePause);
 pauseRestartBtn.addEventListener('click', () => {
   soundManager.stopBGM();
   pauseModal.classList.add('hidden');
-  gameLoop.reset();
-  modeModal.classList.remove('hidden');
+  showHomeView();
 });
 
 // Unified, Single-Dispatch Keyboard Event Listener
@@ -467,23 +500,14 @@ window.addEventListener('keydown', (e) => {
 // Home Navigation Button (KakaoBank Logo Click)
 const homeLogoBtn = document.getElementById('home-logo-btn')!;
 
-function goToHome() {
-  soundManager.stopBGM();
-  pauseModal.classList.add('hidden');
-  leaderboardModal.classList.add('hidden');
-  gameoverModal.classList.add('hidden');
-  gameLoop.reset();
-  modeModal.classList.remove('hidden');
-}
-
 if (homeLogoBtn) {
-  homeLogoBtn.addEventListener('click', goToHome);
+  homeLogoBtn.addEventListener('click', showHomeView);
 }
 
 // Mode Change / Open Modal Event
-modeChangeBtn.addEventListener('click', goToHome);
+modeChangeBtn.addEventListener('click', showHomeView);
 
-// Mode Selection Modal Buttons
+// Mode Selection Cards
 selectTimeattack.addEventListener('click', () => {
   selectedMode = 'timeattack';
   selectTimeattack.classList.add('active');
@@ -497,19 +521,7 @@ selectClassic.addEventListener('click', () => {
 });
 
 startGameBtn.addEventListener('click', () => {
-  modeModal.classList.add('hidden');
-  leaderboardModal.classList.add('hidden');
-  gameoverModal.classList.add('hidden');
-
-  modeDisplayTag.innerHTML =
-    selectedMode === 'timeattack'
-      ? `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <span>90s TIME ATTACK</span>`
-      : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
-  gameLoop.setMode(selectedMode);
-  gameLoop.start();
-  soundManager.startBGM();
-
-  renderLeaderboard(selectedMode);
+  showGameView();
 });
 
 // Leaderboard Tabs
@@ -538,8 +550,9 @@ leaderboardForm.addEventListener('submit', (e) => {
 
 restartBtn.addEventListener('click', () => {
   gameoverModal.classList.add('hidden');
-  modeModal.classList.remove('hidden');
+  showHomeView();
 });
 
-// Initial Render
+// Initial View Render
 renderLeaderboard('timeattack');
+showHomeView();
