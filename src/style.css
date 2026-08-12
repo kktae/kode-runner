@@ -1451,6 +1451,31 @@ kbd {
   color: var(--text-muted);
 }
 
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-link-btn {
+  background: none;
+  border: none;
+  color: var(--kakao-yellow);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  transition: opacity 0.15s ease;
+}
+
+.text-link-btn:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
 .input-group input {
   padding: 10px 12px;
   border-radius: 8px;

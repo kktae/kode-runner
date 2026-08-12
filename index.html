@@ -110,12 +110,18 @@
             <div class="multiplayer-hero-box">
               <div class="multiplayer-inputs">
                 <div class="input-group">
-                  <label for="multi-nickname">내 닉네임</label>
-                  <input type="text" id="multi-nickname" placeholder="예: 라이언_개발팀" maxlength="10" value="플레이어1" />
+                  <div class="label-row">
+                    <label for="multi-nickname">내 닉네임</label>
+                    <button id="random-nickname-btn" class="text-link-btn" type="button" title="한글 닉네임 랜덤 생성">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                      <span>새로 생성</span>
+                    </button>
+                  </div>
+                  <input type="text" id="multi-nickname" placeholder="한글 닉네임 생성 중..." maxlength="12" />
                 </div>
                 <div class="input-group">
-                  <label for="multi-room-id">방 코드 (선택)</label>
-                  <input type="text" id="multi-room-id" placeholder="예: ROOM-1234 (입력 시 해당 방 입장)" />
+                  <label for="multi-room-id">방 코드 (4자리 정수)</label>
+                  <input type="number" id="multi-room-id" placeholder="예: 4829 (4자리 숫자)" min="1000" max="9999" maxlength="4" />
                 </div>
               </div>
 

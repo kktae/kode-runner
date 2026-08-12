@@ -11,6 +11,7 @@ import { RemotionModal } from './ui/RemotionModal';
 import { TouchController } from './ui/TouchController';
 import { useMultiplayerStore } from './stores/useMultiplayerStore';
 import { OpponentBoardRenderer } from './ui/OpponentBoard';
+import { generateKoreanNickname, generate4DigitRoomCode } from './utils/nicknameGenerator';
 
 // DOM Elements
 const tetrisCanvas = document.getElementById(
@@ -629,8 +630,20 @@ if (homeTabSingle && homeTabMulti && singlePlayerSection && multiPlayerSection) 
 // Realtime Multiplayer Room Join Logic
 const multiNicknameInput = document.getElementById('multi-nickname') as HTMLInputElement;
 const multiRoomIdInput = document.getElementById('multi-room-id') as HTMLInputElement;
+const randomNicknameBtn = document.getElementById('random-nickname-btn');
 const quickMatchBtn = document.getElementById('quick-match-btn');
 const createRoomBtn = document.getElementById('create-room-btn');
+
+// Initial Korean Random Nickname Assignment
+if (multiNicknameInput) {
+  multiNicknameInput.value = generateKoreanNickname();
+}
+
+if (randomNicknameBtn && multiNicknameInput) {
+  randomNicknameBtn.addEventListener('click', () => {
+    multiNicknameInput.value = generateKoreanNickname();
+  });
+}
 
 const opponentPanel = document.getElementById('opponent-panel');
 const singleLeaderboardPanel = document.getElementById('single-leaderboard-panel');
@@ -644,7 +657,7 @@ if (opponentCanvas) {
 }
 
 function startMultiplayerGame(roomId: string) {
-  const nickname = multiNicknameInput?.value.trim() || '플레이어1';
+  const nickname = multiNicknameInput?.value.trim() || generateKoreanNickname();
   useMultiplayerStore.getState().joinRoom(roomId, nickname);
 
   // Switch Right Panel Layout for 1v1 PvP
@@ -657,14 +670,15 @@ function startMultiplayerGame(roomId: string) {
 if (quickMatchBtn) {
   quickMatchBtn.addEventListener('click', () => {
     const customRoom = multiRoomIdInput?.value.trim();
-    const roomId = customRoom || `ROOM-${Math.floor(1000 + Math.random() * 9000)}`;
+    // 4자리 정수 코드 검증 또는 4자리 무작위 정수 코드 생성
+    const roomId = customRoom && customRoom.length === 4 ? customRoom : generate4DigitRoomCode();
     startMultiplayerGame(roomId);
   });
 }
 
 if (createRoomBtn) {
   createRoomBtn.addEventListener('click', () => {
-    const roomId = `ROOM-${Math.floor(1000 + Math.random() * 9000)}`;
+    const roomId = generate4DigitRoomCode();
     if (multiRoomIdInput) multiRoomIdInput.value = roomId;
     startMultiplayerGame(roomId);
   });
