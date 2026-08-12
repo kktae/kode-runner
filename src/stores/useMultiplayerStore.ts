@@ -1,11 +1,10 @@
 import { create } from 'zustand';
 import { io, Socket } from 'socket.io-client';
-import { Packet, PlayerGameState } from '../types/network';
+import { PlayerGameState } from '../types/network';
 
 export type RoomStatus = 'IDLE' | 'CONNECTING' | 'WAITING' | 'PLAYING' | 'GAME_OVER';
 
 interface MultiplayerStore {
-  // Room State
   roomId: string | null;
   status: RoomStatus;
   nickname: string;
@@ -13,10 +12,9 @@ interface MultiplayerStore {
   opponentState: PlayerGameState | null;
   pendingGarbageLines: number;
 
-  // Socket.io Client Instance
   socket: Socket | null;
 
-  // Actions
+  connectSocket: () => Socket;
   requestQuickMatch: (nickname: string) => void;
   joinRoom: (roomId: string, nickname: string) => void;
   leaveRoom: () => void;
@@ -34,110 +32,94 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   pendingGarbageLines: 0,
   socket: null,
 
-  requestQuickMatch: (nickname: string) => {
-    const currentSocket = get().socket;
-    if (currentSocket) {
-      currentSocket.disconnect();
+  connectSocket: () => {
+    let { socket } = get();
+    if (!socket || !socket.connected) {
+      const serverUrl = import.meta.env.VITE_SERVER_URL || window.location.origin;
+      socket = io(serverUrl, {
+        transports: ['websocket', 'polling'],
+        autoConnect: true,
+      });
+
+      socket.on('room_info', (data: { roomId: string; players: { nickname: string; socketId: string }[] }) => {
+        const myNick = get().nickname;
+        const opponent = data.players.find((p) => p.nickname !== myNick);
+        set({
+          roomId: data.roomId,
+          opponentNickname: opponent ? opponent.nickname : null,
+          status: data.players.length >= 2 ? 'PLAYING' : 'WAITING',
+        });
+      });
+
+      socket.on('game_start', (data: { seed: number; startTime: number; players: { nickname: string; socketId: string }[] }) => {
+        const myNick = get().nickname;
+        const opponent = data.players.find((p) => p.nickname !== myNick);
+        set({
+          status: 'PLAYING',
+          pendingGarbageLines: 0,
+          opponentNickname: opponent ? opponent.nickname : get().opponentNickname,
+        });
+      });
+
+      socket.on('state_sync', (state: PlayerGameState) => {
+        set({ opponentState: state });
+      });
+
+      socket.on('attack_garbage', (data: { linesCount: number; holePosition: number }) => {
+        set((s) => ({ pendingGarbageLines: s.pendingGarbageLines + data.linesCount }));
+      });
+
+      socket.on('opponent_left', () => {
+        set({ opponentNickname: null, opponentState: null, status: 'GAME_OVER' });
+      });
+
+      socket.on('quick_match_assigned', (data: { roomId: string }) => {
+        const myNick = get().nickname;
+        get().joinRoom(data.roomId, myNick);
+      });
+
+      set({ socket });
     }
+    return socket;
+  },
 
-    set({ status: 'CONNECTING', nickname });
-    const serverUrl = import.meta.env.VITE_SERVER_URL || window.location.origin;
+  requestQuickMatch: (nickname: string) => {
+    set({ nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null });
+    const socket = get().connectSocket();
 
-    const socket = io(serverUrl, {
-      transports: ['websocket', 'polling'],
-      autoConnect: true,
-    });
+    const doRequest = () => {
+      socket.emit('quick_match_request', { nickname });
+    };
 
-    socket.on('connect', () => {
-      socket.emit('packet', {
-        type: 'QUICK_MATCH_REQUEST',
-        payload: { nickname },
-      } satisfies Packet);
-    });
-
-    socket.on('packet', (data: Packet) => {
-      if (data.type === 'QUICK_MATCH_ASSIGNED') {
-        const assignedRoomId = data.payload.roomId;
-        socket.disconnect();
-        // 부여받은 방 코드(assignedRoomId)로 방에 정식 입장!
-        get().joinRoom(assignedRoomId, nickname);
-      }
-    });
-
-    set({ socket });
+    if (socket.connected) {
+      doRequest();
+    } else {
+      socket.once('connect', doRequest);
+    }
   },
 
   joinRoom: (roomId: string, nickname: string) => {
-    // 기존 소켓 연결 정리
-    const currentSocket = get().socket;
-    if (currentSocket) {
-      currentSocket.disconnect();
-    }
+    set({ roomId, nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null });
+    const socket = get().connectSocket();
 
-    set({ status: 'CONNECTING', roomId, nickname });
-
-    // 표준 백엔드 서버 URL (Cloud Run 호스팅 URL 등)
-    const serverUrl = import.meta.env.VITE_SERVER_URL || window.location.origin;
-
-    const socket = io(serverUrl, {
-      transports: ['websocket', 'polling'],
-      autoConnect: true,
-      query: { roomId, nickname },
-    });
-
-    socket.on('connect', () => {
+    const doJoin = () => {
+      socket.emit('join_room', { roomId, nickname });
       set({ status: 'WAITING' });
-      const joinPacket: Packet = {
-        type: 'JOIN_ROOM',
-        payload: { nickname },
-      };
-      socket.emit('packet', joinPacket);
-    });
+    };
 
-    socket.on('packet', (data: Packet) => {
-      try {
-        switch (data.type) {
-          case 'JOIN_ROOM':
-            set({ opponentNickname: data.payload.nickname });
-            break;
-
-          case 'GAME_START':
-            set({ status: 'PLAYING', pendingGarbageLines: 0 });
-            break;
-
-          case 'STATE_SYNC':
-            set({ opponentState: data.payload });
-            break;
-
-          case 'ATTACK_GARBAGE':
-            set((state) => ({
-              pendingGarbageLines: state.pendingGarbageLines + data.payload.linesCount,
-            }));
-            break;
-
-          case 'GAME_OVER':
-            set({ status: 'GAME_OVER' });
-            break;
-        }
-      } catch (err) {
-        console.error('Failed to handle socket packet:', err);
-      }
-    });
-
-    socket.on('disconnect', () => {
-      set({ status: 'IDLE', socket: null, roomId: null });
-    });
-
-    set({ socket });
+    if (socket.connected) {
+      doJoin();
+    } else {
+      socket.once('connect', doJoin);
+    }
   },
 
   leaveRoom: () => {
     const { socket } = get();
     if (socket) {
-      socket.disconnect();
+      socket.emit('leave_room');
     }
     set({
-      socket: null,
       roomId: null,
       status: 'IDLE',
       opponentNickname: null,
@@ -148,23 +130,15 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
 
   sendStateSync: (state: PlayerGameState) => {
     const { socket, status } = get();
-    if (socket && status === 'PLAYING') {
-      const packet: Packet = {
-        type: 'STATE_SYNC',
-        payload: state,
-      };
-      socket.emit('packet', packet);
+    if (socket && socket.connected && status === 'PLAYING') {
+      socket.emit('state_sync', state);
     }
   },
 
   sendGarbageAttack: (linesCount: number, holePosition: number) => {
     const { socket, status } = get();
-    if (socket && status === 'PLAYING') {
-      const packet: Packet = {
-        type: 'ATTACK_GARBAGE',
-        payload: { linesCount, holePosition },
-      };
-      socket.emit('packet', packet);
+    if (socket && socket.connected && status === 'PLAYING') {
+      socket.emit('attack_garbage', { linesCount, holePosition });
     }
   },
 

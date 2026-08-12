@@ -483,27 +483,36 @@ export class GameLoop {
     this.syncMultiplayerState();
   }
 
-  private syncMultiplayerState() {
+  private lastSyncTime = 0;
+
+  private syncMultiplayerState(force = false) {
     const mpState = useMultiplayerStore.getState();
-    if (mpState.status === 'PLAYING') {
-      const typeMap: Record<string, number> = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7 };
-      const piece = this.board.activePiece;
-      
-      mpState.sendStateSync({
-        board: this.board.getGridMatrix(),
-        score: this.stats.score,
-        lines: this.stats.lines,
-        combo: this.stats.combo,
-        currentPiece: piece
-          ? {
-              type: typeMap[piece.type] || 1,
-              x: piece.x,
-              y: piece.y,
-              rotation: piece.rotation,
-            }
-          : null,
-        isGameOver: !this.isRunning,
-      });
+    if (mpState.status !== 'PLAYING') return;
+
+    const now = performance.now();
+    // 80ms 스로틀링 (초당 12.5회 송신)으로 소켓 네트워크 병목/지연 및 패킷 드롭 완전 방지
+    if (!force && now - this.lastSyncTime < 80) {
+      return;
     }
+    this.lastSyncTime = now;
+
+    const typeMap: Record<string, number> = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7 };
+    const piece = this.board.activePiece;
+
+    mpState.sendStateSync({
+      board: this.board.getGridMatrix(),
+      score: this.stats.score,
+      lines: this.stats.lines,
+      combo: this.stats.combo,
+      currentPiece: piece
+        ? {
+            type: typeMap[piece.type] || 1,
+            x: piece.x,
+            y: piece.y,
+            rotation: piece.rotation,
+          }
+        : null,
+      isGameOver: !this.isRunning,
+    });
   }
 }
