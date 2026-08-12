@@ -250,17 +250,20 @@
             <!-- Multiplayer Opponent Canvas Panel (Dynamic in 1v1 PvP) -->
             <div id="opponent-panel" class="glass-card panel-opponent hidden">
               <div class="opponent-header">
-                <span class="opponent-badge">OPPONENT 1v1</span>
+                <span class="opponent-badge">1v1 PvP 대전</span>
                 <h4 id="opponent-name-tag">상대방 대기중</h4>
               </div>
-              <div class="opponent-canvas-box">
-                <canvas id="opponent-canvas" width="150" height="300"></canvas>
+
+              <div class="opponent-canvas-wrapper">
+                <canvas id="opponent-canvas" width="160" height="320"></canvas>
               </div>
+
               <div id="garbage-indicator" class="garbage-indicator-box">
-                <span>공격 수신: <strong id="garbage-count">0</strong> 줄</span>
+                <span>수신 공격: <strong id="garbage-count">0</strong>줄</span>
               </div>
+
               <button id="toggle-ready-btn" class="primary-btn wide-btn ready-btn" type="button">
-                <span>준비하기 (READY)</span>
+                <span>게임 준비 (READY)</span>
               </button>
             </div>
 
