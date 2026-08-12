@@ -93,6 +93,19 @@ export const PacketSchema = z.discriminatedUnion('type', [
       survivedTime: z.number(),
     }),
   }),
+  // Quick Matchmaking
+  z.object({
+    type: z.literal('QUICK_MATCH_REQUEST'),
+    payload: z.object({
+      nickname: z.string(),
+    }),
+  }),
+  z.object({
+    type: z.literal('QUICK_MATCH_ASSIGNED'),
+    payload: z.object({
+      roomId: z.string(),
+    }),
+  }),
 ]);
 
 export type Packet = z.infer<typeof PacketSchema>;

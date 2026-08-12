@@ -680,9 +680,18 @@ function startMultiplayerGame(roomId: string) {
 if (quickMatchBtn) {
   quickMatchBtn.addEventListener('click', () => {
     const customRoom = multiRoomIdInput?.value.trim();
-    // 4자리 정수 코드 검증 또는 4자리 무작위 정수 코드 생성
-    const roomId = customRoom && customRoom.length === 4 ? customRoom : generate4DigitRoomCode();
-    startMultiplayerGame(roomId);
+    const nickname = multiNicknameInput?.value.trim() || generateKoreanNickname();
+
+    if (customRoom && customRoom.length === 4) {
+      // 4자리 지정 방 코드가 있는 경우 직통 입장
+      startMultiplayerGame(customRoom);
+    } else {
+      // 빠른 무작위 매칭: 서버 매치메이킹 큐에 대기 요청!
+      if (opponentPanel) opponentPanel.classList.remove('hidden');
+      if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
+      useMultiplayerStore.getState().requestQuickMatch(nickname);
+      showGameView(true);
+    }
   });
 }
 
@@ -696,8 +705,12 @@ if (createRoomBtn) {
 
 // Subscribe to Multiplayer Store Updates
 useMultiplayerStore.subscribe((state) => {
+  if (state.roomId && multiRoomIdInput) {
+    multiRoomIdInput.value = state.roomId;
+  }
+
   if (opponentNameTag) {
-    opponentNameTag.innerText = state.opponentNickname || (state.status === 'WAITING' ? `방 코드: ${state.roomId} (상대 대기중)` : '상대방 연결 대기');
+    opponentNameTag.innerText = state.opponentNickname || (state.status === 'WAITING' ? `방 코드 [${state.roomId}] 대기중...` : '상대방 연결 대기');
   }
 
   if (garbageCountTag) {

@@ -17,6 +17,7 @@ interface MultiplayerStore {
   socket: Socket | null;
 
   // Actions
+  requestQuickMatch: (nickname: string) => void;
   joinRoom: (roomId: string, nickname: string) => void;
   leaveRoom: () => void;
   sendStateSync: (state: PlayerGameState) => void;
@@ -32,6 +33,39 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   opponentState: null,
   pendingGarbageLines: 0,
   socket: null,
+
+  requestQuickMatch: (nickname: string) => {
+    const currentSocket = get().socket;
+    if (currentSocket) {
+      currentSocket.disconnect();
+    }
+
+    set({ status: 'CONNECTING', nickname });
+    const serverUrl = import.meta.env.VITE_SERVER_URL || window.location.origin;
+
+    const socket = io(serverUrl, {
+      transports: ['websocket', 'polling'],
+      autoConnect: true,
+    });
+
+    socket.on('connect', () => {
+      socket.emit('packet', {
+        type: 'QUICK_MATCH_REQUEST',
+        payload: { nickname },
+      } satisfies Packet);
+    });
+
+    socket.on('packet', (data: Packet) => {
+      if (data.type === 'QUICK_MATCH_ASSIGNED') {
+        const assignedRoomId = data.payload.roomId;
+        socket.disconnect();
+        // 부여받은 방 코드(assignedRoomId)로 방에 정식 입장!
+        get().joinRoom(assignedRoomId, nickname);
+      }
+    });
+
+    set({ socket });
+  },
 
   joinRoom: (roomId: string, nickname: string) => {
     // 기존 소켓 연결 정리

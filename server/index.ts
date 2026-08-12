@@ -45,23 +45,64 @@ try {
   console.warn('Redis Adapter initialization error:', e);
 }
 
+// Global Matchmaking Queue
+let waitingMatchRoomId: string | null = null;
+
+function generate4DigitRoomCode(): string {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
 io.on('connection', (socket) => {
-  const roomId = socket.handshake.query.roomId as string;
+  let activeRoomId = socket.handshake.query.roomId as string | undefined;
   const nickname = socket.handshake.query.nickname as string;
 
-  if (roomId) {
-    socket.join(roomId);
+  // Handle Matchmaking & Normal Game Packets
+  socket.on('packet', (data: Packet) => {
+    if (data.type === 'QUICK_MATCH_REQUEST') {
+      if (waitingMatchRoomId) {
+        // 대기 중인 방이 있으면 대기자의 방 코드로 즉시 매칭!
+        const assignedRoom = waitingMatchRoomId;
+        waitingMatchRoomId = null;
+
+        socket.emit('packet', {
+          type: 'QUICK_MATCH_ASSIGNED',
+          payload: { roomId: assignedRoom },
+        } satisfies Packet);
+      } else {
+        // 대기중인 방이 없으면 새로운 4자리 정수 방 생성 후 대기 큐 등록
+        const newRoom = generate4DigitRoomCode();
+        waitingMatchRoomId = newRoom;
+
+        socket.emit('packet', {
+          type: 'QUICK_MATCH_ASSIGNED',
+          payload: { roomId: newRoom },
+        } satisfies Packet);
+      }
+      return;
+    }
+
+    if (activeRoomId) {
+      socket.to(activeRoomId).emit('packet', data);
+    }
+  });
+
+  if (activeRoomId) {
+    socket.join(activeRoomId);
 
     // Notify opponent in the room
-    socket.to(roomId).emit('packet', {
+    socket.to(activeRoomId).emit('packet', {
       type: 'JOIN_ROOM',
       payload: { nickname: nickname || 'Player' },
     } satisfies Packet);
 
-    // Query total sockets in room across all Cloud Run instances via Redis Adapter
-    io.in(roomId).fetchSockets().then((sockets) => {
+    // Query total sockets in room across all instances
+    io.in(activeRoomId).fetchSockets().then((sockets) => {
       if (sockets.length === 2) {
-        io.in(roomId).emit('packet', {
+        if (waitingMatchRoomId === activeRoomId) {
+          waitingMatchRoomId = null;
+        }
+
+        io.in(activeRoomId!).emit('packet', {
           type: 'GAME_START',
           payload: {
             seed: Math.floor(Math.random() * 1000000),
@@ -74,15 +115,12 @@ io.on('connection', (socket) => {
     });
   }
 
-  socket.on('packet', (data: Packet) => {
-    if (roomId) {
-      socket.to(roomId).emit('packet', data);
-    }
-  });
-
   socket.on('disconnect', () => {
-    if (roomId) {
-      socket.to(roomId).emit('packet', {
+    if (activeRoomId) {
+      if (waitingMatchRoomId === activeRoomId) {
+        waitingMatchRoomId = null;
+      }
+      socket.to(activeRoomId).emit('packet', {
         type: 'GAME_OVER',
         payload: { finalScore: 0, survivedTime: 0 },
       } satisfies Packet);
