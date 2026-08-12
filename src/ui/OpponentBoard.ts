@@ -2,6 +2,16 @@ import { drawMinoCell } from '../assets/characters';
 import { PlayerGameState } from '../types/network';
 import { MinoType } from '../types/tetris';
 
+const ID_TO_MINO: Record<number, MinoType> = {
+  1: 'I',
+  2: 'J',
+  3: 'L',
+  4: 'O',
+  5: 'S',
+  6: 'T',
+  7: 'Z',
+};
+
 export class OpponentBoardRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -21,12 +31,12 @@ export class OpponentBoardRenderer {
     const height = this.canvas.height;
     const cellSize = width / this.cols;
 
-    // Clear Canvas & Draw Background Grid
+    // Clear Canvas & Background Grid
     this.ctx.fillStyle = '#0f172a';
     this.ctx.fillRect(0, 0, width, height);
 
-    // Draw Subtle Grid Lines
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    // Draw Grid Lines
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
     this.ctx.lineWidth = 1;
     for (let r = 0; r <= this.rows; r++) {
       this.ctx.beginPath();
@@ -42,12 +52,11 @@ export class OpponentBoardRenderer {
     }
 
     if (!gameState) {
-      // Waiting for opponent data
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      this.ctx.font = '12px Pretendard, sans-serif';
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      this.ctx.font = '11px Pretendard, sans-serif';
       this.ctx.textAlign = 'center';
       this.ctx.fillText(
-        opponentNickname ? '상대방 화면 연결 중...' : '상대방 접속 대기 중...',
+        opponentNickname ? `${opponentNickname} 대기 중...` : '상대 접속 대기 중...',
         width / 2,
         height / 2,
       );
@@ -58,18 +67,19 @@ export class OpponentBoardRenderer {
     const board = gameState.board;
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
-        const minoType = board[r]?.[c] || 0;
-        if (minoType > 0) {
-          drawMinoCell(this.ctx, c * cellSize, r * cellSize, cellSize, minoType as unknown as MinoType);
+        const typeId = board[r]?.[c] || 0;
+        if (typeId > 0) {
+          const charType = ID_TO_MINO[typeId] || 'I';
+          drawMinoCell(this.ctx, c * cellSize, r * cellSize, cellSize, charType, false);
         }
       }
     }
 
     // 2. Draw Active Falling Piece
     if (gameState.currentPiece) {
-      const { type, x, y } = gameState.currentPiece;
-      // Draw simple block representation for active piece
-      drawMinoCell(this.ctx, x * cellSize, y * cellSize, cellSize, type as unknown as MinoType);
+      const { type: typeId, x, y } = gameState.currentPiece;
+      const charType = ID_TO_MINO[typeId] || 'I';
+      drawMinoCell(this.ctx, x * cellSize, y * cellSize, cellSize, charType, false);
     }
 
     // 3. Draw Game Over Overlay
@@ -77,7 +87,7 @@ export class OpponentBoardRenderer {
       this.ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
       this.ctx.fillRect(0, 0, width, height);
       this.ctx.fillStyle = '#ef4444';
-      this.ctx.font = 'bold 16px Outfit, sans-serif';
+      this.ctx.font = 'bold 15px Outfit, sans-serif';
       this.ctx.textAlign = 'center';
       this.ctx.fillText('KNOCK OUT!', width / 2, height / 2);
     }

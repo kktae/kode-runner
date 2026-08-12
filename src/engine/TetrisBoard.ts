@@ -32,6 +32,7 @@ export class TetrisBoard {
     this.activePiece = null;
     this.holdType = null;
     this.canHold = true;
+    this.factory.reset();
   }
 
   private createEmptyGrid(): CellState[][] {

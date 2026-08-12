@@ -180,6 +180,11 @@ export class MinoFactory {
     this.refillBag();
   }
 
+  public reset() {
+    this.bag = [];
+    this.refillBag();
+  }
+
   private random(): number {
     if (this.prngState === 0) {
       return Math.random();
