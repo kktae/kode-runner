@@ -4,6 +4,7 @@ import type { GameMode, GameStats, MinoType } from '../types/tetris';
 import { MinoFactory } from './MinoFactory';
 import { ParticleSystem } from './ParticleSystem';
 import { BOARD_HEIGHT, BOARD_WIDTH, TetrisBoard } from './TetrisBoard';
+import { useMultiplayerStore } from '../stores/useMultiplayerStore';
 
 export interface GameLoopCallbacks {
   onStatsUpdate: (stats: GameStats) => void;
@@ -301,6 +302,16 @@ export class GameLoop {
       this.stats.score += earned;
       this.stats.lines += clearEvent.count;
 
+      // Multiplayer Attack Dispatch (2줄 이상 클리어 또는 콤보 발생 시 상대방 가비지 공격)
+      const mpState = useMultiplayerStore.getState();
+      if (mpState.status === 'PLAYING') {
+        const attackLines = Math.max(0, (clearEvent.count - 1) + Math.floor(this.stats.combo / 2));
+        if (attackLines > 0) {
+          const holePos = Math.floor(Math.random() * BOARD_WIDTH);
+          mpState.sendGarbageAttack(attackLines, holePos);
+        }
+      }
+
       // Level Increase in Classic Mode every 10 lines
       const newLevel = Math.floor(this.stats.lines / 10) + 1;
       if (newLevel !== this.stats.level) {
@@ -467,5 +478,32 @@ export class GameLoop {
 
     // Particles Overlay
     this.particles.draw(this.ctx);
+
+    // Sync Multiplayer Realtime Frame State
+    this.syncMultiplayerState();
+  }
+
+  private syncMultiplayerState() {
+    const mpState = useMultiplayerStore.getState();
+    if (mpState.status === 'PLAYING') {
+      const typeMap: Record<string, number> = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7 };
+      const piece = this.board.activePiece;
+      
+      mpState.sendStateSync({
+        board: this.board.getGridMatrix(),
+        score: this.stats.score,
+        lines: this.stats.lines,
+        combo: this.stats.combo,
+        currentPiece: piece
+          ? {
+              type: typeMap[piece.type] || 1,
+              x: piece.x,
+              y: piece.y,
+              rotation: piece.rotation,
+            }
+          : null,
+        isGameOver: !this.isRunning,
+      });
+    }
   }
 }

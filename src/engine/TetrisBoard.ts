@@ -270,4 +270,38 @@ export class TetrisBoard {
       isTetris: clearedRows.length === 4,
     };
   }
+
+  /**
+   * 상대방의 가비지 라인 공격 추가 (하단 상승)
+   */
+  public addGarbageLines(count: number, holePosition = Math.floor(Math.random() * BOARD_WIDTH)) {
+    if (count <= 0) return;
+    const linesToAdd = Math.min(count, BOARD_HEIGHT);
+
+    // Shift existing rows up
+    this.grid = this.grid.slice(linesToAdd);
+
+    // Append garbage rows at bottom with a hole
+    for (let i = 0; i < linesToAdd; i++) {
+      const garbageRow: CellState[] = Array.from({ length: BOARD_WIDTH }, (_, colIdx) => ({
+        filled: colIdx !== holePosition,
+        color: '#64748b',
+        characterType: colIdx !== holePosition ? ('I' as MinoType) : undefined,
+      }));
+      this.grid.push(garbageRow);
+    }
+  }
+
+  /**
+   * 소켓 전송용 2D Matrix 변환 (0=empty, 1-7=minoType)
+   */
+  public getGridMatrix(): number[][] {
+    const typeMap: Record<string, number> = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7 };
+    return this.grid.map((row) =>
+      row.map((cell) => {
+        if (!cell.filled) return 0;
+        return cell.characterType ? typeMap[cell.characterType] || 1 : 1;
+      }),
+    );
+  }
 }
