@@ -115,25 +115,21 @@
       <!-- Main In-Game View (Hidden when on Home Screen) -->
       <div id="game-view" class="game-screen-view hidden">
         <main class="game-grid">
-          <!-- Left Console Panel: HOLD & Score Hero Card -->
+          <!-- Left Panel: HOLD & Stats -->
           <section class="side-panel left-panel">
-            <!-- HOLD Box -->
             <div class="glass-card panel-hold">
-              <div class="panel-header-badge">HOLD</div>
+              <h3 class="panel-title">HOLD</h3>
               <div class="preview-box">
                 <canvas id="hold-canvas" width="100" height="100"></canvas>
               </div>
               <span class="key-hint">[Shift / C]</span>
             </div>
 
-            <!-- Main Score Hero Card -->
-            <div class="glass-card score-hero-card">
-              <span class="score-label">CURRENT SCORE</span>
-              <div id="score-val" class="score-hero-value">0</div>
-            </div>
-
-            <!-- Stats HUD Grid -->
             <div class="glass-card panel-stats">
+              <div class="stat-item">
+                <span class="stat-label">SCORE</span>
+                <span id="score-val" class="stat-value highlight">0</span>
+              </div>
               <div class="stat-item">
                 <span class="stat-label">LINES</span>
                 <span id="lines-val" class="stat-value">0</span>
@@ -149,9 +145,9 @@
             </div>
           </section>
 
-          <!-- Center Panel: Main Arena & HUD Status Rack -->
+          <!-- Center Panel: Main Canvas & Timer -->
           <section class="center-panel">
-            <!-- HUD Status / Timer Bar -->
+            <!-- Mode Status / Timer Bar -->
             <div class="timer-bar-container glass-card">
               <div class="timer-info">
                 <span id="mode-display-tag" class="mode-tag">
@@ -182,10 +178,10 @@
             </div>
           </section>
 
-          <!-- Right Console Panel: NEXT Queue & Leaderboard -->
+          <!-- Right Panel: NEXT Queue & Leaderboard -->
           <section class="side-panel right-panel">
             <div class="glass-card panel-next">
-              <div class="panel-header-badge">NEXT</div>
+              <h3 class="panel-title">NEXT</h3>
               <div class="next-queue">
                 <div class="preview-box mini"><canvas id="next1-canvas" width="80" height="80"></canvas></div>
                 <div class="preview-box mini"><canvas id="next2-canvas" width="80" height="80"></canvas></div>
@@ -215,11 +211,10 @@
         <!-- Key Controls Banner Footer -->
         <footer class="controls-footer glass-card">
           <div class="key-item"><kbd>←</kbd><kbd>→</kbd> 이동</div>
-          <div class="key-item"><kbd>↓</kbd> 하강</div>
-          <div class="key-item"><kbd>Space</kbd> 하드드롭</div>
-          <div class="key-item"><kbd>↑</kbd> 회전</div>
+          <div class="key-item"><kbd>↓</kbd> 천천히 하강</div>
+          <div class="key-item"><kbd>Space</kbd> 즉시 하드드롭</div>
+          <div class="key-item"><kbd>↑</kbd> / <kbd>Z</kbd><kbd>X</kbd> 회전</div>
           <div class="key-item"><kbd>Shift</kbd> / <kbd>C</kbd> HOLD</div>
-          <div class="key-item"><kbd>P</kbd> / <kbd>Esc</kbd> 일시정지</div>
         </footer>
       </div>
 
@@ -233,13 +228,7 @@
     <div id="leaderboard-modal" class="modal-backdrop hidden">
       <div class="modal-card glass-modal wide">
         <div class="modal-header">
-          <div class="brand-logo-row">
-            <div class="partner-logo-box">
-              <img src="/assets/MEGAZONECLOUD_NEW_CI_B.png" alt="MEGAZONECLOUD" class="header-partner-logo" />
-            </div>
-            <span class="brand-x-badge">✕</span>
-            <span class="modal-kakaobank">kakaobank</span>
-          </div>
+          <span class="modal-kakaobank">kakaobank</span>
           <h2>BOOTH TOP 5 명예의 전당</h2>
           <p class="modal-sub">Kode Runner 2026 부스 최고 득점자 목록입니다</p>
         </div>
@@ -267,13 +256,7 @@
     <div id="pause-modal" class="modal-backdrop hidden">
       <div class="modal-card glass-modal">
         <div class="modal-header">
-          <div class="brand-logo-row">
-            <div class="partner-logo-box">
-              <img src="/assets/MEGAZONECLOUD_NEW_CI_B.png" alt="MEGAZONECLOUD" class="header-partner-logo" />
-            </div>
-            <span class="brand-x-badge">✕</span>
-            <span class="modal-kakaobank">kakaobank</span>
-          </div>
+          <span class="modal-kakaobank">kakaobank</span>
           <h2>일시정지 중</h2>
           <p class="modal-sub">게임이 잠시 멈췄습니다. 준비되면 계속 진행하세요.</p>
         </div>
@@ -295,13 +278,6 @@
     <div id="gameover-modal" class="modal-backdrop hidden">
       <div class="modal-card glass-modal">
         <div class="modal-header">
-          <div class="brand-logo-row">
-            <div class="partner-logo-box">
-              <img src="/assets/MEGAZONECLOUD_NEW_CI_B.png" alt="MEGAZONECLOUD" class="header-partner-logo" />
-            </div>
-            <span class="brand-x-badge">✕</span>
-            <span class="modal-kakaobank">kakaobank</span>
-          </div>
           <div class="celebration-badge">GAME OVER</div>
           <h2 id="gameover-title">수고하셨습니다!</h2>
           <p class="modal-sub">멋진 플레이였습니다! 부스 리더보드에 등록하세요.</p>
