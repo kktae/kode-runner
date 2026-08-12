@@ -792,13 +792,21 @@ useMultiplayerStore.subscribe((state) => {
   lastMultiStatus = state.status;
 
   if (toggleReadyBtn) {
-    toggleReadyBtn.innerText = state.isReady ? '준비 완료! (취소)' : '게임 준비 (READY)';
-    toggleReadyBtn.style.background = state.isReady ? '#00c73c' : '';
+    if (state.status === 'PLAYING') {
+      toggleReadyBtn.style.display = 'none';
+    } else {
+      toggleReadyBtn.style.display = 'inline-flex';
+      toggleReadyBtn.innerText = state.isReady ? '준비 완료! (취소)' : '게임 준비 (READY)';
+      toggleReadyBtn.style.background = state.isReady ? '#00c73c' : '';
+    }
   }
 
   if (opponentNameTag) {
     if (state.opponentNickname) {
-      if (state.opponentReady) {
+      if (state.status === 'PLAYING') {
+        opponentNameTag.innerHTML = `${state.opponentNickname} <span class="ingame-status-badge">대전 중 🔥</span>`;
+        opponentPanel?.classList.remove('opponent-is-ready');
+      } else if (state.opponentReady) {
         opponentNameTag.innerHTML = `${state.opponentNickname} <span class="ready-status-badge">READY!</span>`;
         opponentPanel?.classList.add('opponent-is-ready');
       } else {

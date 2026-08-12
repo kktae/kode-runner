@@ -105,10 +105,10 @@ export class OpponentBoardRenderer {
       this.ctx.save();
       this.ctx.fillStyle = '#fee500';
       this.ctx.shadowColor = '#fee500';
-      this.ctx.shadowBlur = 12;
-      this.ctx.font = '900 16px Outfit, sans-serif';
+      this.ctx.shadowBlur = 18;
+      this.ctx.font = '900 22px Outfit, sans-serif';
       this.ctx.textAlign = 'center';
-      this.ctx.fillText(`${gameState.combo} COMBO!`, width / 2, 32);
+      this.ctx.fillText(`${gameState.combo} COMBO! 🔥`, width / 2, height / 2 - 10);
       this.ctx.restore();
     }
 

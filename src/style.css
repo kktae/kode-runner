@@ -1427,6 +1427,18 @@ kbd {
   display: inline-block !important;
 }
 
+.ingame-status-badge {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  margin-left: 6px !important;
+  display: inline-block !important;
+}
+
 @keyframes pulseReady {
   from {
     transform: scale(1);
@@ -1459,23 +1471,38 @@ kbd {
   height: 280px !important;
 }
 
+/* Compact Horizontal NEXT Queue Layout */
 .panel-next {
   padding: 8px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
   gap: 4px !important;
+  width: 100% !important;
 }
 
 .next-queue {
-  gap: 6px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
 }
 
 .preview-box.mini {
-  width: 52px !important;
-  height: 52px !important;
+  width: 48px !important;
+  height: 48px !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .preview-box.mini canvas {
-  width: 52px !important;
-  height: 52px !important;
+  width: 44px !important;
+  height: 44px !important;
 }
 
 .opponent-header {
