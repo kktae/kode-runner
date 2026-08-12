@@ -79,6 +79,17 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-btn);
+  transition:
+    background-color 0.15s ease-out,
+    transform 0.15s ease-out;
+}
+
+.brand-badge:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
 }
 
 .kakaobank-logo {

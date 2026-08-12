@@ -464,13 +464,24 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// Mode Change / Open Modal Event
-modeChangeBtn.addEventListener('click', () => {
+// Home Navigation Button (KakaoBank Logo Click)
+const homeLogoBtn = document.getElementById('home-logo-btn')!;
+
+function goToHome() {
   soundManager.stopBGM();
   pauseModal.classList.add('hidden');
+  leaderboardModal.classList.add('hidden');
+  gameoverModal.classList.add('hidden');
   gameLoop.reset();
   modeModal.classList.remove('hidden');
-});
+}
+
+if (homeLogoBtn) {
+  homeLogoBtn.addEventListener('click', goToHome);
+}
+
+// Mode Change / Open Modal Event
+modeChangeBtn.addEventListener('click', goToHome);
 
 // Mode Selection Modal Buttons
 selectTimeattack.addEventListener('click', () => {
