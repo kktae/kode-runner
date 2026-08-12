@@ -778,6 +778,9 @@ useMultiplayerStore.subscribe((state) => {
 
   // Victory / Defeat Modal Trigger for Multiplayer
   if (state.status === 'GAME_OVER' && lastMultiStatus === 'PLAYING') {
+    gameLoop.stop(); // Completely stop background game loop, lock animation, and timers!
+    soundManager.stopBGM();
+
     const multiActions = document.getElementById('multi-gameover-actions');
     const singleForm = document.getElementById('leaderboard-form');
     const singleRestartBtn = document.getElementById('restart-btn');

@@ -135,6 +135,15 @@ export class GameLoop {
     this.isPaused = false;
   }
 
+  public stop() {
+    this.isRunning = false;
+    if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+    if (this.timerIntervalId) clearInterval(this.timerIntervalId);
+
+    const wrapper = document.getElementById('canvas-wrapper');
+    if (wrapper) wrapper.classList.remove('is-playing');
+  }
+
   public togglePause() {
     if (!this.isRunning) return;
     this.isPaused = !this.isPaused;
