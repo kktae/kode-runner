@@ -23,6 +23,10 @@ scratch/
 .env
 .env.*
 !.env.example
+*.tfvars
+*.tfstate
+*.tfstate.*
+.terraform/
 
 # OS & Editor files
 .DS_Store

@@ -36,7 +36,7 @@ resource "google_compute_subnetwork" "vpc_subnet" {
   network       = google_compute_network.vpc_network.id
 }
 
-# Serverless VPC Access Connector (Connects Cloud Run to VPC)
+# Serverless VPC Access Connector (Optimized for 400 CCU WebSocket Sync Traffic)
 resource "google_vpc_access_connector" "vpc_connector" {
   depends_on    = [google_project_service.enabled_apis]
   name          = "${var.app_name}-vpc-conn"
@@ -44,11 +44,11 @@ resource "google_vpc_access_connector" "vpc_connector" {
   ip_cidr_range = "10.8.0.0/28"
   network       = google_compute_network.vpc_network.name
   min_instances = 2
-  max_instances = 3
-  machine_type  = "f1-micro"
+  max_instances = 10
+  machine_type  = "e2-micro"
 }
 
-# Memorystore for Redis (Basic Tier Single Instance 1GB)
+# Memorystore for Redis (1GB Basic Tier - Handles 50k+ OPS for 400 CCU Pub/Sub Sync)
 resource "google_redis_instance" "redis_instance" {
   depends_on         = [google_project_service.enabled_apis]
   name               = "${var.app_name}-redis"
@@ -58,9 +58,14 @@ resource "google_redis_instance" "redis_instance" {
   authorized_network = google_compute_network.vpc_network.id
   redis_version      = "REDIS_7_0"
   display_name       = "Kode Runner Redis Instance"
+
+  redis_config = {
+    maxmemory-policy = "allkeys-lru"
+    timeout          = "300"
+  }
 }
 
-# Cloud Run v2 Service
+# Cloud Run v2 Service (Scaled & Sized for Max 400 CCU)
 resource "google_cloud_run_v2_service" "cloud_run_app" {
   depends_on = [
     google_project_service.enabled_apis,
@@ -73,14 +78,19 @@ resource "google_cloud_run_v2_service" "cloud_run_app" {
   ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
+    # Set max 100 concurrent WebSocket connections per Cloud Run container
+    max_instance_request_concurrency = 100
+
     vpc_access {
       connector = google_vpc_access_connector.vpc_connector.id
       egress    = "PRIVATE_RANGES_ONLY"
     }
 
     scaling {
-      min_instance_count = 1 # Keep 1 active instance for booth demo to eliminate cold starts
-      max_instance_count = 5
+      # Min 2 active instances = 200 CCU baseline capacity with zero cold starts
+      min_instance_count = 2
+      # Max 10 instances = Scale up to 1,000 CCU peak headroom
+      max_instance_count = 10
     }
 
     containers {
@@ -92,10 +102,10 @@ resource "google_cloud_run_v2_service" "cloud_run_app" {
 
       resources {
         limits = {
-          cpu    = "1000m"
-          memory = "512Mi"
+          cpu    = "2000m"  # 2 vCPU per instance for high-throughput Socket.io event loop
+          memory = "1024Mi" # 1 GiB RAM
         }
-        cpu_idle = false # Always-allocated CPU for persistent WebSocket connections
+        cpu_idle = false # Always-allocated CPU for zero latency persistent WebSockets
       }
 
       env {
