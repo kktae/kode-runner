@@ -13,6 +13,8 @@ interface MultiplayerStore {
   opponentReady: boolean;
   opponentState: PlayerGameState | null;
   pendingGarbageLines: number;
+  gameSeed: number | null;
+  gameWinner: 'ME' | 'OPPONENT' | null;
 
   socket: Socket | null;
 
@@ -35,6 +37,8 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   opponentReady: false,
   opponentState: null,
   pendingGarbageLines: 0,
+  gameSeed: null,
+  gameWinner: null,
   socket: null,
 
   connectSocket: () => {
@@ -68,12 +72,25 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
           isReady: false,
           opponentReady: false,
           pendingGarbageLines: 0,
+          gameSeed: data.seed,
+          gameWinner: null,
           opponentNickname: opponent ? opponent.nickname : get().opponentNickname,
         });
       });
 
       socket.on('state_sync', (state: PlayerGameState) => {
-        set({ opponentState: state });
+        if (state.isGameOver && get().status === 'PLAYING') {
+          // 상대방이 먼저 KO 되었으므로 내가 승리!
+          set({ opponentState: state, gameWinner: 'ME', status: 'GAME_OVER' });
+        } else {
+          set({ opponentState: state });
+        }
+      });
+
+      socket.on('game_over', () => {
+        if (get().status === 'PLAYING') {
+          set({ gameWinner: 'ME', status: 'GAME_OVER' });
+        }
       });
 
       socket.on('attack_garbage', (data: { linesCount: number; holePosition: number }) => {
@@ -81,7 +98,11 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       });
 
       socket.on('opponent_left', () => {
-        set({ opponentNickname: null, opponentState: null, opponentReady: false, status: 'WAITING' });
+        if (get().status === 'PLAYING') {
+          set({ gameWinner: 'ME', status: 'GAME_OVER', opponentNickname: null, opponentState: null, opponentReady: false });
+        } else {
+          set({ opponentNickname: null, opponentState: null, opponentReady: false, status: 'WAITING' });
+        }
       });
 
       socket.on('quick_match_assigned', (data: { roomId: string }) => {
@@ -95,7 +116,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   },
 
   requestQuickMatch: (nickname: string) => {
-    set({ nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false });
+    set({ nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false, gameWinner: null });
     const socket = get().connectSocket();
 
     const doRequest = () => {
@@ -110,7 +131,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   },
 
   joinRoom: (roomId: string, nickname: string) => {
-    set({ roomId, nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false });
+    set({ roomId, nickname, status: 'CONNECTING', opponentNickname: null, opponentState: null, isReady: false, opponentReady: false, gameWinner: null });
     const socket = get().connectSocket();
 
     const doJoin = () => {
@@ -147,6 +168,8 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       isReady: false,
       opponentReady: false,
       pendingGarbageLines: 0,
+      gameWinner: null,
+      gameSeed: null,
     });
   },
 

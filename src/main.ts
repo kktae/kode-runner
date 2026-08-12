@@ -9,6 +9,7 @@ import { ComboBanner } from './ui/ComboBanner';
 import { LeaderboardManager } from './ui/Leaderboard';
 import { RemotionModal } from './ui/RemotionModal';
 import { TouchController } from './ui/TouchController';
+import confetti from 'canvas-confetti';
 import { useMultiplayerStore } from './stores/useMultiplayerStore';
 import { OpponentBoardRenderer } from './ui/OpponentBoard';
 import { generateKoreanNickname, generate4DigitRoomCode } from './utils/nicknameGenerator';
@@ -760,11 +761,38 @@ useMultiplayerStore.subscribe((state) => {
     multiRoomIdInput.value = state.roomId;
   }
 
+  // Handle Game Seed Synchronization
+  if (state.gameSeed !== null) {
+    gameLoop.setSeed(state.gameSeed);
+  }
+
   // Transition to Game View on BOTH PLAYERS READY -> PLAYING
   if (state.status === 'PLAYING' && lastMultiStatus !== 'PLAYING') {
     gameoverModal.classList.add('hidden');
     showGameView(true);
   }
+
+  // Victory / Defeat Modal Trigger for Multiplayer
+  if (state.status === 'GAME_OVER' && lastMultiStatus === 'PLAYING') {
+    const multiActions = document.getElementById('multi-gameover-actions');
+    const singleForm = document.getElementById('leaderboard-form');
+    const singleRestartBtn = document.getElementById('restart-btn');
+
+    if (multiActions) multiActions.classList.remove('hidden');
+    if (singleForm) singleForm.classList.add('hidden');
+    if (singleRestartBtn) singleRestartBtn.classList.add('hidden');
+
+    if (state.gameWinner === 'ME') {
+      gameoverTitle.innerText = 'VICTORY! 1v1 대전 승리!';
+      if (celebrationBadge) celebrationBadge.innerText = 'WINNER!';
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    } else {
+      gameoverTitle.innerText = 'DEFEAT... 1v1 대전 패배!';
+      if (celebrationBadge) celebrationBadge.innerText = '1v1 MATCH';
+    }
+    gameoverModal.classList.remove('hidden');
+  }
+
   lastMultiStatus = state.status;
 
   if (toggleReadyBtn) {

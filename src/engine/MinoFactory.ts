@@ -168,16 +168,34 @@ export const I_WALL_KICKS: Record<string, Point[]> = {
 
 export class MinoFactory {
   private bag: MinoType[] = [];
+  private prngState = 0;
 
   constructor() {
     this.refillBag();
   }
 
+  public setSeed(seed: number) {
+    this.prngState = (seed + 1) >>> 0;
+    this.bag = [];
+    this.refillBag();
+  }
+
+  private random(): number {
+    if (this.prngState === 0) {
+      return Math.random();
+    }
+    // Mulberry32 PRNG Algorithm
+    let t = (this.prngState += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+
   private refillBag() {
     const types: MinoType[] = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-    // Fisher-Yates shuffle
+    // Fisher-Yates shuffle with PRNG
     for (let i = types.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(this.random() * (i + 1));
       [types[i], types[j]] = [types[j], types[i]];
     }
     this.bag.push(...types);

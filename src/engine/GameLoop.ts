@@ -73,6 +73,10 @@ export class GameLoop {
     this.mode = mode;
   }
 
+  public setSeed(seed: number) {
+    this.factory.setSeed(seed);
+  }
+
   public start() {
     this.reset();
     this.isRunning = true;
