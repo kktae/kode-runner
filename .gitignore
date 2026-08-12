@@ -11,6 +11,7 @@ output.mp4
 .agents/
 .claude/
 .gemini/
+.codegraph/
 skills-lock.json
 
 # Scratch & Temporary media files
