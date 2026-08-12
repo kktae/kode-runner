@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from "remotion";
+import { AbsoluteFill, useCurrentFrame, interpolate, Easing, staticFile } from "remotion";
 import { HeaderBar } from "./components/HeaderBar";
 import { Sidebar } from "./components/Sidebar";
 import { UserPromptArea } from "./components/UserPromptArea";
@@ -68,6 +68,32 @@ export const AntigravityDemo: React.FC = () => {
         overflow: "hidden",
       }}
     >
+      {/* Semi-transparent Partner Brand Watermark Overlay */}
+      <div
+        style={{
+          position: "absolute",
+          top: 24,
+          right: 32,
+          zIndex: 1000,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          backgroundColor: "rgba(255, 255, 255, 0.85)",
+          padding: "6px 14px",
+          borderRadius: 8,
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",
+          opacity: 0.75,
+          backdropFilter: "blur(4px)",
+          pointerEvents: "none",
+        }}
+      >
+        <img
+          src={staticFile("assets/MEGAZONECLOUD_NEW_CI_B.png")}
+          alt="MEGAZONECLOUD"
+          style={{ height: 16, width: "auto", display: "block" }}
+        />
+      </div>
+
       {/* Antigravity 2.0 App Window with Camera Scaling Focus */}
       <div
         style={{
