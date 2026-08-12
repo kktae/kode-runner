@@ -1,3 +1,4 @@
+import hotkeys from 'hotkeys-js';
 import { drawMinoCell } from './assets/characters';
 import { SoundManager } from './audio/SoundManager';
 import { GameLoop } from './engine/GameLoop';
@@ -339,107 +340,88 @@ pauseRestartBtn.addEventListener('click', () => {
   modeModal.classList.remove('hidden');
 });
 
-// Keyboard Shortcut for Pause (P or Escape)
-window.addEventListener('keydown', (e) => {
-  const key = e.key;
-  const code = e.code;
+// Configure Hotkeys-js filter to ignore input fields (e.g. Leaderboard name input)
+hotkeys.filter = (event) => {
+  const target = (event.target || event.srcElement) as HTMLElement;
+  const tagName = target?.tagName;
+  return !(
+    tagName === 'INPUT' ||
+    tagName === 'SELECT' ||
+    tagName === 'TEXTAREA'
+  );
+};
 
-  // Global Pause Toggle
-  if (
-    (key === 'p' || key === 'P' || key === 'Escape' || code === 'KeyP') &&
-    gameLoop.getIsRunning()
-  ) {
-    handleTogglePause();
-    return;
-  }
-
-  // Game Movement & Actions Controls
-  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
-
-  const preventKeys = [
-    'ArrowLeft',
-    'ArrowRight',
-    'ArrowDown',
-    'ArrowUp',
-    ' ',
-    'Spacebar',
-    'Shift',
-    'c',
-    'C',
-    'ㅊ',
-  ];
-  if (preventKeys.includes(key) || code === 'Space' || code === 'KeyC') {
+// Global Pause Shortcut (P or Escape)
+hotkeys('p, p, escape', (e) => {
+  if (gameLoop.getIsRunning()) {
     e.preventDefault();
+    handleTogglePause();
   }
+});
 
-  // Left: ArrowLeft, A, ㅁ
-  if (
-    key === 'ArrowLeft' ||
-    key === 'a' ||
-    key === 'A' ||
-    key === 'ㅁ' ||
-    code === 'KeyA'
-  ) {
-    gameLoop.handleInput('left');
-  }
-  // Right: ArrowRight, D, ㅇ
-  else if (
-    key === 'ArrowRight' ||
-    key === 'd' ||
-    key === 'D' ||
-    key === 'ㅇ' ||
-    code === 'KeyD'
-  ) {
-    gameLoop.handleInput('right');
-  }
-  // Soft Drop: ArrowDown, S, ㄴ
-  else if (
-    key === 'ArrowDown' ||
-    key === 's' ||
-    key === 'S' ||
-    key === 'ㄴ' ||
-    code === 'KeyS'
-  ) {
-    gameLoop.handleInput('down');
-  }
-  // Rotate: ArrowUp, W, Z, X, ㅈ, ㅋ, ㅌ
-  else if (
-    key === 'ArrowUp' ||
-    key === 'w' ||
-    key === 'W' ||
-    key === 'ㅈ' ||
-    code === 'KeyW' ||
-    key === 'x' ||
-    key === 'X' ||
-    key === 'ㅌ' ||
-    code === 'KeyX' ||
-    key === 'z' ||
-    key === 'Z' ||
-    key === 'ㅋ' ||
-    code === 'KeyZ'
-  ) {
+// Register Game Action Shortcuts via Hotkeys-js
+hotkeys('left, a, A, ㅁ', (e) => {
+  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
+  e.preventDefault();
+  gameLoop.handleInput('left');
+});
+
+hotkeys('right, d, D, ㅇ', (e) => {
+  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
+  e.preventDefault();
+  gameLoop.handleInput('right');
+});
+
+hotkeys('down, s, S, ㄴ', (e) => {
+  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
+  e.preventDefault();
+  gameLoop.handleInput('down');
+});
+
+hotkeys('up, w, W, z, Z, x, X, ㅈ, ㅋ, ㅌ', (e) => {
+  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
+  e.preventDefault();
+  gameLoop.handleInput('rotate');
+});
+
+hotkeys('space', (e) => {
+  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
+  e.preventDefault();
+  gameLoop.handleInput('hardDrop');
+});
+
+hotkeys('shift, c, C, ㅊ', (e) => {
+  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
+  e.preventDefault();
+  gameLoop.handleInput('hold');
+});
+
+// Additional Fallback for KeyboardEvent.code (KeyC, KeyZ, KeyX, Shift) for 100% IME/Keyboard Layout Safety
+window.addEventListener('keydown', (e) => {
+  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
+  const target = e.target as HTMLElement;
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'))
+    return;
+
+  if (e.code === 'KeyC' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
     if (!e.repeat) {
-      gameLoop.handleInput('rotate');
+      e.preventDefault();
+      gameLoop.handleInput('hold');
     }
-  }
-  // Hard Drop: Space
-  else if (key === ' ' || key === 'Spacebar' || code === 'Space') {
+  } else if (e.code === 'Space') {
     if (!e.repeat) {
+      e.preventDefault();
       gameLoop.handleInput('hardDrop');
     }
-  }
-  // Hold: Shift, C, ㅊ
-  else if (
-    key === 'Shift' ||
-    key === 'c' ||
-    key === 'C' ||
-    key === 'ㅊ' ||
-    code === 'KeyC' ||
-    code === 'ShiftLeft' ||
-    code === 'ShiftRight'
+  } else if (
+    e.code === 'KeyZ' ||
+    e.code === 'KeyX' ||
+    e.code === 'KeyW' ||
+    e.code === 'ArrowUp'
   ) {
     if (!e.repeat) {
-      gameLoop.handleInput('hold');
+      e.preventDefault();
+      gameLoop.handleInput('rotate');
     }
   }
 });
