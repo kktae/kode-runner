@@ -62,14 +62,14 @@ export class ParticleSystem {
     }
   }
 
-  public addScoreText(score: number, yRow: number, cellHeight: number) {
-    const x = this.canvasElement.width / 2;
-    const y = yRow * cellHeight;
+  public addScoreText(score: number) {
+    const x = this.canvasElement.width - 15;
+    const y = 30;
 
     this.floatingTexts.push({
       x,
       y,
-      text: `+${score.toLocaleString()}점!`,
+      text: `+${score.toLocaleString()}`,
       color: '#FEE500',
       alpha: 1,
       life: 0,
@@ -166,14 +166,14 @@ export class ParticleSystem {
       ctx.fill();
     }
 
-    // Draw Floating Score Texts
-    ctx.font = '800 20px "Pretendard", "Outfit", sans-serif';
-    ctx.textAlign = 'center';
+    // Draw Floating Score Texts - Top Right HUD
+    ctx.font = '800 16px "Outfit", "Pretendard", sans-serif';
+    ctx.textAlign = 'right';
 
     for (const ft of this.floatingTexts) {
       ctx.globalAlpha = Math.max(0, ft.alpha);
       ctx.fillStyle = ft.color;
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
       ctx.shadowBlur = 8;
       ctx.fillText(ft.text, ft.x, ft.y);
     }

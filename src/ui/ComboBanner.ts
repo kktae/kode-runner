@@ -51,20 +51,20 @@ export class ComboBanner {
     gsap.killTweensOf(this.bannerEl);
     gsap.fromTo(
       this.bannerEl,
-      { scale: 0.6, opacity: 0, y: 15 },
+      { scale: 0.7, opacity: 0, y: -10 },
       {
-        scale: 1.1,
+        scale: 1,
         opacity: 1,
-        y: -15,
-        duration: 0.35,
-        ease: 'back.out(1.7)',
+        y: 0,
+        duration: 0.3,
+        ease: 'back.out(1.5)',
         onComplete: () => {
           gsap.to(this.bannerEl, {
             opacity: 0,
-            y: -35,
-            scale: 0.95,
-            delay: 0.5,
-            duration: 0.3,
+            y: -15,
+            scale: 0.9,
+            delay: 0.8,
+            duration: 0.25,
             ease: 'power2.in',
           });
         },

@@ -331,11 +331,7 @@ export class GameLoop {
       }
 
       if (clearEvent.clearedRows.length > 0) {
-        this.particles.addScoreText(
-          earned,
-          clearEvent.clearedRows[0],
-          cellHeight,
-        );
+        this.particles.addScoreText(earned);
       }
 
       this.soundManager.playLineClear(clearEvent.count, this.stats.combo);

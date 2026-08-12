@@ -607,39 +607,39 @@ kbd {
   font-weight: 500;
 }
 
-/* Combo Banner Overlay - Pure Typography Motion */
+/* Combo Banner Overlay - Floating Top Notch Pill (Never covers active blocks) */
 .combo-banner {
   position: absolute;
-  top: 35%;
+  top: -20px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   font-family: "Outfit", "Pretendard", sans-serif;
-  font-size: 1.8rem;
-  font-weight: 900;
+  font-size: 0.88rem;
+  font-weight: 800;
   text-align: center;
   pointer-events: none;
   z-index: 100;
   opacity: 0;
-  width: auto;
   white-space: nowrap;
-  background: none;
-  padding: 0;
-  border: none;
-  box-shadow: none;
-  letter-spacing: -0.02em;
+  background: rgba(18, 16, 17, 0.95);
+  border: 1px solid var(--kakao-yellow);
+  padding: 4px 14px;
+  border-radius: 20px;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.8),
+    0 0 12px rgba(254, 229, 0, 0.3);
+  letter-spacing: 0.02em;
 }
 
-/* Full Width Special Cut-In Banner */
+/* Full Width Special Cut-In Banner - Fixed Top Viewport Sweep (Zero playfield obstruction) */
 .cutin-banner-overlay {
-  position: absolute;
-  top: 45%;
+  position: fixed;
+  top: 18px;
   left: 0;
-  width: 100%;
-  transform: translateY(-50%);
+  width: 100vw;
   pointer-events: none;
-  z-index: 200;
+  z-index: 1100;
   overflow: hidden;
-  padding: 12px 0;
 }
 
 .cutin-banner-overlay.hidden {
