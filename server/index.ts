@@ -5,6 +5,15 @@ import Redis from 'ioredis';
 import sirv from 'sirv';
 import { logInfo, logWarn, logError, logDebug } from './logger';
 
+// Global Unhandled Rejection & Exception Handlers to Prevent Process Crash
+process.on('uncaughtException', (err) => {
+  logError('Uncaught Exception caught', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  logError('Unhandled Rejection caught', reason);
+});
+
 const PORT = Number(process.env.PORT) || 8080;
 const REDIS_HOST = process.env.REDIS_HOST;
 const REDIS_PORT = process.env.REDIS_PORT || '6379';
@@ -18,12 +27,16 @@ const serveAssets = sirv('dist', {
 
 const httpServer = createServer((req, res) => {
   if (req.url === '/health') {
-    logDebug('Health check requested', { method: req.method, ip: req.socket.remoteAddress });
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', serverless: true, timestamp: new Date().toISOString() }));
     return;
   }
   serveAssets(req, res);
+});
+
+// Bind HTTP server immediately to pass Cloud Run health checks
+httpServer.listen(PORT, '0.0.0.0', () => {
+  logInfo(`Cloud Run Serverless Socket Server listening on port ${PORT}`, { port: PORT, env: process.env.NODE_ENV || 'development' });
 });
 
 const io = new Server(httpServer, {
@@ -33,15 +46,25 @@ const io = new Server(httpServer, {
   },
 });
 
-// Setup Redis Adapter for Cloud Run Auto-Scaling
+// Setup Redis Adapter for Cloud Run Auto-Scaling (Safeguarded against Error Event Crashes)
 if (REDIS_URL) {
   try {
     const pubClient = new Redis(REDIS_URL, {
       lazyConnect: true,
-      connectTimeout: 5000,
-      maxRetriesPerRequest: 2,
+      connectTimeout: 3000,
+      maxRetriesPerRequest: 1,
+      enableOfflineQueue: false,
     });
     const subClient = pubClient.duplicate();
+
+    // Attach required error handlers to prevent unhandled 'error' event crash
+    pubClient.on('error', (err) => {
+      logWarn('Redis pubClient error event', { error: err.message });
+    });
+
+    subClient.on('error', (err) => {
+      logWarn('Redis subClient error event', { error: err.message });
+    });
 
     Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
       io.adapter(createAdapter(pubClient, subClient));
