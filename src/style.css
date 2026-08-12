@@ -1397,3 +1397,162 @@ kbd {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================
+   Home Main Mode Tabs (Single vs Multi)
+   ========================================== */
+.home-main-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.home-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+.home-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.home-tab-btn.active {
+  background: var(--kakao-yellow);
+  color: #121011;
+  border-color: var(--kakao-yellow);
+  box-shadow: 0 4px 16px rgba(254, 229, 0, 0.3);
+}
+
+.mode-section-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wide-btn {
+  width: 100%;
+  height: 52px;
+  font-size: 1.05rem;
+}
+
+/* ==========================================
+   Multiplayer Form Box
+   ========================================== */
+.multiplayer-hero-box {
+  background: rgba(18, 24, 38, 0.85);
+  border: 1px solid rgba(254, 229, 0, 0.25);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.multiplayer-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.input-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.input-group input {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.4);
+  color: #ffffff;
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: var(--kakao-yellow);
+}
+
+.multiplayer-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ==========================================
+   Multiplayer 1v1 Opponent Board Panel
+   ========================================== */
+.panel-opponent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+}
+
+.opponent-header {
+  text-align: center;
+}
+
+.opponent-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: #3b82f6;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.opponent-header h4 {
+  font-size: 0.9rem;
+  font-weight: 800;
+  margin-top: 4px;
+  color: #ffffff;
+}
+
+.opponent-canvas-box {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.garbage-indicator-box {
+  font-size: 0.8rem;
+  color: #ef4444;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 6px 12px;
+  border-radius: 6px;
+  width: 100%;
+  text-align: center;
+}
+

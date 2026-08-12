@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>카카오뱅크 Kode Runner 2026</title>
+    <title>카카오뱅크 Kode Runner 2026 - 바이브 코딩 테트리스</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
     <div id="app" class="booth-container">
       <!-- Top Header -->
       <header class="booth-header">
-        <div id="home-logo-btn" class="brand-badge" title="홈으로 이동">
+        <div id="home-logo-btn" class="brand-badge cursor-pointer" title="홈으로 이동">
           <div class="partner-logo-box">
             <img src="/assets/MEGAZONECLOUD_NEW_CI_B.png" alt="MEGAZONECLOUD" class="header-partner-logo" />
           </div>
@@ -45,7 +45,7 @@
           </button>
           <button id="mode-change-btn" class="pill-btn">
             <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            <span>모드 변경</span>
+            <span>홈으로</span>
           </button>
         </div>
       </header>
@@ -65,17 +65,70 @@
             <p class="home-subtitle">자연어 프롬프트 1줄로 완성된 바이브 코딩 테트리스</p>
           </div>
 
-          <!-- Vibe Coding Prompt Showcase Box -->
-          <div class="vibe-prompt-card">
-            <div class="vibe-prompt-header">
-              <span class="vibe-prompt-label">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
-                <span>VIBE CODING PROMPT</span>
-              </span>
-              <span class="vibe-engine-tag">Antigravity 2.0 AI Engine</span>
+          <!-- Mode Select Navigation Tabs -->
+          <div class="home-main-tabs">
+            <button id="home-tab-single" class="home-tab-btn active">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>👤 싱글 플레이</span>
+            </button>
+            <button id="home-tab-multi" class="home-tab-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>⚔️ 실시간 1v1 멀티 플레이</span>
+            </button>
+          </div>
+
+          <!-- Single Player Section -->
+          <div id="single-player-section" class="mode-section-container">
+            <div class="home-mode-section">
+              <div id="select-timeattack" class="mode-card active">
+                <div class="mode-icon-svg">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
+                </div>
+                <h3>90초 타임어택 (Time Attack)</h3>
+                <p>1분 30초 제한시간 동안 VIBE FEVER를 발동하여 최고점에 도전하세요.</p>
+                <span class="mode-badge">부스 권장</span>
+              </div>
+
+              <div id="select-classic" class="mode-card">
+                <div class="mode-icon-svg">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <h3>클래식 가속 모드 (Classic Mode)</h3>
+                <p>10줄마다 레벨업 및 낙하 속도가 무제한 가속되는 오리지널 모드입니다.</p>
+                <span class="mode-badge secondary">도전 모드</span>
+              </div>
             </div>
-            <div class="vibe-prompt-text">
-              <code>"카카오뱅크 Kode Runner 2026 행사의 부스에서 시연할 테트리스 웹게임을 생성해줘."</code>
+
+            <button id="start-game-btn" class="primary-btn vibe-card-btn wide-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>싱글 플레이 시작하기</span>
+            </button>
+          </div>
+
+          <!-- Realtime Multiplayer Section -->
+          <div id="multi-player-section" class="mode-section-container hidden">
+            <div class="multiplayer-hero-box">
+              <div class="multiplayer-inputs">
+                <div class="input-group">
+                  <label for="multi-nickname">내 닉네임</label>
+                  <input type="text" id="multi-nickname" placeholder="예: 라이언_개발팀" maxlength="10" value="플레이어1" />
+                </div>
+                <div class="input-group">
+                  <label for="multi-room-id">방 코드 (선택)</label>
+                  <input type="text" id="multi-room-id" placeholder="예: ROOM-1234 (입력 시 해당 방 입장)" />
+                </div>
+              </div>
+
+              <div class="multiplayer-actions">
+                <button id="quick-match-btn" class="primary-btn flex-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  <span>빠른 무작위 매칭</span>
+                </button>
+                <button id="create-room-btn" class="secondary-btn flex-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                  <span>방 새로 만들기</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -84,7 +137,7 @@
             <div class="vibe-feature-card">
               <div class="vibe-card-badge accent">AI GENERATION DEMO</div>
               <h3>AI 생성 과정 시연</h3>
-              <p>자연어 프롬프트 해석부터 코드 빌드까지의 AI 개발 공정을 60fps 영상으로 감상하세요.</p>
+              <p>자연어 프롬프트 해석부터 코드 빌드까지의 AI 개발 공정을 감상하세요.</p>
               <button id="home-remotion-demo-btn" class="secondary-btn vibe-card-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <span>AI 생성 과정 시연</span>
@@ -92,43 +145,14 @@
             </div>
 
             <div class="vibe-feature-card highlight">
-              <div class="vibe-card-badge primary">BOOTH ARCADE PLAY</div>
-              <h3>3D 테트리스 플레이</h3>
-              <p>90초 타임어택 & 클래식 가속 모드로 피버 타임을 터뜨리고 최고 점수에 도전하세요.</p>
-              <button id="start-game-btn" class="primary-btn vibe-card-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                <span>게임 시작하기</span>
+              <div class="vibe-card-badge primary">BOOTH TOP 5</div>
+              <h3>명예의 전당</h3>
+              <p>부스 현장 최고 득점자 순위 및 실시간 리더보드를 확인하세요.</p>
+              <button id="modal-view-leaderboard-btn" class="secondary-btn vibe-card-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+                <span>리더보드 열기</span>
               </button>
             </div>
-          </div>
-
-          <!-- Game Mode Selector Section -->
-          <div class="home-mode-section">
-            <div id="select-timeattack" class="mode-card active">
-              <div class="mode-icon-svg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
-              </div>
-              <h3>90초 타임어택 (Time Attack)</h3>
-              <p>1분 30초 제한시간 동안 VIBE FEVER를 발동하여 최고점에 도전하세요.</p>
-              <span class="mode-badge">부스 권장</span>
-            </div>
-
-            <div id="select-classic" class="mode-card">
-              <div class="mode-icon-svg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              </div>
-              <h3>클래식 가속 모드 (Classic Mode)</h3>
-              <p>10줄마다 레벨업 및 낙하 속도가 무제한 가속되는 오리지널 모드입니다.</p>
-              <span class="mode-badge secondary">도전 모드</span>
-            </div>
-          </div>
-
-          <!-- Honor Roll Leaderboard Action -->
-          <div class="home-action-group">
-            <button id="modal-view-leaderboard-btn" class="secondary-btn home-sub-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
-              <span>명예의 전당 (BOOTH TOP 5)</span>
-            </button>
           </div>
 
           <!-- Controls Guide Footer -->
@@ -208,7 +232,7 @@
             </div>
           </section>
 
-          <!-- Right Panel: NEXT Queue & Leaderboard -->
+          <!-- Right Panel: NEXT Queue / Opponent Board in Multiplayer -->
           <section class="side-panel right-panel">
             <div class="glass-card panel-next">
               <h3 class="panel-title">NEXT</h3>
@@ -219,8 +243,22 @@
               </div>
             </div>
 
-            <!-- Leaderboard Card -->
-            <div class="glass-card panel-leaderboard">
+            <!-- Multiplayer Opponent Canvas Panel (Dynamic in 1v1 PvP) -->
+            <div id="opponent-panel" class="glass-card panel-opponent hidden">
+              <div class="opponent-header">
+                <span class="opponent-badge">OPPONENT 1v1</span>
+                <h4 id="opponent-name-tag">상대방 대기중</h4>
+              </div>
+              <div class="opponent-canvas-box">
+                <canvas id="opponent-canvas" width="150" height="300"></canvas>
+              </div>
+              <div id="garbage-indicator" class="garbage-indicator-box">
+                <span>공격 수신: <strong id="garbage-count">0</strong> 줄</span>
+              </div>
+            </div>
+
+            <!-- Leaderboard Card (Single Player) -->
+            <div id="single-leaderboard-panel" class="glass-card panel-leaderboard">
               <div class="leaderboard-header">
                 <h3 class="panel-title flex-title">
                   <svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>

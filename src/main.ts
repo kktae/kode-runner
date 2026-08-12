@@ -9,6 +9,8 @@ import { ComboBanner } from './ui/ComboBanner';
 import { LeaderboardManager } from './ui/Leaderboard';
 import { RemotionModal } from './ui/RemotionModal';
 import { TouchController } from './ui/TouchController';
+import { useMultiplayerStore } from './stores/useMultiplayerStore';
+import { OpponentBoardRenderer } from './ui/OpponentBoard';
 
 // DOM Elements
 const tetrisCanvas = document.getElementById(
@@ -588,3 +590,85 @@ restartBtn.addEventListener('click', () => {
 // Initial View Render
 renderLeaderboard('timeattack');
 showHomeView();
+
+// Home Main Tabs (Single Player vs Realtime Multiplayer)
+const homeTabSingle = document.getElementById('home-tab-single');
+const homeTabMulti = document.getElementById('home-tab-multi');
+const singlePlayerSection = document.getElementById('single-player-section');
+const multiPlayerSection = document.getElementById('multi-player-section');
+
+if (homeTabSingle && homeTabMulti && singlePlayerSection && multiPlayerSection) {
+  homeTabSingle.addEventListener('click', () => {
+    homeTabSingle.classList.add('active');
+    homeTabMulti.classList.remove('active');
+    singlePlayerSection.classList.remove('hidden');
+    multiPlayerSection.classList.add('hidden');
+  });
+
+  homeTabMulti.addEventListener('click', () => {
+    homeTabMulti.classList.add('active');
+    homeTabSingle.classList.remove('active');
+    multiPlayerSection.classList.remove('hidden');
+    singlePlayerSection.classList.add('hidden');
+  });
+}
+
+// Realtime Multiplayer Room Join Logic
+const multiNicknameInput = document.getElementById('multi-nickname') as HTMLInputElement;
+const multiRoomIdInput = document.getElementById('multi-room-id') as HTMLInputElement;
+const quickMatchBtn = document.getElementById('quick-match-btn');
+const createRoomBtn = document.getElementById('create-room-btn');
+
+const opponentPanel = document.getElementById('opponent-panel');
+const singleLeaderboardPanel = document.getElementById('single-leaderboard-panel');
+const opponentCanvas = document.getElementById('opponent-canvas') as HTMLCanvasElement;
+const opponentNameTag = document.getElementById('opponent-name-tag');
+const garbageCountTag = document.getElementById('garbage-count');
+
+let opponentRenderer: OpponentBoardRenderer | null = null;
+if (opponentCanvas) {
+  opponentRenderer = new OpponentBoardRenderer(opponentCanvas);
+}
+
+function startMultiplayerGame(roomId: string) {
+  const nickname = multiNicknameInput?.value.trim() || '플레이어1';
+  useMultiplayerStore.getState().joinRoom(roomId, nickname);
+
+  // Switch Right Panel Layout for 1v1 PvP
+  if (opponentPanel) opponentPanel.classList.remove('hidden');
+  if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
+
+  showGameView();
+}
+
+if (quickMatchBtn) {
+  quickMatchBtn.addEventListener('click', () => {
+    const customRoom = multiRoomIdInput?.value.trim();
+    const roomId = customRoom || `ROOM-${Math.floor(1000 + Math.random() * 9000)}`;
+    startMultiplayerGame(roomId);
+  });
+}
+
+if (createRoomBtn) {
+  createRoomBtn.addEventListener('click', () => {
+    const roomId = `ROOM-${Math.floor(1000 + Math.random() * 9000)}`;
+    if (multiRoomIdInput) multiRoomIdInput.value = roomId;
+    startMultiplayerGame(roomId);
+  });
+}
+
+// Subscribe to Multiplayer Store Updates
+useMultiplayerStore.subscribe((state) => {
+  if (opponentNameTag) {
+    opponentNameTag.innerText = state.opponentNickname || (state.status === 'WAITING' ? `방 코드: ${state.roomId} (상대 대기중)` : '상대방 연결 대기');
+  }
+
+  if (garbageCountTag) {
+    garbageCountTag.innerText = state.pendingGarbageLines.toString();
+  }
+
+  if (opponentRenderer) {
+    opponentRenderer.render(state.opponentState, state.opponentNickname);
+  }
+});
+
