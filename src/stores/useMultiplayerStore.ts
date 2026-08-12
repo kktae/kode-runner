@@ -36,6 +36,8 @@ interface MultiplayerStore {
   sendGameOver: (finalScore: number, survivedTime: number) => void;
   sendChatMessage: (message: string) => void;
   clearPendingGarbage: () => void;
+  fetchLeaderboard: (mode: string) => void;
+  submitScore: (name: string, score: number, lines: number, mode: string) => void;
 }
 
 export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
@@ -59,6 +61,18 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       socket = io(serverUrl, {
         transports: ['websocket', 'polling'],
         autoConnect: true,
+      });
+
+      socket.on('leaderboard_data', (data: { mode: any; entries: any[] }) => {
+        if (data && data.mode && Array.isArray(data.entries)) {
+          window.dispatchEvent(new CustomEvent('leaderboard_updated', { detail: data }));
+        }
+      });
+
+      socket.on('leaderboard_update', (data: { mode: any; entries: any[] }) => {
+        if (data && data.mode && Array.isArray(data.entries)) {
+          window.dispatchEvent(new CustomEvent('leaderboard_updated', { detail: data }));
+        }
       });
 
       socket.on('room_info', (data: { roomId: string; players: { nickname: string; socketId: string; isReady: boolean }[] }) => {
@@ -223,5 +237,27 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
 
   clearPendingGarbage: () => {
     set({ pendingGarbageLines: 0 });
+  },
+
+  fetchLeaderboard: (mode: string) => {
+    const socket = get().connectSocket();
+    if (socket && socket.connected) {
+      socket.emit('get_leaderboard', { mode });
+    } else {
+      socket.once('connect', () => {
+        socket.emit('get_leaderboard', { mode });
+      });
+    }
+  },
+
+  submitScore: (name: string, score: number, lines: number, mode: string) => {
+    const socket = get().connectSocket();
+    if (socket && socket.connected) {
+      socket.emit('submit_score', { name, score, lines, mode });
+    } else {
+      socket.once('connect', () => {
+        socket.emit('submit_score', { name, score, lines, mode });
+      });
+    }
   },
 }));

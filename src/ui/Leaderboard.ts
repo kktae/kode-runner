@@ -4,11 +4,24 @@ const STORAGE_KEY_TIMEATTACK = 'kakaobank_tetris_top_timeattack';
 const STORAGE_KEY_CLASSIC = 'kakaobank_tetris_top_classic';
 
 export class LeaderboardManager {
+  private static remoteCache: Record<GameMode, LeaderboardEntry[]> = {
+    timeattack: [],
+    classic: [],
+  };
+
   private static getKey(mode: GameMode): string {
     return mode === 'timeattack' ? STORAGE_KEY_TIMEATTACK : STORAGE_KEY_CLASSIC;
   }
 
+  public static setRemoteEntries(mode: GameMode, entries: LeaderboardEntry[]) {
+    this.remoteCache[mode] = entries;
+    localStorage.setItem(this.getKey(mode), JSON.stringify(entries.slice(0, 20)));
+  }
+
   public static getEntries(mode: GameMode): LeaderboardEntry[] {
+    if (this.remoteCache[mode] && this.remoteCache[mode].length > 0) {
+      return this.remoteCache[mode];
+    }
     const key = LeaderboardManager.getKey(mode);
     const data = localStorage.getItem(key);
     if (!data) {
@@ -74,10 +87,11 @@ export class LeaderboardManager {
 
     entries.push(newEntry);
     entries.sort((a, b) => b.score - a.score);
-    const top5 = entries.slice(0, 5);
+    const top20 = entries.slice(0, 20);
 
-    localStorage.setItem(LeaderboardManager.getKey(mode), JSON.stringify(top5));
-    return top5;
+    this.remoteCache[mode] = top20;
+    localStorage.setItem(LeaderboardManager.getKey(mode), JSON.stringify(top20));
+    return top20;
   }
 
   public static clearAll() {

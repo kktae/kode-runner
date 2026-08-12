@@ -93,11 +93,139 @@ function generate4DigitCode(): string {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
+let redisClient: Redis | null = null;
+
+if (REDIS_URL) {
+  try {
+    redisClient = new Redis(REDIS_URL, {
+      lazyConnect: true,
+      connectTimeout: 3000,
+      maxRetriesPerRequest: 1,
+      enableOfflineQueue: false,
+    });
+    redisClient.on('error', (err) => {
+      logWarn('Redis client error event', { error: err.message });
+    });
+    redisClient.connect().catch((err) => {
+      logWarn('Redis client connection failed; falling back to in-memory leaderboard', { error: err.message });
+    });
+  } catch (e) {
+    logWarn('Redis client init error', { error: e });
+  }
+}
+
+// In-Memory Leaderboard Fallback Data Store
+interface LeaderboardRecord {
+  id: string;
+  name: string;
+  score: number;
+  lines: number;
+  mode: string;
+  date: string;
+}
+
+const inMemoryLeaderboard: Record<string, LeaderboardRecord[]> = {
+  timeattack: [],
+  classic: [],
+};
+
+async function fetchLeaderboardFromStorage(mode: string): Promise<LeaderboardRecord[]> {
+  const key = `leaderboard:${mode}`;
+  if (redisClient && redisClient.status === 'ready') {
+    try {
+      // Fetch top 20 entries sorted by score DESC
+      const rawData = await (redisClient as any).zrevrange(key, 0, 19, 'WITHSCORES');
+      const results: LeaderboardRecord[] = [];
+      for (let i = 0; i < rawData.length; i += 2) {
+        const memberStr = rawData[i];
+        const score = parseInt(rawData[i + 1], 10);
+        try {
+          const parsed = JSON.parse(memberStr);
+          results.push({
+            id: parsed.id || String(i),
+            name: parsed.name || '관람객',
+            score: score || parsed.score || 0,
+            lines: parsed.lines || 0,
+            mode: mode,
+            date: parsed.date || new Date().toLocaleDateString('ko-KR'),
+          });
+        } catch {
+          results.push({
+            id: String(i),
+            name: memberStr,
+            score: score,
+            lines: 0,
+            mode: mode,
+            date: new Date().toLocaleDateString('ko-KR'),
+          });
+        }
+      }
+      return results;
+    } catch (err: any) {
+      logWarn('Failed to fetch leaderboard from Redis', { error: err.message });
+    }
+  }
+  return inMemoryLeaderboard[mode] || [];
+}
+
+async function saveScoreToStorage(entry: LeaderboardRecord): Promise<LeaderboardRecord[]> {
+  const mode = entry.mode || 'timeattack';
+  const key = `leaderboard:${mode}`;
+
+  if (redisClient && redisClient.status === 'ready') {
+    try {
+      const memberStr = JSON.stringify({
+        id: entry.id,
+        name: entry.name,
+        score: entry.score,
+        lines: entry.lines,
+        date: entry.date,
+      });
+      // ZADD leaderboard:mode SCORE MEMBER
+      await redisClient.zadd(key, entry.score, memberStr);
+      // Keep top 100 entries in Redis Sorted Set
+      await redisClient.zremrangebyrank(key, 0, -101);
+      logInfo('Score successfully saved to Redis Leaderboard', { name: entry.name, score: entry.score, mode });
+    } catch (err: any) {
+      logWarn('Failed to save score to Redis', { error: err.message });
+    }
+  }
+
+  // Also update in-memory store
+  const list = inMemoryLeaderboard[mode] || [];
+  list.push(entry);
+  list.sort((a, b) => b.score - a.score);
+  inMemoryLeaderboard[mode] = list.slice(0, 50);
+
+  return fetchLeaderboardFromStorage(mode);
+}
+
 io.on('connection', (socket: Socket) => {
   let currentRoomId: string | null = null;
   let currentNickname = '플레이어';
 
   logInfo('Socket client connected', { socketId: socket.id, ip: socket.handshake.address });
+
+  // 0. Global Leaderboard Handlers
+  socket.on('get_leaderboard', async (data: { mode: string }) => {
+    const mode = data?.mode || 'timeattack';
+    const entries = await fetchLeaderboardFromStorage(mode);
+    socket.emit('leaderboard_data', { mode, entries });
+  });
+
+  socket.on('submit_score', async (data: { name: string; score: number; lines: number; mode: string }) => {
+    const entry: LeaderboardRecord = {
+      id: `${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      name: data.name ? data.name.trim().slice(0, 20) : '관람객',
+      score: Number(data.score) || 0,
+      lines: Number(data.lines) || 0,
+      mode: data.mode || 'timeattack',
+      date: new Date().toLocaleDateString('ko-KR'),
+    };
+
+    const updatedList = await saveScoreToStorage(entry);
+    io.emit('leaderboard_update', { mode: entry.mode, entries: updatedList });
+  });
 
   // 1. Quick Matchmaking Request
   socket.on('quick_match_request', (data: { nickname: string }) => {

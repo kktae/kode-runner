@@ -624,16 +624,42 @@ startGameBtn.addEventListener('click', () => {
 });
 
 // Leaderboard Tabs
-tabTimeattack.addEventListener('click', () => renderLeaderboard('timeattack'));
-tabClassic.addEventListener('click', () => renderLeaderboard('classic'));
+tabTimeattack.addEventListener('click', () => {
+  renderLeaderboard('timeattack');
+  useMultiplayerStore.getState().fetchLeaderboard('timeattack');
+});
+tabClassic.addEventListener('click', () => {
+  renderLeaderboard('classic');
+  useMultiplayerStore.getState().fetchLeaderboard('classic');
+});
+
+// Listen for Global Leaderboard Updates from Redis Server
+window.addEventListener('leaderboard_updated', (e: any) => {
+  const detail = e.detail;
+  if (detail && detail.mode && Array.isArray(detail.entries)) {
+    LeaderboardManager.setRemoteEntries(detail.mode, detail.entries);
+    renderLeaderboard(selectedMode);
+    if (!leaderboardModal.classList.contains('hidden')) {
+      renderModalLeaderboard(currentModalMode, leaderboardSearch?.value || '');
+    }
+  }
+});
 
 // Leaderboard Name Submission Form
 leaderboardForm.addEventListener('submit', (e) => {
   e.preventDefault();
   if (!currentStats) return;
 
-  const name = playerNameInput.value.trim();
+  const name = playerNameInput.value.trim() || '관람객';
   LeaderboardManager.addEntry(
+    name,
+    currentStats.score,
+    currentStats.lines,
+    selectedMode,
+  );
+
+  // Submit score to Cloud Redis Leaderboard
+  useMultiplayerStore.getState().submitScore(
     name,
     currentStats.score,
     currentStats.lines,
@@ -652,9 +678,11 @@ restartBtn.addEventListener('click', () => {
   showHomeView();
 });
 
-// Initial View Render
+// Initial View Render & Cloud Leaderboard Sync
 renderLeaderboard('timeattack');
 showHomeView();
+useMultiplayerStore.getState().fetchLeaderboard('timeattack');
+useMultiplayerStore.getState().fetchLeaderboard('classic');
 
 // Home Main Tabs (Single Player vs Realtime Multiplayer)
 const homeTabSingle = document.getElementById('home-tab-single');
