@@ -797,8 +797,18 @@ useMultiplayerStore.subscribe((state) => {
   }
 
   if (opponentNameTag) {
-    const oppStatus = state.opponentReady ? ' [준비완료!]' : '';
-    opponentNameTag.innerText = state.opponentNickname ? `${state.opponentNickname}${oppStatus}` : (state.status === 'WAITING' ? `방 코드 [${state.roomId}] 대기중...` : '상대방 연결 대기');
+    if (state.opponentNickname) {
+      if (state.opponentReady) {
+        opponentNameTag.innerHTML = `${state.opponentNickname} <span class="ready-status-badge">READY!</span>`;
+        opponentPanel?.classList.add('opponent-is-ready');
+      } else {
+        opponentNameTag.innerHTML = `${state.opponentNickname} <span class="waiting-status-badge">대기중</span>`;
+        opponentPanel?.classList.remove('opponent-is-ready');
+      }
+    } else {
+      opponentNameTag.innerHTML = state.status === 'WAITING' ? `방 코드 [${state.roomId}] 대기 중...` : '상대방 연결 대기';
+      opponentPanel?.classList.remove('opponent-is-ready');
+    }
   }
 
   if (garbageCountTag) {
