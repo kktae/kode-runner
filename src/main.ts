@@ -143,7 +143,7 @@ function showHomeView() {
   if (modeChangeBtn) modeChangeBtn.style.display = 'none';
 }
 
-function showGameView(isMultiplayer = false) {
+function showGameView(isMultiplayer = false, autoStartGame = true) {
   homeView.classList.add('hidden');
   gameView.classList.remove('hidden');
 
@@ -151,6 +151,9 @@ function showGameView(isMultiplayer = false) {
   if (modeChangeBtn) modeChangeBtn.style.display = 'inline-flex';
 
   if (isMultiplayer) {
+    if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
+    if (opponentPanel) opponentPanel.classList.remove('hidden');
+
     modeDisplayTag.innerHTML = `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span>1v1 REALTIME PvP</span>`;
     gameLoop.setMode('timeattack');
 
@@ -159,18 +162,23 @@ function showGameView(isMultiplayer = false) {
       gameLoop.start();
       soundManager.startBGM();
     } else {
-      gameLoop.reset();
+      gameLoop.reset(); // Lobby waiting mode: board is reset, but game is NOT started automatically!
     }
   } else {
-    modeDisplayTag.innerHTML =
-      selectedMode === 'timeattack'
-        ? `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <span>90s TIME ATTACK</span>`
-        : `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>CLASSIC MODE</span>`;
-    gameLoop.setMode(selectedMode);
-  }
+    if (singleLeaderboardPanel) singleLeaderboardPanel.classList.remove('hidden');
+    if (opponentPanel) opponentPanel.classList.add('hidden');
 
-  gameLoop.start();
-  soundManager.startBGM();
+    if (selectedMode === 'timeattack') {
+      modeDisplayTag.innerHTML = `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span>90초 타임어택</span>`;
+    } else {
+      modeDisplayTag.innerHTML = `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>클래식 서바이벌</span>`;
+    }
+    gameLoop.setMode(selectedMode);
+    if (autoStartGame) {
+      gameLoop.start();
+      soundManager.startBGM();
+    }
+  }
 
   if (!isMultiplayer) {
     renderLeaderboard(selectedMode);
@@ -701,7 +709,7 @@ function startMultiplayerGame(roomId: string) {
   if (opponentPanel) opponentPanel.classList.remove('hidden');
   if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
 
-  showGameView(true);
+  showGameView(true, false); // Enter lobby view without starting game loop
 }
 
 if (quickMatchBtn) {
@@ -717,7 +725,7 @@ if (quickMatchBtn) {
       if (opponentPanel) opponentPanel.classList.remove('hidden');
       if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
       useMultiplayerStore.getState().requestQuickMatch(nickname);
-      showGameView(true);
+      showGameView(true, false); // Enter lobby view without starting game loop
     }
   });
 }
