@@ -341,11 +341,70 @@ pauseRestartBtn.addEventListener('click', () => {
 
 // Keyboard Shortcut for Pause (P or Escape)
 window.addEventListener('keydown', (e) => {
+  // Global Pause Toggle
   if (
     (e.key === 'p' || e.key === 'P' || e.key === 'Escape') &&
     gameLoop.getIsRunning()
   ) {
     handleTogglePause();
+    return;
+  }
+
+  // Game Movement & Actions Controls
+  if (!gameLoop.getIsRunning() || gameLoop.getIsPaused()) return;
+
+  const preventKeys = [
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowDown',
+    'ArrowUp',
+    ' ',
+    'Spacebar',
+  ];
+  if (preventKeys.includes(e.key)) {
+    e.preventDefault();
+  }
+
+  switch (e.key) {
+    case 'ArrowLeft':
+    case 'a':
+    case 'A':
+      gameLoop.handleInput('left');
+      break;
+    case 'ArrowRight':
+    case 'd':
+    case 'D':
+      gameLoop.handleInput('right');
+      break;
+    case 'ArrowDown':
+    case 's':
+    case 'S':
+      gameLoop.handleInput('down');
+      break;
+    case 'ArrowUp':
+    case 'w':
+    case 'W':
+    case 'x':
+    case 'X':
+    case 'z':
+    case 'Z':
+      if (!e.repeat) {
+        gameLoop.handleInput('rotate');
+      }
+      break;
+    case ' ':
+    case 'Spacebar':
+      if (!e.repeat) {
+        gameLoop.handleInput('hardDrop');
+      }
+      break;
+    case 'Shift':
+    case 'c':
+    case 'C':
+      if (!e.repeat) {
+        gameLoop.handleInput('hold');
+      }
+      break;
   }
 });
 
