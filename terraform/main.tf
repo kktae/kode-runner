@@ -46,6 +46,14 @@ resource "google_vpc_access_connector" "vpc_connector" {
   min_instances = 2
   max_instances = 10
   machine_type  = "e2-micro"
+
+  # Ignore changes for throughput attributes auto-calculated by GCP backend
+  lifecycle {
+    ignore_changes = [
+      min_throughput,
+      max_throughput
+    ]
+  }
 }
 
 # Memorystore for Redis (1GB Basic Tier - Handles 50k+ OPS for 400 CCU Pub/Sub Sync)
