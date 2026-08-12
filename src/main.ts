@@ -264,6 +264,7 @@ const gameLoop = new GameLoop(tetrisCanvas, {
     const singleRestartBtn = document.getElementById('restart-btn');
 
     if (isMulti) {
+      useMultiplayerStore.getState().sendGameOver(finalStats.score, finalStats.elapsedTime);
       gameoverTitle.innerText = '멀티 플레이 대전 종료!';
       if (celebrationBadge) celebrationBadge.innerText = '1v1 MATCH';
       if (multiActions) multiActions.classList.remove('hidden');

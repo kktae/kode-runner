@@ -25,6 +25,7 @@ interface MultiplayerStore {
   leaveRoom: () => void;
   sendStateSync: (state: PlayerGameState) => void;
   sendGarbageAttack: (linesCount: number, holePosition: number) => void;
+  sendGameOver: (finalScore: number, survivedTime: number) => void;
   clearPendingGarbage: () => void;
 }
 
@@ -51,9 +52,10 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       });
 
       socket.on('room_info', (data: { roomId: string; players: { nickname: string; socketId: string; isReady: boolean }[] }) => {
-        const myNick = get().nickname;
-        const me = data.players.find((p) => p.nickname === myNick);
-        const opponent = data.players.find((p) => p.nickname !== myNick);
+        const curSocket = get().socket;
+        const mySocketId = curSocket ? curSocket.id : null;
+        const me = data.players.find((p) => p.socketId === mySocketId);
+        const opponent = data.players.find((p) => p.socketId !== mySocketId);
 
         set({
           roomId: data.roomId,
@@ -65,8 +67,10 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       });
 
       socket.on('game_start', (data: { seed: number; startTime: number; players: { nickname: string; socketId: string }[] }) => {
-        const myNick = get().nickname;
-        const opponent = data.players.find((p) => p.nickname !== myNick);
+        const curSocket = get().socket;
+        const mySocketId = curSocket ? curSocket.id : null;
+        const opponent = data.players.find((p) => p.socketId !== mySocketId);
+
         set({
           status: 'PLAYING',
           isReady: false,
@@ -184,6 +188,14 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
     const { socket, status } = get();
     if (socket && socket.connected && status === 'PLAYING') {
       socket.emit('attack_garbage', { linesCount, holePosition });
+    }
+  },
+
+  sendGameOver: (finalScore: number, survivedTime: number) => {
+    const { socket } = get();
+    set({ status: 'GAME_OVER', gameWinner: 'OPPONENT' });
+    if (socket && socket.connected) {
+      socket.emit('game_over', { finalScore, survivedTime });
     }
   },
 
