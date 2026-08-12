@@ -87,34 +87,36 @@ body {
     transform 0.15s ease-out;
 }
 
-/* Partner Logo Styling */
+/* Partner & Brand Logo Uniform Styling */
 .partner-logo-box {
   display: flex;
   align-items: center;
   justify-content: center;
   background: #ffffff;
-  padding: 3px 8px;
+  padding: 3px 10px;
   border-radius: 6px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-  height: 24px;
+  height: 28px;
+  box-sizing: border-box;
 }
 
 .partner-logo-box.large {
-  padding: 4px 12px;
+  padding: 4px 14px;
   border-radius: 8px;
-  height: 32px;
+  height: 36px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
 }
 
 .header-partner-logo {
-  height: 14px;
+  height: 18px;
   width: auto;
   object-fit: contain;
   display: block;
 }
 
 .home-partner-logo {
-  height: 18px;
+  height: 22px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -124,13 +126,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 4px;
 }
 
 .brand-x-badge {
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -140,16 +142,24 @@ body {
 }
 
 .kakaobank-logo {
-  font-weight: 800;
-  font-size: 1.3rem;
-  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-yellow {
   color: var(--text-dark);
   background: var(--kakao-yellow);
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .divider {
@@ -1159,13 +1169,18 @@ kbd {
 
 .home-kakaobank-badge {
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--text-dark);
   background: var(--kakao-yellow);
-  padding: 3px 10px;
-  border-radius: var(--radius-pill);
+  padding: 4px 14px;
+  border-radius: 8px;
   letter-spacing: -0.01em;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 0 12px rgba(254, 229, 0, 0.4);
+  box-sizing: border-box;
 }
 
 .home-title {
