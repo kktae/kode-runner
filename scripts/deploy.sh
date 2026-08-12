@@ -30,8 +30,8 @@ IMAGE_TAG="${REGION}-docker.pkg.dev/${PROJECT_ID}/${APP_NAME}-repo/${APP_NAME}-a
 echo "Step 1/4: Authenticating Docker with Artifact Registry..."
 gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
 
-echo "Step 2/4: Building Docker image (${IMAGE_TAG})..."
-docker build -t "${IMAGE_TAG}" .
+echo "Step 2/4: Building Docker image for linux/amd64 platform (${IMAGE_TAG})..."
+docker build --platform linux/amd64 -t "${IMAGE_TAG}" .
 
 echo "Step 3/4: Pushing Docker image to Artifact Registry..."
 docker push "${IMAGE_TAG}"
