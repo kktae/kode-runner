@@ -59,7 +59,7 @@ resource "google_redis_instance" "redis_instance" {
   redis_version      = "REDIS_7_0"
   display_name       = "Kode Runner Redis Instance"
 
-  redis_config = {
+  redis_configs = {
     maxmemory-policy = "allkeys-lru"
     timeout          = "300"
   }
