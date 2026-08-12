@@ -87,6 +87,53 @@ body {
     transform 0.15s ease-out;
 }
 
+/* Partner Logo Styling */
+.partner-logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  height: 24px;
+}
+
+.partner-logo-box.large {
+  padding: 4px 12px;
+  border-radius: 8px;
+  height: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.header-partner-logo {
+  height: 14px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.home-partner-logo {
+  height: 18px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.brand-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.brand-x-badge {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
 .brand-badge:hover {
   background: rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
