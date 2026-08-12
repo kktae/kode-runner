@@ -67,14 +67,14 @@ body {
   box-shadow: var(--shadow-main);
 }
 
-/* Header (Consistent 860px Alignment) */
+/* Header (Exact 832px Grid Alignment) */
 .booth-header {
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
   padding: 12px 18px !important;
   width: 100% !important;
-  max-width: 860px !important;
+  max-width: 832px !important;
   margin: 0 auto 16px auto !important;
   box-sizing: border-box !important;
   background: var(--surface-card);
@@ -362,15 +362,16 @@ body {
   font-size: 1.15rem;
 }
 
-/* Optimized 3-Column Balanced E-Sports Grid Layout */
+/* Optimized 3-Column Balanced E-Sports Grid Layout (Exact 832px Total Width) */
 .game-grid {
   display: flex !important;
-  justify-content: center !important;
+  justify-content: space-between !important;
   align-items: flex-start !important;
   gap: 16px !important;
   width: 100% !important;
-  max-width: 860px !important;
+  max-width: 832px !important;
   margin: 0 auto !important;
+  box-sizing: border-box !important;
 }
 
 .side-panel {
@@ -703,14 +704,14 @@ body {
   color: var(--con-green);
 }
 
-/* Footer Key Hints (Consistent 860px Alignment) */
+/* Footer Key Hints (Exact 832px Alignment) */
 .controls-footer {
   display: flex !important;
   justify-content: space-around !important;
   align-items: center !important;
   padding: 10px 16px !important;
   width: 100% !important;
-  max-width: 860px !important;
+  max-width: 832px !important;
   margin: 16px auto 0 auto !important;
   box-sizing: border-box !important;
   font-size: 0.78rem;
@@ -738,7 +739,7 @@ kbd {
   padding: 4px 8px;
   font-weight: 500;
   width: 100% !important;
-  max-width: 860px !important;
+  max-width: 832px !important;
   margin: 8px auto 0 auto !important;
   box-sizing: border-box !important;
 }
@@ -1214,7 +1215,7 @@ kbd {
 
 .home-hero-card {
   width: 100% !important;
-  max-width: 860px !important;
+  max-width: 832px !important;
   margin: 0 auto !important;
   box-sizing: border-box !important;
   height: 100%;
