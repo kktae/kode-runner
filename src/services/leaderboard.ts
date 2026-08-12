@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import Redis from 'ioredis';
 import { LeaderboardEntry, LeaderboardEntrySchema, SubmitScoreRequest } from '../types/network';
 
 // Fallback LocalStorage Key
@@ -8,12 +8,18 @@ class LeaderboardService {
   private redis: Redis | null = null;
 
   constructor() {
-    // 환경변수 등록 시 Upstash Redis 클라이언트 자동 활성화
-    const url = import.meta.env.VITE_UPSTASH_REDIS_REST_URL;
-    const token = import.meta.env.VITE_UPSTASH_REDIS_REST_TOKEN;
+    // 표준 Redis URL (예: redis://:password@host:6379)
+    const redisUrl = import.meta.env.VITE_REDIS_URL;
 
-    if (url && token) {
-      this.redis = new Redis({ url, token });
+    if (redisUrl) {
+      try {
+        this.redis = new Redis(redisUrl, {
+          lazyConnect: true,
+          maxRetriesPerRequest: 3,
+        });
+      } catch (err) {
+        console.warn('Failed to initialize ioredis client:', err);
+      }
     }
   }
 
@@ -23,17 +29,19 @@ class LeaderboardService {
   async getTopScores(mode: 'timeattack' | 'classic' = 'timeattack'): Promise<LeaderboardEntry[]> {
     if (this.redis) {
       try {
+        if (this.redis.status === 'wait') {
+          await this.redis.connect();
+        }
         const key = `leaderboard:${mode}`;
-        // zrange (rev: true) 로 TOP 10 항목 역순 조회
-        const rawEntries = await this.redis.zrange<string[]>(key, 0, 9, { rev: true, withScores: true });
+        // ioredis zrevrange: TOP 10 항목 역순 조회
+        const rawEntries = await this.redis.zrevrange(key, 0, 9, 'WITHSCORES');
         
         const entries: LeaderboardEntry[] = [];
-        // Raw Redis data format: [member1, score1, member2, score2, ...]
         for (let i = 0; i < rawEntries.length; i += 2) {
           const memberJson = rawEntries[i];
           const scoreStr = rawEntries[i + 1];
           try {
-            const parsed = typeof memberJson === 'string' ? JSON.parse(memberJson) : memberJson;
+            const parsed = JSON.parse(memberJson);
             const validated = LeaderboardEntrySchema.parse({
               ...parsed,
               score: Number(scoreStr),
@@ -46,7 +54,7 @@ class LeaderboardService {
         }
         return entries;
       } catch (err) {
-        console.error('Upstash Redis fetch error, falling back to LocalStorage:', err);
+        console.error('Standard Redis fetch error, falling back to LocalStorage:', err);
       }
     }
 
@@ -68,6 +76,9 @@ class LeaderboardService {
 
     if (this.redis) {
       try {
+        if (this.redis.status === 'wait') {
+          await this.redis.connect();
+        }
         const key = `leaderboard:${req.mode}`;
         const memberPayload = JSON.stringify({
           id: entry.id,
@@ -76,16 +87,16 @@ class LeaderboardService {
           timestamp: entry.timestamp,
         });
 
-        // Redis ZADD Score 저장
-        await this.redis.zadd(key, { score: entry.score, member: memberPayload });
+        // ioredis zadd
+        await this.redis.zadd(key, entry.score, memberPayload);
         
         // 제출된 점수의 내 랭킹 조회 (0-based -> 1-based)
         const rankIndex = await this.redis.zrevrank(key, memberPayload);
-        const rank = rankIndex !== null ? rankIndex + 1 : undefined;
+        const rank = rankIndex !== null && rankIndex !== undefined ? rankIndex + 1 : undefined;
 
         return { success: true, rank };
       } catch (err) {
-        console.error('Upstash Redis submit error, using local fallback:', err);
+        console.error('Standard Redis submit error, using local fallback:', err);
       }
     }
 

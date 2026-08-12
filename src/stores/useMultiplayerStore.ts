@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import PartySocket from 'partysocket';
+import { io, Socket } from 'socket.io-client';
 import { Packet, PlayerGameState } from '../types/network';
 
 export type RoomStatus = 'IDLE' | 'CONNECTING' | 'WAITING' | 'PLAYING' | 'GAME_OVER';
@@ -13,8 +13,8 @@ interface MultiplayerStore {
   opponentState: PlayerGameState | null;
   pendingGarbageLines: number;
 
-  // PartySocket Instance
-  socket: PartySocket | null;
+  // Socket.io Client Instance
+  socket: Socket | null;
 
   // Actions
   joinRoom: (roomId: string, nickname: string) => void;
@@ -34,39 +34,37 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   socket: null,
 
   joinRoom: (roomId: string, nickname: string) => {
-    // 기존 소켓 정리
+    // 기존 소켓 연결 정리
     const currentSocket = get().socket;
     if (currentSocket) {
-      currentSocket.close();
+      currentSocket.disconnect();
     }
 
     set({ status: 'CONNECTING', roomId, nickname });
 
-    // PartyKit 호스트 설정 (환경변수 또는 default host)
-    const host = import.meta.env.VITE_PARTYKIT_HOST || 'localhost:1999';
+    // 표준 백엔드 서버 URL (Cloud Run 호스팅 URL 등)
+    const serverUrl = import.meta.env.VITE_SERVER_URL || window.location.origin;
 
-    const socket = new PartySocket({
-      host,
-      room: roomId,
+    const socket = io(serverUrl, {
+      transports: ['websocket', 'polling'],
+      autoConnect: true,
+      query: { roomId, nickname },
     });
 
-    socket.addEventListener('open', () => {
+    socket.on('connect', () => {
       set({ status: 'WAITING' });
-      // JOIN_ROOM 패킷 전송
       const joinPacket: Packet = {
         type: 'JOIN_ROOM',
         payload: { nickname },
       };
-      socket.send(JSON.stringify(joinPacket));
+      socket.emit('packet', joinPacket);
     });
 
-    socket.addEventListener('message', (event) => {
+    socket.on('packet', (data: Packet) => {
       try {
-        const packet: Packet = JSON.parse(event.data);
-
-        switch (packet.type) {
+        switch (data.type) {
           case 'JOIN_ROOM':
-            set({ opponentNickname: packet.payload.nickname });
+            set({ opponentNickname: data.payload.nickname });
             break;
 
           case 'GAME_START':
@@ -74,13 +72,12 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
             break;
 
           case 'STATE_SYNC':
-            set({ opponentState: packet.payload });
+            set({ opponentState: data.payload });
             break;
 
           case 'ATTACK_GARBAGE':
-            // 상대방의 공격 수신 -> 쌓인 가비지 라인 카운트 증가
             set((state) => ({
-              pendingGarbageLines: state.pendingGarbageLines + packet.payload.linesCount,
+              pendingGarbageLines: state.pendingGarbageLines + data.payload.linesCount,
             }));
             break;
 
@@ -89,11 +86,11 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
             break;
         }
       } catch (err) {
-        console.error('Failed to parse multiplayer message:', err);
+        console.error('Failed to handle socket packet:', err);
       }
     });
 
-    socket.addEventListener('close', () => {
+    socket.on('disconnect', () => {
       set({ status: 'IDLE', socket: null, roomId: null });
     });
 
@@ -103,7 +100,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   leaveRoom: () => {
     const { socket } = get();
     if (socket) {
-      socket.close();
+      socket.disconnect();
     }
     set({
       socket: null,
@@ -122,7 +119,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
         type: 'STATE_SYNC',
         payload: state,
       };
-      socket.send(JSON.stringify(packet));
+      socket.emit('packet', packet);
     }
   },
 
@@ -133,7 +130,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
         type: 'ATTACK_GARBAGE',
         payload: { linesCount, holePosition },
       };
-      socket.send(JSON.stringify(packet));
+      socket.emit('packet', packet);
     }
   },
 
