@@ -515,6 +515,15 @@ kbd {
   margin: 0 2px;
 }
 
+.legal-disclaimer {
+  text-align: center;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  opacity: 0.75;
+  padding: 4px 8px;
+  font-weight: 500;
+}
+
 /* Combo Banner Overlay - Pure Typography Motion */
 .combo-banner {
   position: absolute;
