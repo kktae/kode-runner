@@ -196,25 +196,28 @@ body {
 
 /* Header Controls */
 .header-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
 }
 
 .icon-btn {
   background: var(--surface-item);
   border: 1px solid var(--border-subtle);
   color: #ffffff;
-  padding: 7px 10px;
+  padding: 6px 8px !important;
   border-radius: var(--radius-btn);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem !important;
+  white-space: nowrap !important;
   transition:
     border-color 0.15s ease-out,
     background-color 0.15s ease-out;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
 }
 
 .icon-btn:hover {
@@ -227,14 +230,17 @@ body {
   border: 1px solid var(--kakao-yellow);
   color: var(--text-dark);
   font-weight: 700;
-  font-size: 0.85rem;
-  padding: 7px 14px;
+  font-size: 0.8rem !important;
+  padding: 6px 10px !important;
   border-radius: var(--radius-btn);
   cursor: pointer;
+  white-space: nowrap !important;
   transition: background-color 0.15s ease-out;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
 }
 
 .pill-btn.secondary {
@@ -1269,10 +1275,12 @@ kbd {
 }
 
 .home-subtitle {
-  font-size: 0.85rem;
+  font-size: 0.82rem !important;
   color: var(--text-muted);
   font-weight: 500;
   margin: 0;
+  word-break: keep-all !important;
+  white-space: nowrap !important;
 }
 
 /* Dual Feature Grid */
