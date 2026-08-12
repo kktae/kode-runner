@@ -144,11 +144,15 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
-  // 6. Realtime 1v1 Chat Message
+  // 6. Realtime 1v1 Chat Message (with Korean Profanity Filter & Length Limit)
   socket.on('chat_message', (data: { message: string }) => {
     if (currentRoomId && data.message && data.message.trim().length > 0) {
+      const rawText = data.message.trim().slice(0, 100);
+      // Basic regex profanity filter on server
+      const sanitized = rawText.replace(/시[발바빨벌발발]+|씨[발바빨벌발발]+|개[새새끼씨끼씹]+|병[신신씬]+|미[친친친놈년]+/g, '***');
+      
       io.in(currentRoomId).emit('chat_message', {
-        message: data.message.trim().slice(0, 100), // Max 100 chars
+        message: sanitized,
         sender: currentNickname,
         socketId: socket.id,
         timestamp: Date.now(),

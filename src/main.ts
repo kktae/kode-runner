@@ -13,6 +13,7 @@ import confetti from 'canvas-confetti';
 import { useMultiplayerStore } from './stores/useMultiplayerStore';
 import { OpponentBoardRenderer } from './ui/OpponentBoard';
 import { generateKoreanNickname, generate4DigitRoomCode } from './utils/nicknameGenerator';
+import { sanitizeMessage, checkChatCooldown } from './utils/profanityFilter';
 
 // DOM Elements
 const tetrisCanvas = document.getElementById(
@@ -874,11 +875,29 @@ const chatForm = document.getElementById('chat-form') as HTMLFormElement | null;
 const chatInput = document.getElementById('chat-input') as HTMLInputElement | null;
 const chatShortcutBtns = document.querySelectorAll('.chat-shortcut-btn');
 
+function sendUserChat(text: string) {
+  if (!text || text.trim().length === 0) return;
+  const cooldown = checkChatCooldown();
+  if (!cooldown.allowed) {
+    if (chatMessagesBox) {
+      const warnMsg = document.createElement('div');
+      warnMsg.className = 'chat-system-msg warn';
+      warnMsg.innerText = '메시지는 1초에 한 번만 전송할 수 있습니다.';
+      chatMessagesBox.appendChild(warnMsg);
+      chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+    }
+    return;
+  }
+
+  const cleanText = sanitizeMessage(text.trim());
+  useMultiplayerStore.getState().sendChatMessage(cleanText);
+}
+
 if (chatForm) {
   chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
     if (chatInput && chatInput.value.trim().length > 0) {
-      useMultiplayerStore.getState().sendChatMessage(chatInput.value.trim());
+      sendUserChat(chatInput.value.trim());
       chatInput.value = '';
     }
   });
@@ -888,7 +907,7 @@ chatShortcutBtns.forEach((btn) => {
   btn.addEventListener('click', () => {
     const emoji = btn.getAttribute('data-emoji');
     if (emoji) {
-      useMultiplayerStore.getState().sendChatMessage(emoji);
+      sendUserChat(emoji);
     }
   });
 });
