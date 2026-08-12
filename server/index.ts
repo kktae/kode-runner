@@ -1,8 +1,15 @@
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import sirv from 'sirv';
 import { Packet } from '../src/types/network';
 
 const PORT = Number(process.env.PORT) || 8080;
+
+// dist/ 디렉토리의 빌드 산출물(HTML, JS, CSS) 정적 서빙 (SPA Single Page Fallback 지원)
+const serveAssets = sirv('dist', {
+  single: true,
+  dev: process.env.NODE_ENV !== 'production',
+});
 
 const httpServer = createServer((req, res) => {
   if (req.url === '/health') {
@@ -10,8 +17,9 @@ const httpServer = createServer((req, res) => {
     res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
     return;
   }
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Cloud Run Vendor-Agnostic Tetris Multiplayer Server');
+
+  // 프론트엔드 정적 웹 자산 서빙
+  serveAssets(req, res);
 });
 
 const io = new Server(httpServer, {
@@ -27,14 +35,12 @@ io.on('connection', (socket) => {
 
   if (roomId) {
     socket.join(roomId);
-    
-    // 방 안의 상대방에게 새로운 유저 참가 알림
+
     socket.to(roomId).emit('packet', {
       type: 'JOIN_ROOM',
       payload: { nickname: nickname || 'Player' },
     } satisfies Packet);
 
-    // 유저가 2명이 되면 자동 GAME_START 전송
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     if (clientsInRoom && clientsInRoom.size === 2) {
       io.in(roomId).emit('packet', {
@@ -49,7 +55,6 @@ io.on('connection', (socket) => {
 
   socket.on('packet', (data: Packet) => {
     if (roomId) {
-      // 나를 제외한 방 안의 상대방에게 패킷 브로드캐스트
       socket.to(roomId).emit('packet', data);
     }
   });
