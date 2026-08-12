@@ -358,17 +358,43 @@ body {
   font-size: 1.15rem;
 }
 
-.stat-value.accent {
-  color: var(--con-green);
+/* Optimized 3-Column Balanced E-Sports Grid Layout */
+.game-grid {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  gap: 16px !important;
+  width: 100% !important;
+  max-width: 860px !important;
+  margin: 0 auto !important;
 }
 
-/* Center Panel & Board */
+.side-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  width: 240px !important;
+  flex: 0 0 240px !important;
+}
+
+/* Center Panel & Board (Slimmed Width) */
 .center-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-  position: relative;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 320px !important;
+  flex: 0 0 320px !important;
+}
+
+.board-wrapper {
+  width: 320px !important;
+  max-width: 320px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 10px !important;
 }
 
 .timer-bar-container {
@@ -1462,13 +1488,13 @@ kbd {
 }
 
 .opponent-canvas-wrapper {
-  width: 140px !important;
-  height: 280px !important;
+  width: 150px !important;
+  height: 300px !important;
 }
 
 #opponent-canvas {
-  width: 140px !important;
-  height: 280px !important;
+  width: 150px !important;
+  height: 300px !important;
 }
 
 /* Compact Horizontal NEXT Queue Layout */

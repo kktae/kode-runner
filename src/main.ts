@@ -888,7 +888,7 @@ function sendUserChat(text: string) {
         {
           sender: '시스템',
           socketId: 'system',
-          message: '⚠️ 메시지는 1초에 한 번만 전송할 수 있습니다.',
+          message: '메시지는 1초에 한 번만 전송할 수 있습니다.',
           timestamp: Date.now(),
         },
       ],
@@ -918,4 +918,3 @@ chatShortcutBtns.forEach((btn) => {
     }
   });
 });
-
