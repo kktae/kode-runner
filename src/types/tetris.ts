@@ -53,4 +53,7 @@ export interface GameStats {
   tetrisCount: number;
   timeRemaining: number; // in seconds
   elapsedTime: number; // in seconds
+  feverGauge: number; // 0 to 100
+  isFever: boolean;
+  feverTimeRemaining: number; // in seconds
 }

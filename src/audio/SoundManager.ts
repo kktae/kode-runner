@@ -246,6 +246,38 @@ export class SoundManager {
     });
   }
 
+  public playFeverStart() {
+    if (this.isMuted) return;
+    this.ensureAudioContext();
+    if (!this.audioCtx) return;
+
+    // Arpeggio fanfare for Fever Mode activation
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98];
+    notes.forEach((freq, idx) => {
+      if (!this.audioCtx) return;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(
+        freq,
+        this.audioCtx.currentTime + idx * 0.05,
+      );
+
+      gain.gain.setValueAtTime(0.18, this.audioCtx.currentTime + idx * 0.05);
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioCtx.currentTime + idx * 0.05 + 0.15,
+      );
+
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+
+      osc.start(this.audioCtx.currentTime + idx * 0.05);
+      osc.stop(this.audioCtx.currentTime + idx * 0.05 + 0.15);
+    });
+  }
+
   public playTick() {
     if (this.isMuted) return;
     this.ensureAudioContext();

@@ -92,6 +92,22 @@ new TouchController(canvasWrapper, {
   onHold: () => gameLoop.handleInput('hold'),
 });
 
+// Fever UI Elements
+const feverFill = document.getElementById('fever-progress-fill') as HTMLElement;
+const feverStatus = document.getElementById('fever-status-text') as HTMLElement;
+const feverTitle = document.querySelector('.fever-title') as HTMLElement;
+
+// 3D Parallax Tilt Mouse Movement
+const gameGrid = document.querySelector('.game-grid') as HTMLElement;
+if (gameGrid) {
+  window.addEventListener('mousemove', (e) => {
+    const { innerWidth, innerHeight } = window;
+    const rotateX = (e.clientY / innerHeight - 0.5) * -6; // -3 to +3 deg
+    const rotateY = (e.clientX / innerWidth - 0.5) * 6; // -3 to +3 deg
+    gameGrid.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  });
+}
+
 // Game Loop Setup
 const gameLoop = new GameLoop(tetrisCanvas, {
   onStatsUpdate: (stats) => {
@@ -100,6 +116,18 @@ const gameLoop = new GameLoop(tetrisCanvas, {
     linesVal.innerText = stats.lines.toString();
     levelVal.innerText = stats.level.toString();
     comboVal.innerText = stats.maxCombo.toString();
+
+    // Fever Gauge UI Update
+    if (feverFill && feverStatus) {
+      feverFill.style.width = `${Math.max(0, Math.min(100, stats.feverGauge))}%`;
+      if (stats.isFever) {
+        feverStatus.innerText = `FEVER! ${stats.feverTimeRemaining}s`;
+        if (feverTitle) feverTitle.classList.add('active');
+      } else {
+        feverStatus.innerText = `${Math.round(stats.feverGauge)}%`;
+        if (feverTitle) feverTitle.classList.remove('active');
+      }
+    }
 
     if (selectedMode === 'timeattack') {
       const minutes = Math.floor(stats.timeRemaining / 60);
@@ -114,6 +142,9 @@ const gameLoop = new GameLoop(tetrisCanvas, {
   },
   onCombo: (combo, isTetris) => {
     comboBanner.showCombo(combo, isTetris);
+  },
+  onFeverStart: () => {
+    comboBanner.showFeverStart();
   },
   onNextQueueUpdate: (nextTypes) => {
     drawMinoPreview(next1Canvas, nextTypes[0]);

@@ -107,6 +107,25 @@ export class ParticleSystem {
     });
   }
 
+  public addFeverSparkles() {
+    const width = this.canvasElement.width;
+    const height = this.canvasElement.height;
+
+    for (let i = 0; i < 3; i++) {
+      this.particles.push({
+        x: Math.random() * width,
+        y: height - Math.random() * 50,
+        vx: (Math.random() - 0.5) * 2,
+        vy: -2 - Math.random() * 4,
+        color: Math.random() > 0.5 ? '#FEE500' : '#FFD700',
+        size: 2 + Math.random() * 4,
+        alpha: 1,
+        life: 0,
+        maxLife: 25 + Math.random() * 15,
+      });
+    }
+  }
+
   public update() {
     // Update Particles
     for (let i = this.particles.length - 1; i >= 0; i--) {

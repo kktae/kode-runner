@@ -11,6 +11,7 @@ export interface GameLoopCallbacks {
   onGameOver: (finalStats: GameStats) => void;
   onNextQueueUpdate: (nextTypes: MinoType[]) => void;
   onHoldUpdate: (holdType: MinoType | null) => void;
+  onFeverStart?: () => void;
 }
 
 export class GameLoop {
@@ -59,6 +60,9 @@ export class GameLoop {
       tetrisCount: 0,
       timeRemaining: 90,
       elapsedTime: 0,
+      feverGauge: 0,
+      isFever: false,
+      feverTimeRemaining: 0,
     };
   }
 
@@ -87,6 +91,18 @@ export class GameLoop {
       if (!this.isRunning || this.isPaused) return;
 
       this.stats.elapsedTime++;
+
+      // Fever Mode Countdown
+      if (this.stats.isFever) {
+        this.stats.feverTimeRemaining--;
+        this.stats.feverGauge = (this.stats.feverTimeRemaining / 10) * 100;
+        if (this.stats.feverTimeRemaining <= 0) {
+          this.stats.isFever = false;
+          this.stats.feverGauge = 0;
+          const wrapper = document.getElementById('canvas-wrapper');
+          if (wrapper) wrapper.classList.remove('is-fever');
+        }
+      }
 
       if (this.mode === 'timeattack') {
         this.stats.timeRemaining--;
@@ -223,6 +239,22 @@ export class GameLoop {
     );
   }
 
+  private activateFeverMode() {
+    this.stats.isFever = true;
+    this.stats.feverGauge = 100;
+    this.stats.feverTimeRemaining = 10;
+
+    const wrapper = document.getElementById('canvas-wrapper');
+    if (wrapper) wrapper.classList.add('is-fever');
+
+    this.soundManager.playFeverStart();
+    this.particles.triggerConfetti();
+
+    if (this.callbacks.onFeverStart) {
+      this.callbacks.onFeverStart();
+    }
+  }
+
   private lockAndNext() {
     this.lockDelayCounter = 0;
     this.dropCounter = 0;
@@ -241,11 +273,29 @@ export class GameLoop {
         this.particles.triggerScreenShake(12);
       }
 
-      // Add Score
+      // Fever Gauge increase
+      const gaugeIncrements = [0, 25, 50, 75, 100];
+      const feverAdd =
+        (gaugeIncrements[clearEvent.count] || 0) +
+        (this.stats.combo > 1 ? this.stats.combo * 5 : 0);
+
+      if (!this.stats.isFever) {
+        this.stats.feverGauge = Math.min(100, this.stats.feverGauge + feverAdd);
+        if (this.stats.feverGauge >= 100) {
+          this.activateFeverMode();
+        }
+      }
+
+      // Add Score (2x Multiplier in Fever Mode!)
       const baseScores = [0, 100, 300, 500, 1200];
-      const earned =
+      let earned =
         baseScores[clearEvent.count] * this.stats.level +
         (this.stats.combo - 1) * 100;
+
+      if (this.stats.isFever) {
+        earned *= 2; // FEVER 2X MULTIPLIER
+      }
+
       this.stats.score += earned;
       this.stats.lines += clearEvent.count;
 
@@ -312,6 +362,10 @@ export class GameLoop {
 
     if (!this.isPaused) {
       this.dropCounter += deltaTime;
+
+      if (this.stats.isFever) {
+        this.particles.addFeverSparkles();
+      }
 
       if (this.isGrounded()) {
         // Increment lock delay counter while sitting on ground
