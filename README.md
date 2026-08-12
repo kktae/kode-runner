@@ -83,7 +83,7 @@ bun run build
 
 ---
 
-## 🚀 미구현 기능 및 향후 개선 방향 (Future Roadmap & Unimplemented Features)
+## 미구현 기능 및 향후 개선 방향 (Future Roadmap & Unimplemented Features)
 
 현재 클라이언트 중심 단일 데모 버전에서 확장하여, 엔터프라이즈 부스 운영 및 글로벌 스케일 환경을 고려한 아키텍처 개선 로드맵입니다.
 
