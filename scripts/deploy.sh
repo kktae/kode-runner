@@ -39,7 +39,7 @@ docker push "${IMAGE_TAG}"
 echo "Step 4/4: Running Terraform Infrastructure Apply..."
 cd "${TERRAFORM_DIR}"
 terraform init
-terraform apply -var="gcp_project_id=${PROJECT_ID}" -var="gcp_region=${REGION}" -var="app_name=${APP_NAME}" -var="container_image=${IMAGE_TAG}" -auto-approve
+terraform apply -var="gcp_project_id=${PROJECT_ID}" -var="gcp_region=${REGION}" -var="app_name=${APP_NAME}" -var="container_image=${IMAGE_TAG}" -var="domain_name=your-custom-domain.com" -auto-approve
 
 echo ""
 echo "=== Deployment Completed Successfully! ==="
