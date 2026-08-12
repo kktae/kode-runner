@@ -808,21 +808,32 @@ kbd {
   gap: 12px;
 }
 
+.modal-btn-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .primary-btn {
+  width: 100%;
+  box-sizing: border-box;
   background: var(--kakao-yellow);
   border: none;
   color: var(--text-dark);
   font-weight: 800;
-  padding: 12px 20px;
+  height: 48px;
+  padding: 0 20px;
   border-radius: var(--radius-btn);
   cursor: pointer;
   transition:
     background-color 0.15s ease,
     transform 0.15s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  font-size: 0.95rem;
 }
 
 .primary-btn:hover {
@@ -830,20 +841,24 @@ kbd {
 }
 
 .secondary-btn {
+  width: 100%;
+  box-sizing: border-box;
   background: var(--surface-item);
   border: 1px solid var(--border-subtle);
   color: #ffffff;
   font-weight: 700;
-  padding: 12px 20px;
+  height: 48px;
+  padding: 0 20px;
   border-radius: var(--radius-btn);
   cursor: pointer;
   transition:
     border-color 0.15s ease,
     background-color 0.15s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  font-size: 0.95rem;
 }
 
 .secondary-btn:hover {
@@ -933,6 +948,20 @@ kbd {
   flex-direction: column;
   align-items: center;
   gap: 6px;
+}
+
+.modal-kakaobank {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  background: var(--kakao-yellow);
+  padding: 3px 10px;
+  border-radius: 6px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .search-box input {
