@@ -21,7 +21,6 @@ resource "google_compute_backend_service" "lb_backend" {
   protocol              = "HTTPS"
   port_name             = "http"
   load_balancing_scheme = "EXTERNAL_MANAGED"
-  timeout_sec           = 300 # 300s timeout for WebSocket persistent connections
 
   backend {
     group = google_compute_region_network_endpoint_group.serverless_neg.id
