@@ -4,7 +4,7 @@ output "artifact_registry_repository_url" {
 }
 
 output "cloud_run_service_url" {
-  description = "Public URL of the deployed Cloud Run service"
+  description = "Direct URL of the deployed Cloud Run service"
   value       = google_cloud_run_v2_service.cloud_run_app.uri
 }
 
@@ -16,4 +16,14 @@ output "redis_host" {
 output "redis_port" {
   description = "Port of Memorystore for Redis"
   value       = google_redis_instance.redis_instance.port
+}
+
+output "load_balancer_ip" {
+  description = "Global Static IP address assigned to External Application Load Balancer"
+  value       = google_compute_global_address.lb_ip.address
+}
+
+output "custom_domain_url" {
+  description = "HTTPS URL for Custom Domain"
+  value       = "https://${var.domain_name}"
 }

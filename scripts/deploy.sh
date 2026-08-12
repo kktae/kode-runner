@@ -43,6 +43,15 @@ terraform apply -var="gcp_project_id=${PROJECT_ID}" -var="gcp_region=${REGION}" 
 
 echo ""
 echo "=== Deployment Completed Successfully! ==="
-echo "Cloud Run Public URL:"
+echo "Cloud Run Direct URL:"
 terraform output -raw cloud_run_service_url || true
+echo ""
+echo "Global External Load Balancer Static IP:"
+terraform output -raw load_balancer_ip || true
+echo ""
+echo "Custom Domain URL:"
+terraform output -raw custom_domain_url || true
+echo ""
+echo "DNS A-Record Configuration Guide:"
+echo "Please set your DNS provider (e.g. Namecheap, GoDaddy, Cloudflare) A-Records for 'your-custom-domain.com' and 'www.your-custom-domain.com' to the Global Load Balancer Static IP above."
 echo ""

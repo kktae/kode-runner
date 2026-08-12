@@ -36,3 +36,9 @@ variable "environment" {
   description = "Deployment environment name"
   default     = "production"
 }
+
+variable "domain_name" {
+  type        = string
+  description = "Custom domain name for Cloud Load Balancer and Managed SSL Certificate"
+  default     = "your-custom-domain.com"
+}
