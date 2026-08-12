@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import Redis from 'ioredis';
 import sirv from 'sirv';
+import { logInfo, logWarn, logError, logDebug } from './logger';
 
 const PORT = Number(process.env.PORT) || 8080;
 const REDIS_URL = process.env.VITE_REDIS_URL || process.env.REDIS_URL || 'redis://localhost:6379';
@@ -15,6 +16,7 @@ const serveAssets = sirv('dist', {
 
 const httpServer = createServer((req, res) => {
   if (req.url === '/health') {
+    logDebug('Health check requested', { method: req.method, ip: req.socket.remoteAddress });
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', serverless: true, timestamp: new Date().toISOString() }));
     return;
@@ -36,12 +38,12 @@ try {
 
   Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
     io.adapter(createAdapter(pubClient, subClient));
-    console.log('Socket.io Redis Adapter connected successfully');
+    logInfo('Socket.io Redis Adapter connected successfully', { redisUrl: REDIS_URL.replace(/:[^:@]+@/, ':***@') });
   }).catch((err) => {
-    console.warn('Redis Adapter fallback to in-memory adapter:', err.message);
+    logWarn('Redis Adapter fallback to in-memory adapter', { error: err.message });
   });
 } catch (e) {
-  console.warn('Redis Adapter initialization error:', e);
+  logWarn('Redis Adapter initialization error', { error: e });
 }
 
 // Room Session Manager with Ready States
@@ -62,6 +64,8 @@ io.on('connection', (socket: Socket) => {
   let currentRoomId: string | null = null;
   let currentNickname = '플레이어';
 
+  logInfo('Socket client connected', { socketId: socket.id, ip: socket.handshake.address });
+
   // 1. Quick Matchmaking Request
   socket.on('quick_match_request', (data: { nickname: string }) => {
     currentNickname = data.nickname || '플레이어';
@@ -69,10 +73,12 @@ io.on('connection', (socket: Socket) => {
     if (waitingRoomId && roomSessions.has(waitingRoomId) && (roomSessions.get(waitingRoomId)?.length || 0) < 2) {
       const assignedRoom = waitingRoomId;
       waitingRoomId = null;
+      logInfo('Quick match assigned to existing room', { socketId: socket.id, roomId: assignedRoom, nickname: currentNickname });
       socket.emit('quick_match_assigned', { roomId: assignedRoom });
     } else {
       const newRoom = generate4DigitCode();
       waitingRoomId = newRoom;
+      logInfo('Quick match created new room', { socketId: socket.id, roomId: newRoom, nickname: currentNickname });
       socket.emit('quick_match_assigned', { roomId: newRoom });
     }
   });
@@ -96,6 +102,7 @@ io.on('connection', (socket: Socket) => {
       isReady: s.isReady,
     }));
 
+    logInfo('Player joined room', { socketId: socket.id, roomId, nickname: currentNickname, totalPlayers: players.length });
     io.in(roomId).emit('room_info', { roomId, players });
   });
 
@@ -115,6 +122,7 @@ io.on('connection', (socket: Socket) => {
       isReady: s.isReady,
     }));
 
+    logInfo('Player toggled ready state', { socketId: socket.id, roomId: currentRoomId, isReady: data.isReady });
     io.in(currentRoomId).emit('room_info', { roomId: currentRoomId, players });
 
     // Start Game when at least 2 players are present and ALL are ready
@@ -122,6 +130,7 @@ io.on('connection', (socket: Socket) => {
       // Reset ready states for next round
       sessionList.forEach((s) => (s.isReady = false));
 
+      logInfo('Multiplayer PvP match started', { roomId: currentRoomId, players: players.map((p) => p.nickname) });
       io.in(currentRoomId).emit('game_start', {
         seed: Math.floor(Math.random() * 1000000),
         startTime: Date.now(),
@@ -140,6 +149,7 @@ io.on('connection', (socket: Socket) => {
   // 5. Attack Garbage Line
   socket.on('attack_garbage', (data: { linesCount: number; holePosition: number }) => {
     if (currentRoomId) {
+      logDebug('Garbage line attack sent', { socketId: socket.id, roomId: currentRoomId, linesCount: data.linesCount });
       socket.to(currentRoomId).emit('attack_garbage', data);
     }
   });
@@ -148,9 +158,10 @@ io.on('connection', (socket: Socket) => {
   socket.on('chat_message', (data: { message: string }) => {
     if (currentRoomId && data.message && data.message.trim().length > 0) {
       const rawText = data.message.trim().slice(0, 100);
-      // Basic regex profanity filter on server
       const sanitized = rawText.replace(/시[발바빨벌발발]+|씨[발바빨벌발발]+|개[새새끼씨끼씹]+|병[신신씬]+|미[친친친놈년]+/g, '***');
       
+      logDebug('Chat message processed', { socketId: socket.id, roomId: currentRoomId, isFiltered: sanitized !== rawText });
+
       io.in(currentRoomId).emit('chat_message', {
         message: sanitized,
         sender: currentNickname,
@@ -163,13 +174,15 @@ io.on('connection', (socket: Socket) => {
   // 7. Game Over
   socket.on('game_over', (data: any) => {
     if (currentRoomId) {
+      logInfo('Game over event received', { socketId: socket.id, roomId: currentRoomId });
       socket.to(currentRoomId).emit('game_over', data);
     }
   });
 
-  // 7. Leave Room or Disconnect
+  // 8. Leave Room or Disconnect
   socket.on('leave_room', () => {
     if (currentRoomId) {
+      logInfo('Player left room', { socketId: socket.id, roomId: currentRoomId });
       socket.leave(currentRoomId);
       let sessionList = roomSessions.get(currentRoomId) || [];
       sessionList = sessionList.filter((s) => s.socketId !== socket.id);
@@ -185,6 +198,7 @@ io.on('connection', (socket: Socket) => {
   });
 
   socket.on('disconnect', () => {
+    logInfo('Socket client disconnected', { socketId: socket.id, roomId: currentRoomId });
     if (currentRoomId) {
       let sessionList = roomSessions.get(currentRoomId) || [];
       sessionList = sessionList.filter((s) => s.socketId !== socket.id);
@@ -200,5 +214,5 @@ io.on('connection', (socket: Socket) => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`Cloud Run Serverless Socket Server listening on port ${PORT}`);
+  logInfo(`Cloud Run Serverless Socket Server listening on port ${PORT}`, { port: PORT, env: process.env.NODE_ENV || 'development' });
 });
