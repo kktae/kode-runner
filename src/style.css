@@ -2,16 +2,16 @@
   --kakao-yellow: #fee500;
   --kakao-yellow-hover: #fada00;
   --con-green: #00c73c;
-  --bg-dark: #121011;
-  --surface-card: #1b1819;
-  --surface-modal: #161415;
-  --surface-item: #110f10;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.16);
-  --border-active: rgba(254, 229, 0, 0.6);
-  --text-main: #ffffff;
-  --text-muted: #8e8b8c;
-  --text-dark: #161415;
+  --bg-dark: #0f1117;
+  --surface-card: #181c26;
+  --surface-modal: #141720;
+  --surface-item: #10121a;
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-hover: rgba(255, 255, 255, 0.24);
+  --border-active: #fee500;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dark: #0f1117;
 
   /* Precision Human Pro Optical Radius System */
   --radius-card: 12px;
@@ -20,8 +20,8 @@
   --radius-tag: 6px;
 
   /* Crisp Precision Ambient Shadows */
-  --shadow-main: 0 2px 12px rgba(0, 0, 0, 0.35);
-  --shadow-modal: 0 16px 36px rgba(0, 0, 0, 0.55);
+  --shadow-main: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-modal: 0 20px 48px rgba(0, 0, 0, 0.65);
   --font-family: "Outfit", "Pretendard", -apple-system, sans-serif;
 }
 
@@ -327,31 +327,34 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: var(--surface-item);
   border-radius: var(--radius-inner);
   border: 1px solid var(--border-subtle);
+  transition: border-color 0.15s ease;
 }
 
 .stat-label {
   font-size: 0.72rem;
-  color: var(--text-muted);
+  color: #94A3B8;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .stat-value {
-  font-size: 1.1rem;
+  font-family: "Outfit", "Pretendard", sans-serif;
+  font-size: 1.2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .stat-value.highlight {
-  color: var(--text-dark);
-  background: var(--kakao-yellow);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 1.15rem;
+  color: var(--kakao-yellow);
+  font-size: 1.35rem;
+  text-shadow: 0 0 16px rgba(254, 229, 0, 0.25);
 }
 
 .stat-value.accent {
