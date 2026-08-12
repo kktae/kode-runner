@@ -762,11 +762,6 @@ useMultiplayerStore.subscribe((state) => {
     multiRoomIdInput.value = state.roomId;
   }
 
-  // Handle Game Seed Synchronization
-  if (state.gameSeed !== null) {
-    gameLoop.setSeed(state.gameSeed);
-  }
-
   // Transition to Game View on BOTH PLAYERS READY -> PLAYING
   if (state.status === 'PLAYING' && lastMultiStatus !== 'PLAYING') {
     gameoverModal.classList.add('hidden');

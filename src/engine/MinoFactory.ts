@@ -5,7 +5,7 @@ export interface MinoPiece {
   shape: number[][];
   x: number;
   y: number;
-  rotation: number; // 0, 1, 2, 3
+  rotation: number;
 }
 
 export const SHAPES: Record<MinoType, number[][]> = {
@@ -46,138 +46,33 @@ export const SHAPES: Record<MinoType, number[][]> = {
   ],
 };
 
-// SRS Wall Kick Offsets for 3x3 minos
 export const JLSTZ_WALL_KICKS: Record<string, Point[]> = {
-  '0->1': [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: -1, y: 1 },
-    { x: 0, y: -2 },
-    { x: -1, y: -2 },
-  ],
-  '1->0': [
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: 1, y: -1 },
-    { x: 0, y: 2 },
-    { x: 1, y: 2 },
-  ],
-  '1->2': [
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: 1, y: -1 },
-    { x: 0, y: 2 },
-    { x: 1, y: 2 },
-  ],
-  '2->1': [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: -1, y: 1 },
-    { x: 0, y: -2 },
-    { x: -1, y: -2 },
-  ],
-  '2->3': [
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: 1, y: 1 },
-    { x: 0, y: -2 },
-    { x: 1, y: -2 },
-  ],
-  '3->2': [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: -1, y: -1 },
-    { x: 0, y: 2 },
-    { x: -1, y: 2 },
-  ],
-  '3->0': [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: -1, y: -1 },
-    { x: 0, y: 2 },
-    { x: -1, y: 2 },
-  ],
-  '0->3': [
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: 1, y: 1 },
-    { x: 0, y: -2 },
-    { x: 1, y: -2 },
-  ],
+  '0->1': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: -2 }, { x: -1, y: -2 }],
+  '1->0': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: 0, y: 2 }, { x: 1, y: 2 }],
+  '1->2': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: 0, y: 2 }, { x: 1, y: 2 }],
+  '2->1': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: -2 }, { x: -1, y: -2 }],
+  '2->3': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: -2 }, { x: 1, y: -2 }],
+  '3->2': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 0, y: 2 }, { x: -1, y: 2 }],
+  '3->0': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 0, y: 2 }, { x: -1, y: 2 }],
+  '0->3': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: -2 }, { x: 1, y: -2 }],
 };
 
-// SRS Wall Kick Offsets for I mino
 export const I_WALL_KICKS: Record<string, Point[]> = {
-  '0->1': [
-    { x: 0, y: 0 },
-    { x: -2, y: 0 },
-    { x: 1, y: 0 },
-    { x: -2, y: -1 },
-    { x: 1, y: 2 },
-  ],
-  '1->0': [
-    { x: 0, y: 0 },
-    { x: 2, y: 0 },
-    { x: -1, y: 0 },
-    { x: 2, y: 1 },
-    { x: -1, y: -2 },
-  ],
-  '1->2': [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: 2, y: 0 },
-    { x: -1, y: 2 },
-    { x: 2, y: -1 },
-  ],
-  '2->1': [
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: -2, y: 0 },
-    { x: 1, y: -2 },
-    { x: -2, y: 1 },
-  ],
-  '2->3': [
-    { x: 0, y: 0 },
-    { x: 2, y: 0 },
-    { x: -1, y: 0 },
-    { x: 2, y: 1 },
-    { x: -1, y: -2 },
-  ],
-  '3->2': [
-    { x: 0, y: 0 },
-    { x: -2, y: 0 },
-    { x: 1, y: 0 },
-    { x: -2, y: -1 },
-    { x: 1, y: 2 },
-  ],
-  '3->0': [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: 2, y: 0 },
-    { x: -1, y: 2 },
-    { x: 2, y: -1 },
-  ],
-  '0->3': [
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: -2, y: 0 },
-    { x: 1, y: -2 },
-    { x: -2, y: 1 },
-  ],
+  '0->1': [{ x: 0, y: 0 }, { x: -2, y: 0 }, { x: 1, y: 0 }, { x: -2, y: -1 }, { x: 1, y: 2 }],
+  '1->0': [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 1 }, { x: -1, y: -2 }],
+  '1->2': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }],
+  '2->1': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -2, y: 0 }, { x: 1, y: -2 }, { x: -2, y: 1 }],
+  '2->3': [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 1 }, { x: -1, y: -2 }],
+  '3->2': [{ x: 0, y: 0 }, { x: -2, y: 0 }, { x: 1, y: 0 }, { x: -2, y: -1 }, { x: 1, y: 2 }],
+  '3->0': [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }],
+  '0->3': [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -2, y: 0 }, { x: 1, y: -2 }, { x: -2, y: 1 }],
 };
 
 export class MinoFactory {
   private bag: MinoType[] = [];
-  private prngState = 0;
 
   constructor() {
-    this.refillBag();
-  }
-
-  public setSeed(seed: number) {
-    this.prngState = (seed + 1) >>> 0;
-    this.bag = [];
-    this.refillBag();
+    this.reset();
   }
 
   public reset() {
@@ -185,29 +80,18 @@ export class MinoFactory {
     this.refillBag();
   }
 
-  private random(): number {
-    if (this.prngState === 0) {
-      return Math.random();
-    }
-    // Mulberry32 PRNG Algorithm
-    let t = (this.prngState += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  }
-
   private refillBag() {
     const types: MinoType[] = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-    // Fisher-Yates shuffle with PRNG
+    // Fisher-Yates shuffle with standard Math.random()
     for (let i = types.length - 1; i > 0; i--) {
-      const j = Math.floor(this.random() * (i + 1));
+      const j = Math.floor(Math.random() * (i + 1));
       [types[i], types[j]] = [types[j], types[i]];
     }
     this.bag.push(...types);
   }
 
   public nextType(): MinoType {
-    if (this.bag.length < 7) {
+    if (this.bag.length < 4) {
       this.refillBag();
     }
     return this.bag.shift()!;
@@ -234,9 +118,7 @@ export class MinoFactory {
 
   public static rotateMatrix(matrix: number[][], clockwise = true): number[][] {
     const N = matrix.length;
-    const result: number[][] = Array.from({ length: N }, () =>
-      Array(N).fill(0),
-    );
+    const result: number[][] = Array.from({ length: N }, () => Array(N).fill(0));
     for (let r = 0; r < N; r++) {
       for (let c = 0; c < N; c++) {
         if (clockwise) {
