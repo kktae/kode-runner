@@ -83,6 +83,32 @@ bun run build
 
 ---
 
+## 🚀 미구현 기능 및 향후 개선 방향 (Future Roadmap & Unimplemented Features)
+
+현재 클라이언트 중심 단일 데모 버전에서 확장하여, 엔터프라이즈 부스 운영 및 글로벌 스케일 환경을 고려한 아키텍처 개선 로드맵입니다.
+
+### 1. 실시간 1v1 멀티플레이어 배틀 (Realtime PvP Multiplayer)
+- **WebRTC / WebSocket (Socket.io) 기반 P2P 및 게임 서버 통신**:
+  - 유저 간 실시간 대전 화면 동기화 및 콤보/가비지 라인(Garbage Attack Line) 메커니즘 탑재.
+  - 클라이언트 사이드 예측(Client Prediction) 및 결정론적(Deterministic) 상태 동기화 처리.
+
+### 2. 서버리스 리더보드 실시간 동기화 (Serverless Leaderboard Sync)
+- **Edge DB / Distributed Key-Value (Upstash Redis / Supabase) 구축**:
+  - 기존 브라우저 `localStorage` 단일 기기 기록 방식에서 **Upstash Redis (Sorted Set)** 또는 **Supabase** 기반 서버리스 DB로 리팩토링.
+  - 행사 방문객 전체 통합 실시간 랭킹 산출 및 SSE/WebSocket을 통한 부스 대형 전광판 자동 스코어 스트리밍.
+
+### 3. 서버리스 수평 확장 아키텍처 (Serverless Horizontal Scaling)
+- **Cloudflare Workers / Vercel Edge Serverless Functions**:
+  - API 백엔드를 글로벌 Edge Network 서버리스 환경에 배포하여 저지연(Low-Latency) API 응답 확보.
+  - 부스 트래픽 폭주 시에도 전용 서버 관리 부담 없이 **자동 수평 확장(Auto-scaling)** 대응.
+
+### 4. 점수 조작 방지 및 무결성 검증 (Anti-Cheat & Validation System)
+- **백엔드 게임 세션 재검증 (Server-side Session Validation)**:
+  - 단순 클라이언트 점수전송 방식의 스푸핑(Score Spoofing) 방지.
+  - 게임 개시 시 암호화 세션 토큰(`gameSessionId`) 발급 및 유저 조작 시퀀스(Input Command Stream) 백엔드 검증.
+
+---
+
 ## 환경 설정 및 보안 (Security & Config)
 
 - **환경 변수**: 개발 환경 설정이 필요한 경우 `.env.example` 파일을 복사하여 `.env` 또는 `.env.local`로 사용합니다.
