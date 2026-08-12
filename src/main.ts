@@ -1,3 +1,5 @@
+import React from 'react';
+import { createRoot, type Root } from 'react-dom/client';
 import { drawMinoCell } from './assets/characters';
 import { SoundManager } from './audio/SoundManager';
 import { GameLoop } from './engine/GameLoop';
@@ -5,6 +7,7 @@ import { SHAPES } from './engine/MinoFactory';
 import type { GameMode, GameStats, MinoType } from './types/tetris';
 import { ComboBanner } from './ui/ComboBanner';
 import { LeaderboardManager } from './ui/Leaderboard';
+import { RemotionModal } from './ui/RemotionModal';
 import { TouchController } from './ui/TouchController';
 
 // DOM Elements
@@ -30,6 +33,8 @@ const timerVal = document.getElementById('timer-val')!;
 const timerFill = document.getElementById('timer-progress-fill') as HTMLElement;
 const modeDisplayTag = document.getElementById('mode-display-tag')!;
 
+const remotionDemoBtn = document.getElementById('remotion-demo-btn');
+const homeRemotionDemoBtn = document.getElementById('home-remotion-demo-btn');
 const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn')!;
 const soundToggleBtn = document.getElementById('sound-toggle-btn')!;
 const pauseBtn = document.getElementById('pause-btn')!;
@@ -78,6 +83,33 @@ const restartBtn = document.getElementById('restart-btn')!;
 let selectedMode: GameMode = 'timeattack';
 let currentStats: GameStats | null = null;
 let currentModalMode: GameMode = 'timeattack';
+
+// Remotion Player React Root Instance
+let remotionRoot: Root | null = null;
+
+function openRemotionModal() {
+  const container = document.getElementById('remotion-modal-root');
+  if (!container) return;
+  if (!remotionRoot) {
+    remotionRoot = createRoot(container);
+  }
+  remotionRoot.render(
+    React.createElement(RemotionModal, {
+      onClose: () => {
+        if (remotionRoot) {
+          remotionRoot.render(null);
+        }
+      },
+    }),
+  );
+}
+
+if (remotionDemoBtn) {
+  remotionDemoBtn.addEventListener('click', openRemotionModal);
+}
+if (homeRemotionDemoBtn) {
+  homeRemotionDemoBtn.addEventListener('click', openRemotionModal);
+}
 
 // View Navigation Manager
 function showHomeView() {

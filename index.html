@@ -25,6 +25,10 @@
         </div>
 
         <div class="header-controls">
+          <button id="remotion-demo-btn" class="pill-btn secondary" title="AI 생성 과정 시연 (Remotion)">
+            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>AI 생성 시연</span>
+          </button>
           <button id="view-leaderboard-btn" class="pill-btn secondary">
             <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
             <span>랭킹 보기</span>
@@ -75,6 +79,11 @@
             <button id="start-game-btn" class="primary-btn home-start-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               <span>게임 시작하기</span>
+            </button>
+
+            <button id="home-remotion-demo-btn" class="secondary-btn home-sub-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>AI 생성 과정 시연 (Remotion Player)</span>
             </button>
 
             <button id="modal-view-leaderboard-btn" class="secondary-btn home-sub-btn">
@@ -205,7 +214,6 @@
       </div>
     </div>
 
-
     <!-- Full Leaderboard Modal -->
     <div id="leaderboard-modal" class="modal-backdrop hidden">
       <div class="modal-card glass-modal wide">
@@ -300,6 +308,9 @@
         </button>
       </div>
     </div>
+
+    <!-- Remotion Player React Mount Root -->
+    <div id="remotion-modal-root"></div>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
