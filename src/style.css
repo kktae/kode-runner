@@ -1169,14 +1169,15 @@ kbd {
 
 .home-hero-card {
   width: 100%;
+  max-width: 740px;
   background: var(--surface-modal);
-  border: 1px solid var(--border-active);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
   padding: 32px 28px;
   box-shadow: var(--shadow-modal);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   align-items: center;
   text-align: center;
 }
@@ -1186,6 +1187,114 @@ kbd {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+}
+
+/* Vibe Coding Home Showcase Styling */
+.vibe-prompt-card {
+  width: 100%;
+  background: var(--surface-item);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-inner);
+  padding: 14px 18px;
+  text-align: left;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.vibe-prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.vibe-prompt-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--kakao-yellow);
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vibe-engine-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.vibe-prompt-text code {
+  font-family: "Pretendard", -apple-system, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #f8fafc;
+  line-height: 1.4;
+}
+
+/* Dual Feature Grid */
+.vibe-feature-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.vibe-feature-card {
+  background: var(--surface-item);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 10px;
+}
+
+.vibe-feature-card.highlight {
+  border-color: rgba(254, 229, 0, 0.4);
+}
+
+.vibe-card-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.vibe-card-badge.primary {
+  background: var(--kakao-yellow);
+  color: var(--text-dark);
+}
+
+.vibe-card-badge.accent {
+  background: rgba(0, 199, 60, 0.15);
+  color: var(--con-green);
+  border: 1px solid rgba(0, 199, 60, 0.4);
+}
+
+.vibe-feature-card h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.vibe-feature-card p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+  flex: 1;
+}
+
+.vibe-card-btn {
+  width: 100%;
+  margin-top: 4px;
 }
 
 .home-kakaobank-badge {

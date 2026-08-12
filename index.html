@@ -62,46 +62,76 @@
               <span class="home-kakaobank-badge">kakaobank</span>
             </div>
             <h1 class="home-title">Kode Runner 2026</h1>
-            <p class="home-subtitle">메가존클라우드 파트너 테크 부스 3D 테트리스</p>
+            <p class="home-subtitle">자연어 프롬프트 1줄로 완성된 바이브 코딩 테트리스</p>
           </div>
 
+          <!-- Vibe Coding Prompt Showcase Box -->
+          <div class="vibe-prompt-card">
+            <div class="vibe-prompt-header">
+              <span class="vibe-prompt-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                <span>VIBE CODING PROMPT</span>
+              </span>
+              <span class="vibe-engine-tag">Antigravity 2.0 AI Engine</span>
+            </div>
+            <div class="vibe-prompt-text">
+              <code>"카카오뱅크 Kode Runner 2026 행사의 부스에서 시연할 테트리스 웹게임을 생성해줘."</code>
+            </div>
+          </div>
+
+          <!-- Dual Main Feature Cards -->
+          <div class="vibe-feature-grid">
+            <div class="vibe-feature-card">
+              <div class="vibe-card-badge accent">AI GENERATION DEMO</div>
+              <h3>AI 생성 과정 시연</h3>
+              <p>자연어 프롬프트 해석부터 코드 빌드까지의 AI 개발 공정을 60fps 영상으로 감상하세요.</p>
+              <button id="home-remotion-demo-btn" class="secondary-btn vibe-card-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span>AI 생성 과정 시연</span>
+              </button>
+            </div>
+
+            <div class="vibe-feature-card highlight">
+              <div class="vibe-card-badge primary">BOOTH ARCADE PLAY</div>
+              <h3>3D 테트리스 플레이</h3>
+              <p>90초 타임어택 & 클래식 가속 모드로 피버 타임을 터뜨리고 최고 점수에 도전하세요.</p>
+              <button id="start-game-btn" class="primary-btn vibe-card-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span>게임 시작하기</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Game Mode Selector Section -->
           <div class="home-mode-section">
             <div id="select-timeattack" class="mode-card active">
               <div class="mode-icon-svg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
               </div>
               <h3>90초 타임어택 (Time Attack)</h3>
-              <p>1분 30초 동안 피버 모드를 발동하여 최고 점수에 도전하세요.</p>
+              <p>1분 30초 제한시간 동안 VIBE FEVER를 발동하여 최고점에 도전하세요.</p>
               <span class="mode-badge">부스 권장</span>
             </div>
 
             <div id="select-classic" class="mode-card">
               <div class="mode-icon-svg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               </div>
               <h3>클래식 가속 모드 (Classic Mode)</h3>
-              <p>10줄마다 레벨업 및 블록 낙하 속도가 가속되는 오리지널 무제한 모드입니다.</p>
+              <p>10줄마다 레벨업 및 낙하 속도가 무제한 가속되는 오리지널 모드입니다.</p>
               <span class="mode-badge secondary">도전 모드</span>
             </div>
           </div>
 
+          <!-- Honor Roll Leaderboard Action -->
           <div class="home-action-group">
-            <button id="start-game-btn" class="primary-btn home-start-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span>게임 시작하기</span>
-            </button>
-
-            <button id="home-remotion-demo-btn" class="secondary-btn home-sub-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span>AI 생성 과정 시연</span>
-            </button>
-
             <button id="modal-view-leaderboard-btn" class="secondary-btn home-sub-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
               <span>명예의 전당 (BOOTH TOP 5)</span>
             </button>
           </div>
 
+          <!-- Controls Guide Footer -->
           <div class="home-quick-controls">
             <div class="control-tag"><kbd>←</kbd><kbd>→</kbd> 이동</div>
             <div class="control-tag"><kbd>↓</kbd> 하강</div>
