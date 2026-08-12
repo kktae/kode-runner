@@ -201,6 +201,27 @@
                 <span id="combo-val" class="stat-value accent">0</span>
               </div>
             </div>
+
+            <!-- Realtime 1v1 Chat Panel (Multiplayer) -->
+            <div id="chat-panel" class="glass-card panel-chat hidden">
+              <div class="chat-header">
+                <span class="chat-title">실시간 1v1 채팅</span>
+              </div>
+              <div id="chat-messages-box" class="chat-messages-box">
+                <div class="chat-system-msg">채팅방에 연결되었습니다.</div>
+              </div>
+              <div class="chat-shortcuts">
+                <button type="button" class="chat-shortcut-btn" data-emoji="🔥">🔥</button>
+                <button type="button" class="chat-shortcut-btn" data-emoji="👍">👍</button>
+                <button type="button" class="chat-shortcut-btn" data-emoji="GG">GG</button>
+                <button type="button" class="chat-shortcut-btn" data-emoji="🙏">🙏</button>
+                <button type="button" class="chat-shortcut-btn" data-emoji="😎">😎</button>
+              </div>
+              <form id="chat-form" class="chat-form">
+                <input id="chat-input" type="text" placeholder="메시지 입력..." maxlength="100" autocomplete="off" />
+                <button type="submit" class="chat-send-btn">전송</button>
+              </form>
+            </div>
           </section>
 
           <!-- Center Panel: Main Canvas & Timer -->
@@ -265,27 +286,6 @@
                 <div class="preview-box mini"><canvas id="next2-canvas" width="80" height="80"></canvas></div>
                 <div class="preview-box mini"><canvas id="next3-canvas" width="80" height="80"></canvas></div>
               </div>
-            </div>
-
-            <!-- Realtime 1v1 Chat Panel (Multiplayer) -->
-            <div id="chat-panel" class="glass-card panel-chat hidden">
-              <div class="chat-header">
-                <span class="chat-title">실시간 1v1 채팅</span>
-              </div>
-              <div id="chat-messages-box" class="chat-messages-box">
-                <div class="chat-system-msg">채팅방에 연결되었습니다.</div>
-              </div>
-              <div class="chat-shortcuts">
-                <button type="button" class="chat-shortcut-btn" data-emoji="🔥">🔥</button>
-                <button type="button" class="chat-shortcut-btn" data-emoji="👍">👍</button>
-                <button type="button" class="chat-shortcut-btn" data-emoji="GG">GG</button>
-                <button type="button" class="chat-shortcut-btn" data-emoji="🙏">🙏</button>
-                <button type="button" class="chat-shortcut-btn" data-emoji="😎">😎</button>
-              </div>
-              <form id="chat-form" class="chat-form">
-                <input id="chat-input" type="text" placeholder="메시지 입력..." maxlength="100" autocomplete="off" />
-                <button type="submit" class="chat-send-btn">전송</button>
-              </form>
             </div>
 
             <!-- Leaderboard Card (Single Player) -->
