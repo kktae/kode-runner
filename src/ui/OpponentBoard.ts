@@ -25,7 +25,7 @@ export class OpponentBoardRenderer {
   }
 
   /**
-   * 상대방 보드 실시간 렌더링
+   * 상대방 보드 및 실시간 콤보 이펙트 렌더링
    */
   public render(gameState: PlayerGameState | null, opponentNickname: string | null) {
     const width = this.canvas.width;
@@ -100,7 +100,19 @@ export class OpponentBoardRenderer {
       }
     }
 
-    // 3. Draw Game Over Overlay
+    // 3. Draw Opponent Dynamic Combo Text Overlay Effect
+    if (gameState.combo > 1) {
+      this.ctx.save();
+      this.ctx.fillStyle = '#fee500';
+      this.ctx.shadowColor = '#fee500';
+      this.ctx.shadowBlur = 12;
+      this.ctx.font = '900 16px Outfit, sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText(`${gameState.combo} COMBO!`, width / 2, 32);
+      this.ctx.restore();
+    }
+
+    // 4. Draw Game Over Overlay
     if (gameState.isGameOver) {
       this.ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
       this.ctx.fillRect(0, 0, width, height);
