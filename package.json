@@ -10,14 +10,14 @@
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
-    "gsap": "^3.12.5",
+    "gsap": "^3.15.0",
     "howler": "^2.2.4",
-    "lucide": "^0.400.0"
+    "lucide": "^1.31.0"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
-    "@types/howler": "^2.2.11",
-    "typescript": "^5.4.5",
-    "vite": "^5.3.1"
+    "@types/howler": "^2.2.13",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1"
   }
 }
