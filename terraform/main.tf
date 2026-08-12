@@ -146,6 +146,11 @@ resource "google_cloud_run_v2_service" "cloud_run_app" {
         name  = "REDIS_PORT"
         value = tostring(google_redis_instance.redis_instance.port)
       }
+
+      env {
+        name  = "REDIS_URL"
+        value = "redis://${google_redis_instance.redis_instance.host}:${google_redis_instance.redis_instance.port}"
+      }
     }
   }
 }

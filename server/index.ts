@@ -6,7 +6,9 @@ import sirv from 'sirv';
 import { logInfo, logWarn, logError, logDebug } from './logger';
 
 const PORT = Number(process.env.PORT) || 8080;
-const REDIS_URL = process.env.VITE_REDIS_URL || process.env.REDIS_URL || 'redis://localhost:6379';
+const REDIS_HOST = process.env.REDIS_HOST;
+const REDIS_PORT = process.env.REDIS_PORT || '6379';
+const REDIS_URL = process.env.REDIS_URL || (REDIS_HOST ? `redis://${REDIS_HOST}:${REDIS_PORT}` : '');
 
 // SPA Static File Server
 const serveAssets = sirv('dist', {
@@ -32,18 +34,26 @@ const io = new Server(httpServer, {
 });
 
 // Setup Redis Adapter for Cloud Run Auto-Scaling
-try {
-  const pubClient = new Redis(REDIS_URL, { lazyConnect: true, maxRetriesPerRequest: 3 });
-  const subClient = pubClient.duplicate();
+if (REDIS_URL) {
+  try {
+    const pubClient = new Redis(REDIS_URL, {
+      lazyConnect: true,
+      connectTimeout: 5000,
+      maxRetriesPerRequest: 2,
+    });
+    const subClient = pubClient.duplicate();
 
-  Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-    io.adapter(createAdapter(pubClient, subClient));
-    logInfo('Socket.io Redis Adapter connected successfully', { redisUrl: REDIS_URL.replace(/:[^:@]+@/, ':***@') });
-  }).catch((err) => {
-    logWarn('Redis Adapter fallback to in-memory adapter', { error: err.message });
-  });
-} catch (e) {
-  logWarn('Redis Adapter initialization error', { error: e });
+    Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+      io.adapter(createAdapter(pubClient, subClient));
+      logInfo('Socket.io Redis Adapter connected successfully', { redisHost: REDIS_HOST, redisPort: REDIS_PORT });
+    }).catch((err) => {
+      logWarn('Redis Adapter fallback to in-memory adapter', { error: err.message });
+    });
+  } catch (e) {
+    logWarn('Redis Adapter initialization error', { error: e });
+  }
+} else {
+  logInfo('No Redis configuration found; running with in-memory adapter');
 }
 
 // Room Session Manager with Ready States
