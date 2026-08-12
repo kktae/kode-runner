@@ -124,6 +124,19 @@ function showHomeView() {
   homeView.classList.remove('hidden');
   gameView.classList.add('hidden');
 
+  // Reset tab selection to Single Player by default
+  const homeTabSingle = document.getElementById('home-tab-single');
+  const homeTabMulti = document.getElementById('home-tab-multi');
+  const singlePlayerSection = document.getElementById('single-player-section');
+  const multiPlayerSection = document.getElementById('multi-player-section');
+
+  if (homeTabSingle && homeTabMulti && singlePlayerSection && multiPlayerSection) {
+    homeTabSingle.classList.add('active');
+    homeTabMulti.classList.remove('active');
+    singlePlayerSection.classList.remove('hidden');
+    multiPlayerSection.classList.add('hidden');
+  }
+
   if (pauseBtn) pauseBtn.style.display = 'none';
   if (modeChangeBtn) modeChangeBtn.style.display = 'none';
 }
