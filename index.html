@@ -236,18 +236,9 @@
             </div>
           </section>
 
-          <!-- Right Panel: NEXT Queue / Opponent Board in Multiplayer -->
+          <!-- Right Panel: Opponent Board / NEXT Queue -->
           <section class="side-panel right-panel">
-            <div class="glass-card panel-next">
-              <h3 class="panel-title">NEXT</h3>
-              <div class="next-queue">
-                <div class="preview-box mini"><canvas id="next1-canvas" width="80" height="80"></canvas></div>
-                <div class="preview-box mini"><canvas id="next2-canvas" width="80" height="80"></canvas></div>
-                <div class="preview-box mini"><canvas id="next3-canvas" width="80" height="80"></canvas></div>
-              </div>
-            </div>
-
-            <!-- Multiplayer Opponent Canvas Panel (Dynamic in 1v1 PvP) -->
+            <!-- Multiplayer Opponent Canvas Panel (Top Eye-Level in 1v1 PvP) -->
             <div id="opponent-panel" class="glass-card panel-opponent hidden">
               <div class="opponent-header">
                 <span class="opponent-badge">1v1 PvP 대전</span>
@@ -265,6 +256,15 @@
               <button id="toggle-ready-btn" class="primary-btn wide-btn ready-btn" type="button">
                 <span>게임 준비 (READY)</span>
               </button>
+            </div>
+
+            <div class="glass-card panel-next">
+              <h3 class="panel-title">NEXT</h3>
+              <div class="next-queue">
+                <div class="preview-box mini"><canvas id="next1-canvas" width="80" height="80"></canvas></div>
+                <div class="preview-box mini"><canvas id="next2-canvas" width="80" height="80"></canvas></div>
+                <div class="preview-box mini"><canvas id="next3-canvas" width="80" height="80"></canvas></div>
+              </div>
             </div>
 
             <!-- Leaderboard Card (Single Player) -->
@@ -398,7 +398,7 @@
         <div id="multi-gameover-actions" class="modal-actions hidden">
           <button id="multi-rematch-btn" class="primary-btn flex-btn" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            <span>재경합 준비 (Rematch)</span>
+            <span>리매치 준비</span>
           </button>
           <button id="multi-leave-btn" class="secondary-btn flex-btn" type="button">
             <span>방 나가기</span>
