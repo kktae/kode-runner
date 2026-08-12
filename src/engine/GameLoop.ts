@@ -498,6 +498,10 @@ export class GameLoop {
 
   private lastSyncTime = 0;
 
+  public getStats(): GameStats {
+    return { ...this.stats };
+  }
+
   private syncMultiplayerState(force = false) {
     const mpState = useMultiplayerStore.getState();
     if (mpState.status !== 'PLAYING') return;

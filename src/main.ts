@@ -787,6 +787,11 @@ useMultiplayerStore.subscribe((state) => {
     gameLoop.stop(); // Completely stop background game loop, lock animation, and timers!
     soundManager.stopBGM();
 
+    const stats = gameLoop.getStats();
+    if (resScore) resScore.innerText = stats.score.toLocaleString();
+    if (resLines) resLines.innerText = stats.lines.toString();
+    if (resCombo) resCombo.innerText = stats.maxCombo.toString();
+
     const multiActions = document.getElementById('multi-gameover-actions');
     const singleForm = document.getElementById('leaderboard-form');
     const singleRestartBtn = document.getElementById('restart-btn');
