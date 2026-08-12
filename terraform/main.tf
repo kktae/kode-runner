@@ -114,11 +114,6 @@ resource "google_cloud_run_v2_service" "cloud_run_app" {
       }
 
       env {
-        name  = "PORT"
-        value = "8080"
-      }
-
-      env {
         name  = "REDIS_HOST"
         value = google_redis_instance.redis_instance.host
       }
