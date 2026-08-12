@@ -341,9 +341,12 @@ pauseRestartBtn.addEventListener('click', () => {
 
 // Keyboard Shortcut for Pause (P or Escape)
 window.addEventListener('keydown', (e) => {
+  const key = e.key;
+  const code = e.code;
+
   // Global Pause Toggle
   if (
-    (e.key === 'p' || e.key === 'P' || e.key === 'Escape') &&
+    (key === 'p' || key === 'P' || key === 'Escape' || code === 'KeyP') &&
     gameLoop.getIsRunning()
   ) {
     handleTogglePause();
@@ -360,51 +363,84 @@ window.addEventListener('keydown', (e) => {
     'ArrowUp',
     ' ',
     'Spacebar',
+    'Shift',
+    'c',
+    'C',
+    'ㅊ',
   ];
-  if (preventKeys.includes(e.key)) {
+  if (preventKeys.includes(key) || code === 'Space' || code === 'KeyC') {
     e.preventDefault();
   }
 
-  switch (e.key) {
-    case 'ArrowLeft':
-    case 'a':
-    case 'A':
-      gameLoop.handleInput('left');
-      break;
-    case 'ArrowRight':
-    case 'd':
-    case 'D':
-      gameLoop.handleInput('right');
-      break;
-    case 'ArrowDown':
-    case 's':
-    case 'S':
-      gameLoop.handleInput('down');
-      break;
-    case 'ArrowUp':
-    case 'w':
-    case 'W':
-    case 'x':
-    case 'X':
-    case 'z':
-    case 'Z':
-      if (!e.repeat) {
-        gameLoop.handleInput('rotate');
-      }
-      break;
-    case ' ':
-    case 'Spacebar':
-      if (!e.repeat) {
-        gameLoop.handleInput('hardDrop');
-      }
-      break;
-    case 'Shift':
-    case 'c':
-    case 'C':
-      if (!e.repeat) {
-        gameLoop.handleInput('hold');
-      }
-      break;
+  // Left: ArrowLeft, A, ㅁ
+  if (
+    key === 'ArrowLeft' ||
+    key === 'a' ||
+    key === 'A' ||
+    key === 'ㅁ' ||
+    code === 'KeyA'
+  ) {
+    gameLoop.handleInput('left');
+  }
+  // Right: ArrowRight, D, ㅇ
+  else if (
+    key === 'ArrowRight' ||
+    key === 'd' ||
+    key === 'D' ||
+    key === 'ㅇ' ||
+    code === 'KeyD'
+  ) {
+    gameLoop.handleInput('right');
+  }
+  // Soft Drop: ArrowDown, S, ㄴ
+  else if (
+    key === 'ArrowDown' ||
+    key === 's' ||
+    key === 'S' ||
+    key === 'ㄴ' ||
+    code === 'KeyS'
+  ) {
+    gameLoop.handleInput('down');
+  }
+  // Rotate: ArrowUp, W, Z, X, ㅈ, ㅋ, ㅌ
+  else if (
+    key === 'ArrowUp' ||
+    key === 'w' ||
+    key === 'W' ||
+    key === 'ㅈ' ||
+    code === 'KeyW' ||
+    key === 'x' ||
+    key === 'X' ||
+    key === 'ㅌ' ||
+    code === 'KeyX' ||
+    key === 'z' ||
+    key === 'Z' ||
+    key === 'ㅋ' ||
+    code === 'KeyZ'
+  ) {
+    if (!e.repeat) {
+      gameLoop.handleInput('rotate');
+    }
+  }
+  // Hard Drop: Space
+  else if (key === ' ' || key === 'Spacebar' || code === 'Space') {
+    if (!e.repeat) {
+      gameLoop.handleInput('hardDrop');
+    }
+  }
+  // Hold: Shift, C, ㅊ
+  else if (
+    key === 'Shift' ||
+    key === 'c' ||
+    key === 'C' ||
+    key === 'ㅊ' ||
+    code === 'KeyC' ||
+    code === 'ShiftLeft' ||
+    code === 'ShiftRight'
+  ) {
+    if (!e.repeat) {
+      gameLoop.handleInput('hold');
+    }
   }
 });
 
