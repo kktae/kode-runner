@@ -1,5 +1,5 @@
 # ==========================================
-# Stage 1: Build Frontend Assets & Prepare
+# Stage 1: Build Frontend Assets & Server Bundle
 # ==========================================
 FROM oven/bun:alpine AS builder
 WORKDIR /app
@@ -8,9 +8,10 @@ WORKDIR /app
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
-# Copy source code and build client SPA
+# Copy source code, build client SPA and pre-bundle server
 COPY . .
 RUN bun run build
+RUN bun build server/index.ts --target bun --outfile dist-server/index.js
 
 # ==========================================
 # Stage 2: Production Runner (Ultra Lightweight)
@@ -25,11 +26,11 @@ ENV PORT=8080
 COPY package.json bun.lock ./
 RUN bun install --production --frozen-lockfile
 
-# Copy compiled frontend dist and server logic
+# Copy compiled frontend dist and bundled server JS
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server ./server
+COPY --from=builder /app/dist-server ./dist-server
 
 EXPOSE 8080
 
-# Run standalone Socket.io server with Bun runtime
-CMD ["bun", "run", "server/index.ts"]
+# Run standalone Socket.io server JS bundle with Bun runtime
+CMD ["bun", "run", "dist-server/index.js"]
