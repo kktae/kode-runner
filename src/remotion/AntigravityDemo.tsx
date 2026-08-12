@@ -13,11 +13,11 @@ export const AntigravityDemo: React.FC = () => {
 
   const cubicEase = Easing.bezier(0.16, 1, 0.3, 1);
 
-  // Camera Zoom-In focus during LLM streaming (Single smooth hold)
+  // Enhanced Camera Zoom-In focus onto main chat response content (1.28x close-up)
   const cameraScale = interpolate(
     frame,
     [0, 180, 220, 1420, 1460, 1500],
-    [1.0, 1.0, 1.12, 1.12, 1.0, 1.0],
+    [1.0, 1.0, 1.28, 1.28, 1.0, 1.0],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -68,7 +68,7 @@ export const AntigravityDemo: React.FC = () => {
         overflow: "hidden",
       }}
     >
-      {/* Antigravity 2.0 App Window with Camera Scaling */}
+      {/* Antigravity 2.0 App Window with Camera Scaling Focus */}
       <div
         style={{
           width: "100%",
@@ -77,7 +77,7 @@ export const AntigravityDemo: React.FC = () => {
           alignItems: "center",
           justifyContent: "center",
           transform: `scale(${cameraScale})`,
-          transformOrigin: "center center",
+          transformOrigin: "55% 48%",
         }}
       >
         {/* App Window Frame */}

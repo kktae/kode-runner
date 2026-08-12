@@ -70,7 +70,7 @@ export const RemotionModal: React.FC<RemotionModalProps> = ({ onClose }) => {
               Antigravity 2.0 - AI 생성 과정 시연
             </h2>
             <p style={{ fontSize: 13, color: "#8B949E", margin: "4px 0 0 0" }}>
-              Remotion Player 기반 60fps 인터랙티브 비디오 시연
+              인터랙티브 비디오 시연
             </p>
           </div>
 
