@@ -13,11 +13,11 @@ export const AntigravityDemo: React.FC = () => {
 
   const cubicEase = Easing.bezier(0.16, 1, 0.3, 1);
 
-  // Enhanced Camera Zoom-In focus onto main chat response content (1.28x close-up)
+  // Enhanced Camera Zoom-In focus onto main chat response content (1.42x close-up)
   const cameraScale = interpolate(
     frame,
     [0, 180, 220, 1420, 1460, 1500],
-    [1.0, 1.0, 1.28, 1.28, 1.0, 1.0],
+    [1.0, 1.0, 1.42, 1.42, 1.0, 1.0],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -68,29 +68,29 @@ export const AntigravityDemo: React.FC = () => {
         overflow: "hidden",
       }}
     >
-      {/* Semi-transparent Partner Brand Watermark Overlay */}
+      {/* Prominent Semi-transparent Partner Brand Watermark Overlay */}
       <div
         style={{
           position: "absolute",
-          top: 24,
-          right: 32,
+          top: 32,
+          right: 40,
           zIndex: 1000,
           display: "flex",
           alignItems: "center",
-          gap: 8,
-          backgroundColor: "rgba(255, 255, 255, 0.85)",
-          padding: "6px 14px",
-          borderRadius: 8,
-          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",
-          opacity: 0.75,
-          backdropFilter: "blur(4px)",
+          gap: 10,
+          backgroundColor: "rgba(255, 255, 255, 0.88)",
+          padding: "10px 22px",
+          borderRadius: 12,
+          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.45)",
+          opacity: 0.85,
+          backdropFilter: "blur(6px)",
           pointerEvents: "none",
         }}
       >
         <img
           src={staticFile("assets/MEGAZONECLOUD_NEW_CI_B.png")}
           alt="MEGAZONECLOUD"
-          style={{ height: 16, width: "auto", display: "block" }}
+          style={{ height: 28, width: "auto", display: "block" }}
         />
       </div>
 
