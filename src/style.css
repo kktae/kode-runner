@@ -1622,17 +1622,31 @@ kbd {
   border-color: var(--kakao-yellow);
 }
 
-/* Refined Chat Input Form & Send Button Layout */
+/* Refined Cross-Browser Chat Panel & Form Layout */
+.panel-chat {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  padding: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
 .chat-form {
   display: flex !important;
+  flex-direction: row !important;
   align-items: center !important;
   gap: 6px !important;
   width: 100% !important;
+  box-sizing: border-box !important;
   margin-top: 2px !important;
 }
 
 .chat-form input {
-  flex: 1 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important; /* Critical fix for Flexbox input overflow in Firefox & Chrome */
+  width: 100% !important;
   height: 36px !important;
   padding: 0 10px !important;
   background: rgba(0, 0, 0, 0.5) !important;
@@ -1642,6 +1656,7 @@ kbd {
   font-family: 'Pretendard', sans-serif !important;
   font-size: 0.82rem !important;
   outline: none !important;
+  box-sizing: border-box !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
@@ -1651,8 +1666,9 @@ kbd {
 }
 
 .chat-send-btn {
+  flex: 0 0 auto !important;
   height: 36px !important;
-  padding: 0 14px !important;
+  padding: 0 12px !important;
   background: var(--kakao-yellow) !important;
   border: none !important;
   border-radius: 8px !important;
@@ -1662,6 +1678,7 @@ kbd {
   font-weight: 800 !important;
   cursor: pointer !important;
   white-space: nowrap !important;
+  box-sizing: border-box !important;
   transition: transform 0.1s ease, background-color 0.15s ease !important;
   display: inline-flex !important;
   align-items: center !important;
