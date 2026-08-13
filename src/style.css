@@ -2063,19 +2063,38 @@ kbd {
   box-sizing: border-box;
 }
 
-.touch-dpad, .touch-actions {
+.touch-dpad-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.dpad-row {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
+  width: 100%;
+}
+
+.dpad-row.top {
+  width: 33.33%;
+}
+
+.touch-actions {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
   width: 100%;
 }
 
 .touch-btn {
   flex: 1;
-  height: 48px;
+  height: 44px;
   background: var(--surface-item);
   border: 1px solid var(--border-active);
-  border-radius: 10px;
+  border-radius: 8px;
   color: #ffffff;
   font-weight: 800;
   font-size: 1.15rem;
@@ -2096,7 +2115,7 @@ kbd {
 
 .touch-btn.secondary {
   background: rgba(255, 255, 255, 0.08);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   border-color: var(--border-subtle);
 }
 
@@ -2104,12 +2123,13 @@ kbd {
   background: var(--kakao-yellow);
   color: var(--text-dark);
   font-size: 1.25rem;
+  font-weight: 900;
 }
 
 .touch-btn.accent {
   background: #ff4500;
   color: #ffffff;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   border-color: #ff6347;
 }
 
