@@ -6,6 +6,8 @@ import { UserPromptArea } from "./components/UserPromptArea";
 import { WorkingProcess } from "./components/WorkingProcess";
 import { PlanResponse } from "./components/PlanResponse";
 import { ImplementationPlanCard } from "./components/ImplementationPlanCard";
+import { ToolExecution } from "./components/ToolExecution";
+import { ExecutionSuccessCard } from "./components/ExecutionSuccessCard";
 import { MouseCursor } from "./components/MouseCursor";
 
 export const AntigravityDemo: React.FC = () => {
@@ -14,9 +16,10 @@ export const AntigravityDemo: React.FC = () => {
   const cubicEase = Easing.bezier(0.16, 1, 0.3, 1);
 
   // Enhanced Camera Zoom-In focus onto main chat response content (1.42x close-up)
+  // Zooms in during plan response, remains focused while Proceed clicked & tools run, then zooms out at completion
   const cameraScale = interpolate(
     frame,
-    [0, 180, 220, 1420, 1460, 1500],
+    [0, 180, 220, 1900, 1960, 2400],
     [1.0, 1.0, 1.42, 1.42, 1.0, 1.0],
     {
       extrapolateLeft: "clamp",
@@ -30,8 +33,8 @@ export const AntigravityDemo: React.FC = () => {
   // Proceed Button Center    -> (X: 380, Y: 868)
   const mouseX = interpolate(
     frame,
-    [0, 25, 1200, 1260, 1500],
-    [900, 420, 420, 380, 380],
+    [0, 25, 1200, 1260, 1900, 1960, 2400],
+    [900, 420, 420, 380, 380, 950, 950],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -41,8 +44,8 @@ export const AntigravityDemo: React.FC = () => {
 
   const mouseY = interpolate(
     frame,
-    [0, 25, 1200, 1260, 1500],
-    [500, 60, 60, 868, 868],
+    [0, 25, 1200, 1260, 1900, 1960, 2400],
+    [500, 60, 60, 868, 868, 600, 600],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -148,7 +151,7 @@ export const AntigravityDemo: React.FC = () => {
                   display: "flex",
                   flexDirection: "column",
                   gap: 10,
-                  overflow: "hidden",
+                  overflowY: "auto",
                 }}
               >
                 {/* User Input Prompt */}
@@ -162,6 +165,12 @@ export const AntigravityDemo: React.FC = () => {
 
                 {/* Implementation Plan Artifact Card & Proceed Button */}
                 <ImplementationPlanCard />
+
+                {/* Tool Execution Cards after Proceed Click */}
+                <ToolExecution />
+
+                {/* Final Task Completion & Cloud Run Deployment Result Card */}
+                <ExecutionSuccessCard />
               </div>
             </div>
           </div>
