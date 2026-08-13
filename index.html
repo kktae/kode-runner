@@ -173,7 +173,7 @@
       <!-- Main In-Game View (Hidden when on Home Screen) -->
       <div id="game-view" class="game-screen-view hidden">
         <main class="game-grid">
-          <!-- Left Panel: HOLD & Stats -->
+          <!-- Left Panel: HOLD, NEXT & Stats -->
           <section class="side-panel left-panel">
             <div class="glass-card panel-hold">
               <h3 class="panel-title">HOLD</h3>
@@ -181,6 +181,15 @@
                 <canvas id="hold-canvas" width="100" height="100"></canvas>
               </div>
               <span class="key-hint">[Shift / C]</span>
+            </div>
+
+            <div class="glass-card panel-next">
+              <h3 class="panel-title">NEXT</h3>
+              <div class="next-queue">
+                <div class="preview-box mini"><canvas id="next1-canvas" width="60" height="60"></canvas></div>
+                <div class="preview-box mini"><canvas id="next2-canvas" width="60" height="60"></canvas></div>
+                <div class="preview-box mini"><canvas id="next3-canvas" width="60" height="60"></canvas></div>
+              </div>
             </div>
 
             <div class="glass-card panel-stats">
@@ -271,16 +280,8 @@
             </div>
           </section>
 
-          <!-- Right Panel: NEXT Queue, Chat & Leaderboard -->
+          <!-- Right Panel: Chat & Leaderboard -->
           <section class="side-panel right-panel">
-            <div class="glass-card panel-next">
-              <h3 class="panel-title">NEXT</h3>
-              <div class="next-queue">
-                <div class="preview-box mini"><canvas id="next1-canvas" width="60" height="60"></canvas></div>
-                <div class="preview-box mini"><canvas id="next2-canvas" width="60" height="60"></canvas></div>
-                <div class="preview-box mini"><canvas id="next3-canvas" width="60" height="60"></canvas></div>
-              </div>
-            </div>
 
             <!-- Realtime 1v1 Chat Panel (Multiplayer) -->
             <div id="chat-panel" class="glass-card panel-chat hidden">
