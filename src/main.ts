@@ -152,9 +152,12 @@ function showGameView(isMultiplayer = false, autoStartGame = true) {
   if (pauseBtn) pauseBtn.style.display = 'inline-flex';
   if (modeChangeBtn) modeChangeBtn.style.display = 'inline-flex';
 
+  const chatPanel = document.getElementById('chat-panel');
+
   if (isMultiplayer) {
     if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
     if (opponentPanel) opponentPanel.classList.remove('hidden');
+    if (chatPanel) chatPanel.classList.remove('hidden');
 
     modeDisplayTag.innerHTML = `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span>1v1 클래식 대전</span>`;
     gameLoop.setMode('classic');
@@ -171,6 +174,7 @@ function showGameView(isMultiplayer = false, autoStartGame = true) {
   } else {
     if (singleLeaderboardPanel) singleLeaderboardPanel.classList.remove('hidden');
     if (opponentPanel) opponentPanel.classList.add('hidden');
+    if (chatPanel) chatPanel.classList.add('hidden');
 
     if (selectedMode === 'timeattack') {
       modeDisplayTag.innerHTML = `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span>90초 타임어택</span>`;

@@ -1582,7 +1582,7 @@ kbd {
 }
 
 /* Realtime 1v1 Chat Panel */
-.panel-chat {
+.panel-chat:not(.hidden) {
   display: flex !important;
   flex-direction: column !important;
   gap: 8px !important;
@@ -2028,7 +2028,7 @@ kbd {
   width: 100% !important;
 }
 
-.panel-opponent {
+.panel-opponent:not(.hidden) {
   display: flex !important;
   flex-direction: column !important;
   gap: 6px !important;
