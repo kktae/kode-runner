@@ -806,6 +806,7 @@ const garbageCountTag = document.getElementById('garbage-count');
 let opponentRenderer: OpponentBoardRenderer | null = null;
 if (opponentCanvas) {
   opponentRenderer = new OpponentBoardRenderer(opponentCanvas);
+  (window as any).opponentRenderer = opponentRenderer;
 }
 
 function startMultiplayerGame(roomId: string) {

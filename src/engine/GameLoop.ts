@@ -198,12 +198,14 @@ export class GameLoop {
         if (this.board.moveLeft()) {
           this.soundManager.playMove();
           this.resetLockDelayIfGrounded();
+          this.syncMultiplayerState(true);
         }
         break;
       case 'right':
         if (this.board.moveRight()) {
           this.soundManager.playMove();
           this.resetLockDelayIfGrounded();
+          this.syncMultiplayerState(true);
         }
         break;
       case 'down':
@@ -211,6 +213,7 @@ export class GameLoop {
           this.stats.score += 1;
           this.soundManager.playMove();
           this.dropCounter = 0;
+          this.syncMultiplayerState(true);
         } else {
           // When soft drop reaches bottom, allow 500ms lock delay for sliding/rotating
           this.resetLockDelayIfGrounded();
@@ -220,6 +223,7 @@ export class GameLoop {
         if (this.board.rotate(true)) {
           this.soundManager.playRotate();
           this.resetLockDelayIfGrounded();
+          this.syncMultiplayerState(true);
         }
         break;
       case 'hardDrop': {
@@ -228,12 +232,14 @@ export class GameLoop {
         this.soundManager.playHardDrop();
         this.particles.triggerScreenShake(6);
         this.lockAndNext();
+        this.syncMultiplayerState(true);
         break;
       }
       case 'hold':
         if (this.board.holdPiece()) {
           this.soundManager.playRotate();
           this.updateQueueAndHold();
+          this.syncMultiplayerState(true);
         }
         break;
     }
@@ -399,7 +405,9 @@ export class GameLoop {
         this.lockDelayCounter = 0;
         if (this.dropCounter >= this.dropInterval) {
           this.dropCounter = 0;
-          this.board.moveDown();
+          if (this.board.moveDown()) {
+            this.syncMultiplayerState(true);
+          }
         }
       }
 
@@ -492,8 +500,18 @@ export class GameLoop {
     // Particles Overlay
     this.particles.draw(this.ctx);
 
-    // Sync Multiplayer Realtime Frame State
+    // Sync & Render Opponent Realtime Frame State
     this.syncMultiplayerState();
+
+    if (useMultiplayerStore.getState().status === 'PLAYING') {
+      const oppRenderer = (window as any).opponentRenderer;
+      if (oppRenderer) {
+        oppRenderer.render(
+          useMultiplayerStore.getState().opponentState,
+          useMultiplayerStore.getState().opponentNickname,
+        );
+      }
+    }
   }
 
   private lastSyncTime = 0;
