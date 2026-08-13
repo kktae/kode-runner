@@ -47,7 +47,7 @@ resource "google_certificate_manager_dns_authorization" "dns_auth" {
 # 2. Certificate Manager Wildcard Managed SSL Certificate (*.your-custom-domain.com & your-custom-domain.com)
 resource "google_certificate_manager_certificate" "wildcard_cert" {
   depends_on  = [google_project_service.enabled_apis]
-  name        = "${var.app_name}-wildcard-cert"
+  name        = "${var.app_name}-wildcard-cert-v2"
   description = "Google-managed Wildcard SSL Certificate for ${var.domain_name} and subdomains"
   scope       = "DEFAULT"
 
