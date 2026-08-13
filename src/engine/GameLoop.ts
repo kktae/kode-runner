@@ -38,6 +38,7 @@ export class GameLoop {
 
   private animationFrameId: number | null = null;
   private timerIntervalId: number | null = null;
+  private tickerWorker: Worker | null = null;
 
   constructor(canvas: HTMLCanvasElement, callbacks: GameLoopCallbacks) {
     this.canvas = canvas;
@@ -51,6 +52,47 @@ export class GameLoop {
     this.callbacks = callbacks;
 
     this.stats = this.createInitialStats();
+    this.initWorkerTicker();
+  }
+
+  private initWorkerTicker() {
+    if (this.tickerWorker) return;
+    try {
+      const workerCode = `
+        let timer = null;
+        self.onmessage = function(e) {
+          if (e.data === 'start') {
+            if (!timer) {
+              timer = setInterval(function() { postMessage('tick'); }, 16);
+            }
+          } else if (e.data === 'stop') {
+            if (timer) {
+              clearInterval(timer);
+              timer = null;
+            }
+          }
+        };
+      `;
+      const blob = new Blob([workerCode], { type: 'application/javascript' });
+      this.tickerWorker = new Worker(URL.createObjectURL(blob));
+
+      this.tickerWorker.onmessage = () => {
+        if (!this.isRunning || this.isPaused) return;
+        const now = performance.now();
+        const deltaTime = now - this.lastTime;
+        const safeDelta = Math.min(deltaTime, 100);
+        this.lastTime = now;
+
+        this.updatePhysics(safeDelta);
+
+        // If tab is inactive (document.hidden), requestAnimationFrame stops, so render & sync directly
+        if (document.hidden) {
+          this.render();
+        }
+      };
+    } catch (e) {
+      console.warn('Web Worker ticker fallback initialized', e);
+    }
   }
 
   private createInitialStats(): GameStats {
@@ -90,6 +132,7 @@ export class GameLoop {
     if (wrapper) wrapper.classList.add('is-playing');
 
     this.lastTime = performance.now();
+    this.tickerWorker?.postMessage('start');
     this.loop(this.lastTime);
 
     // Timer Interval for 1 second ticks
@@ -126,6 +169,7 @@ export class GameLoop {
   }
 
   public reset() {
+    this.tickerWorker?.postMessage('stop');
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
     if (this.timerIntervalId) clearInterval(this.timerIntervalId);
 
@@ -141,6 +185,7 @@ export class GameLoop {
 
   public stop() {
     this.isRunning = false;
+    this.tickerWorker?.postMessage('stop');
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
     if (this.timerIntervalId) clearInterval(this.timerIntervalId);
 
@@ -163,6 +208,7 @@ export class GameLoop {
 
   private gameOver() {
     this.isRunning = false;
+    this.tickerWorker?.postMessage('stop');
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
     if (this.timerIntervalId) clearInterval(this.timerIntervalId);
 
@@ -382,38 +428,41 @@ export class GameLoop {
     this.callbacks.onStatsUpdate(this.stats);
   }
 
+  private updatePhysics(deltaTime: number) {
+    if (!this.isRunning || this.isPaused) return;
+
+    this.dropCounter += deltaTime;
+
+    if (this.stats.isFever) {
+      this.particles.addFeverSparkles();
+    }
+
+    if (this.isGrounded()) {
+      // Increment lock delay counter while sitting on ground
+      this.lockDelayCounter += deltaTime;
+      if (this.lockDelayCounter >= this.lockDelay) {
+        this.lockAndNext();
+      }
+    } else {
+      this.lockDelayCounter = 0;
+      if (this.dropCounter >= this.dropInterval) {
+        this.dropCounter = 0;
+        if (this.board.moveDown()) {
+          this.syncMultiplayerState(true);
+        }
+      }
+    }
+
+    this.particles.update();
+  }
+
   private loop(timestamp: number) {
     if (!this.isRunning) return;
 
     const deltaTime = timestamp - this.lastTime;
     this.lastTime = timestamp;
 
-    if (!this.isPaused) {
-      this.dropCounter += deltaTime;
-
-      if (this.stats.isFever) {
-        this.particles.addFeverSparkles();
-      }
-
-      if (this.isGrounded()) {
-        // Increment lock delay counter while sitting on ground
-        this.lockDelayCounter += deltaTime;
-        if (this.lockDelayCounter >= this.lockDelay) {
-          this.lockAndNext();
-        }
-      } else {
-        this.lockDelayCounter = 0;
-        if (this.dropCounter >= this.dropInterval) {
-          this.dropCounter = 0;
-          if (this.board.moveDown()) {
-            this.syncMultiplayerState(true);
-          }
-        }
-      }
-
-      this.particles.update();
-    }
-
+    this.updatePhysics(deltaTime);
     this.render();
     this.animationFrameId = requestAnimationFrame((ts) => this.loop(ts));
   }
