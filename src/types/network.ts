@@ -43,6 +43,7 @@ export const PlayerGameStateSchema = z.object({
     x: z.number().int(),
     y: z.number().int(),
     rotation: z.number().int(),
+    shape: z.array(z.array(z.number())).optional(),
   }).nullable(),
   isGameOver: z.boolean(),
 });

@@ -78,22 +78,26 @@ export class OpponentBoardRenderer {
 
     // 2. Draw Falling Active Piece (Full 4-Cell Matrix with Rotation)
     if (gameState.currentPiece) {
-      const { type: typeId, x, y, rotation } = gameState.currentPiece;
+      const { type: typeId, x, y, rotation, shape: customShape } = gameState.currentPiece as any;
       const charType = ID_TO_MINO[typeId] || 'I';
-      let shape = SHAPES[charType];
+      let shape = customShape;
 
-      // Apply rotations
-      for (let i = 0; i < (rotation % 4); i++) {
-        shape = MinoFactory.rotateMatrix(shape, true);
+      if (!shape) {
+        shape = SHAPES[charType];
+        for (let i = 0; i < (rotation % 4); i++) {
+          shape = MinoFactory.rotateMatrix(shape, true);
+        }
       }
 
-      for (let r = 0; r < shape.length; r++) {
-        for (let c = 0; c < shape[r].length; c++) {
-          if (shape[r][c]) {
-            const drawX = (x + c) * cellSize;
-            const drawY = (y + r) * cellSize;
-            if (y + r >= 0) {
-              drawMinoCell(this.ctx, drawX, drawY, cellSize, charType, false);
+      if (shape && Array.isArray(shape)) {
+        for (let r = 0; r < shape.length; r++) {
+          for (let c = 0; c < shape[r].length; c++) {
+            if (shape[r][c]) {
+              const drawX = (x + c) * cellSize;
+              const drawY = (y + r) * cellSize;
+              if (y + r >= 0 && y + r < this.rows && x + c >= 0 && x + c < this.cols) {
+                drawMinoCell(this.ctx, drawX, drawY, cellSize, charType, false);
+              }
             }
           }
         }

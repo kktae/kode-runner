@@ -525,8 +525,8 @@ export class GameLoop {
     if (mpState.status !== 'PLAYING') return;
 
     const now = performance.now();
-    // 80ms 스로틀링 (초당 12.5회 송신)으로 소켓 네트워크 병목/지연 및 패킷 드롭 완전 방지
-    if (!force && now - this.lastSyncTime < 80) {
+    // 33ms 스로틀링 (초당 30회 실시간 동기화)으로 딜레이 없는 실시간 피스 낙하 표현
+    if (!force && now - this.lastSyncTime < 33) {
       return;
     }
     this.lastSyncTime = now;
@@ -545,6 +545,7 @@ export class GameLoop {
             x: piece.x,
             y: piece.y,
             rotation: piece.rotation,
+            shape: piece.shape,
           }
         : null,
       isGameOver: !this.isRunning,
