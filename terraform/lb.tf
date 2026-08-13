@@ -32,15 +32,20 @@ resource "google_compute_backend_service" "lb_backend" {
   }
 }
 
-# Google Managed SSL Certificate for Custom Domain (your-custom-domain.com & www.your-custom-domain.com)
+# Google Managed SSL Certificate for Custom Domain (your-custom-domain.com, www, and mzs)
 resource "google_compute_managed_ssl_certificate" "lb_ssl_cert" {
-  name = "${var.app_name}-managed-ssl-cert"
+  name = "${var.app_name}-managed-ssl-cert-v2"
 
   managed {
     domains = [
       var.domain_name,
-      "www.${var.domain_name}"
+      "www.${var.domain_name}",
+      "mzs.${var.domain_name}"
     ]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
