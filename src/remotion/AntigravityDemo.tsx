@@ -6,7 +6,7 @@ import { UserPromptArea } from "./components/UserPromptArea";
 import { WorkingProcess } from "./components/WorkingProcess";
 import { PlanResponse } from "./components/PlanResponse";
 import { ImplementationPlanCard } from "./components/ImplementationPlanCard";
-import { ExactAntigravityScreenshotOverlay } from "./components/ExactAntigravityScreenshotOverlay";
+import { PostProceedExecutionStream } from "./components/PostProceedExecutionStream";
 import { MouseCursor } from "./components/MouseCursor";
 
 export const AntigravityDemo: React.FC = () => {
@@ -15,10 +15,9 @@ export const AntigravityDemo: React.FC = () => {
   const cubicEase = Easing.bezier(0.16, 1, 0.3, 1);
 
   // Camera Zoom-In focus onto main chat response content (1.42x close-up)
-  // Zooms in during plan response, remains focused while Proceed clicked & Antigravity execution steps run, then zooms out
   const cameraScale = interpolate(
     frame,
-    [0, 180, 220, 2200, 2300, 2400],
+    [0, 180, 220, 1180, 1280, 1380],
     [1.0, 1.0, 1.42, 1.42, 1.0, 1.0],
     {
       extrapolateLeft: "clamp",
@@ -27,13 +26,13 @@ export const AntigravityDemo: React.FC = () => {
     }
   );
 
-  // Mouse Cursor Trajectory inside App Window
+  // Mouse Cursor Trajectory inside App Window (Fast Snappy Motion)
   // Frame 0-25: Move to Prompt
-  // Frame 1200-1260: Move to Proceed button (X: 380, Y: 868)
-  // Frame 1800-2100: Move to "Submit" button in permission modal (X: 1100, Y: 940)
+  // Frame 600-650: Move to Proceed button (X: 380, Y: 868)
+  // Frame 1050-1120: Move to "Submit" button in permission modal (X: 1100, Y: 940)
   const mouseX = interpolate(
     frame,
-    [0, 25, 1200, 1260, 1800, 2100, 2200, 2400],
+    [0, 25, 600, 650, 1050, 1120, 1200, 1380],
     [900, 420, 420, 380, 800, 1100, 1100, 950],
     {
       extrapolateLeft: "clamp",
@@ -44,8 +43,20 @@ export const AntigravityDemo: React.FC = () => {
 
   const mouseY = interpolate(
     frame,
-    [0, 25, 1200, 1260, 1800, 2100, 2200, 2400],
+    [0, 25, 600, 650, 1050, 1120, 1200, 1380],
     [500, 60, 60, 868, 700, 940, 940, 600],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: cubicEase,
+    }
+  );
+
+  // Smooth Chat Area Auto-Scroll Offset when content expands after Proceed click (frame 650~)
+  const chatScrollY = interpolate(
+    frame,
+    [0, 650, 800, 950, 1100, 1250, 1380],
+    [0, 0, -200, -520, -850, -1150, -1200],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -55,8 +66,8 @@ export const AntigravityDemo: React.FC = () => {
 
   const isMouseClicking =
     (frame >= 15 && frame <= 35) ||
-    (frame >= 1255 && frame <= 1275) ||
-    (frame >= 2095 && frame <= 2115);
+    (frame >= 645 && frame <= 665) ||
+    (frame >= 1115 && frame <= 1135);
 
   return (
     <AbsoluteFill
@@ -77,7 +88,7 @@ export const AntigravityDemo: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 32,
+          top: 80,
           right: 40,
           zIndex: 1000,
           display: "flex",
@@ -153,26 +164,36 @@ export const AntigravityDemo: React.FC = () => {
                   display: "flex",
                   flexDirection: "column",
                   gap: 10,
-                  overflowY: "auto",
+                  overflowY: "hidden",
                 }}
               >
-                {/* User Input Prompt */}
-                <UserPromptArea />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 10,
+                    transform: `translateY(${chatScrollY}px)`,
+                    transition: "transform 0.2s ease-out",
+                  }}
+                >
+                  {/* User Input Prompt */}
+                  <UserPromptArea />
 
-                {/* Working Process / CoT Steps */}
-                <WorkingProcess />
+                  {/* Working Process / CoT Steps */}
+                  <WorkingProcess />
 
-                {/* Text Plan Response */}
-                <PlanResponse />
+                  {/* Text Plan Response */}
+                  <PlanResponse />
 
-                {/* Implementation Plan Artifact Card & Proceed Button */}
-                <ImplementationPlanCard />
+                  {/* Implementation Plan Artifact Card & Proceed Button */}
+                  <ImplementationPlanCard />
+
+                  {/* Animated Post-Proceed Execution Stream matching user uploaded Antigravity UI */}
+                  <PostProceedExecutionStream />
+                </div>
               </div>
             </div>
           </div>
-
-          {/* Exact User Uploaded Antigravity Screenshots Overlay after Proceed (1270f~) */}
-          <ExactAntigravityScreenshotOverlay />
 
           {/* Interactive Mouse Cursor nested INSIDE window */}
           <MouseCursor x={mouseX} y={mouseY} clicking={isMouseClicking} />

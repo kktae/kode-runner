@@ -108,7 +108,7 @@ export const RemotionModal: React.FC<RemotionModalProps> = ({ onClose }) => {
         >
           <Player
             component={AntigravityDemo}
-            durationInFrames={2400}
+            durationInFrames={1380}
             compositionWidth={1920}
             compositionHeight={1080}
             fps={60}

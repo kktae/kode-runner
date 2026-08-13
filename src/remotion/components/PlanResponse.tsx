@@ -17,11 +17,11 @@ export const PlanResponse: React.FC = () => {
   const outroText =
     "계획서를 확인하시고 Proceed 버튼을 누르시거나 승인해 주시면 개발을 시작겠습니다!";
 
-  // Progressive streaming frames starting around frame 520
+  // Fast Progressive streaming frames starting at frame 280
   const introTypedLength = Math.min(
     introText.length,
     Math.floor(
-      interpolate(frame, [520, 620], [0, introText.length], {
+      interpolate(frame, [280, 330], [0, introText.length], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       })
@@ -31,7 +31,7 @@ export const PlanResponse: React.FC = () => {
   const p1Length = Math.min(
     points[0].length,
     Math.floor(
-      interpolate(frame, [630, 720], [0, points[0].length], {
+      interpolate(frame, [335, 385], [0, points[0].length], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       })
@@ -41,7 +41,7 @@ export const PlanResponse: React.FC = () => {
   const p2Length = Math.min(
     points[1].length,
     Math.floor(
-      interpolate(frame, [730, 830], [0, points[1].length], {
+      interpolate(frame, [390, 445], [0, points[1].length], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       })
@@ -51,7 +51,7 @@ export const PlanResponse: React.FC = () => {
   const p3Length = Math.min(
     points[2].length,
     Math.floor(
-      interpolate(frame, [840, 920], [0, points[2].length], {
+      interpolate(frame, [450, 495], [0, points[2].length], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       })
@@ -61,7 +61,7 @@ export const PlanResponse: React.FC = () => {
   const p4Length = Math.min(
     points[3].length,
     Math.floor(
-      interpolate(frame, [930, 1040], [0, points[3].length], {
+      interpolate(frame, [500, 550], [0, points[3].length], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       })
@@ -71,14 +71,14 @@ export const PlanResponse: React.FC = () => {
   const outroLength = Math.min(
     outroText.length,
     Math.floor(
-      interpolate(frame, [1050, 1120], [0, outroText.length], {
+      interpolate(frame, [555, 590], [0, outroText.length], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       })
     )
   );
 
-  if (frame < 520) return null;
+  if (frame < 280) return null;
 
   return (
     <div
@@ -96,64 +96,64 @@ export const PlanResponse: React.FC = () => {
       {/* Intro Sentence */}
       <div>
         <span>{introText.slice(0, introTypedLength)}</span>
-        {frame >= 520 && frame < 625 && (
-          <span style={{ opacity: Math.floor(frame / 10) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
+        {frame >= 280 && frame < 332 && (
+          <span style={{ opacity: Math.floor(frame / 6) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
         )}
       </div>
 
       {/* Key Elements Section Header */}
-      {frame >= 620 && (
+      {frame >= 330 && (
         <div style={{ fontWeight: 700, fontSize: 14, color: "#0F172A", marginTop: 4 }}>
           주요 핵심 요소
         </div>
       )}
 
       {/* Point 1 */}
-      {frame >= 630 && (
+      {frame >= 335 && (
         <div style={{ whiteSpace: "pre-wrap" }}>
           <span>{points[0].slice(0, p1Length)}</span>
-          {frame >= 630 && frame < 725 && (
-            <span style={{ opacity: Math.floor(frame / 10) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
+          {frame >= 335 && frame < 388 && (
+            <span style={{ opacity: Math.floor(frame / 6) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
           )}
         </div>
       )}
 
       {/* Point 2 */}
-      {frame >= 730 && (
+      {frame >= 390 && (
         <div style={{ whiteSpace: "pre-wrap" }}>
           <span>{points[1].slice(0, p2Length)}</span>
-          {frame >= 730 && frame < 835 && (
-            <span style={{ opacity: Math.floor(frame / 10) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
+          {frame >= 390 && frame < 448 && (
+            <span style={{ opacity: Math.floor(frame / 6) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
           )}
         </div>
       )}
 
       {/* Point 3 */}
-      {frame >= 840 && (
+      {frame >= 450 && (
         <div style={{ whiteSpace: "pre-wrap" }}>
           <span>{points[2].slice(0, p3Length)}</span>
-          {frame >= 840 && frame < 925 && (
-            <span style={{ opacity: Math.floor(frame / 10) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
+          {frame >= 450 && frame < 498 && (
+            <span style={{ opacity: Math.floor(frame / 6) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
           )}
         </div>
       )}
 
       {/* Point 4 */}
-      {frame >= 930 && (
+      {frame >= 500 && (
         <div style={{ whiteSpace: "pre-wrap" }}>
           <span>{points[3].slice(0, p4Length)}</span>
-          {frame >= 930 && frame < 1045 && (
-            <span style={{ opacity: Math.floor(frame / 10) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
+          {frame >= 500 && frame < 553 && (
+            <span style={{ opacity: Math.floor(frame / 6) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
           )}
         </div>
       )}
 
       {/* Outro Sentence */}
-      {frame >= 1050 && (
+      {frame >= 555 && (
         <div style={{ marginTop: 4 }}>
           <span>{outroText.slice(0, outroLength)}</span>
-          {frame >= 1050 && frame < 1125 && (
-            <span style={{ opacity: Math.floor(frame / 10) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
+          {frame >= 555 && frame < 593 && (
+            <span style={{ opacity: Math.floor(frame / 6) % 2 === 0 ? 1 : 0, color: "#0088FF", fontWeight: 700, marginLeft: 2 }}>▌</span>
           )}
         </div>
       )}

@@ -5,35 +5,36 @@ import { ChevronDown, Folder, FileText } from "lucide-react";
 export const WorkingProcess: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // Appears around frame 160
-  const opacity = interpolate(frame, [160, 190], [0, 1], {
+  // Appears around frame 120
+  const opacity = interpolate(frame, [120, 140], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  if (frame < 160) return null;
+  if (frame < 120) return null;
 
-  // Progressive reveal at 60 FPS
-  const step1 = frame >= 190;
-  const step2 = frame >= 230;
-  const step3 = frame >= 270;
-  const step4 = frame >= 310;
+  // Fast Snappy Progressive reveal
+  const step1 = frame >= 135;
+  const step2 = frame >= 150;
+  const step3 = frame >= 165;
+  const step4 = frame >= 180;
 
   // Streamed thought text for Designing Project Structure
   const thoughtText =
     "I'm currently focused on architecting the foundation for the project. My thoughts are gravitating towards either a robust Vite-powered React app with HTML5 Canvas, or a lean, modular web application featuring a comprehensive suite of custom elements like an audio synthesizer, Canvas engine, and particle effects, alongside a leaderboard and sound design.";
 
+  // Fast typing streaming
   const thoughtTypedLength = Math.min(
     thoughtText.length,
     Math.floor(
-      interpolate(frame, [330, 500], [0, thoughtText.length], {
+      interpolate(frame, [190, 260], [0, thoughtText.length], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       })
     )
   );
 
-  const step5 = frame >= 510;
+  const step5 = frame >= 270;
 
   return (
     <div
@@ -82,7 +83,7 @@ export const WorkingProcess: React.FC = () => {
         </div>
       )}
 
-      {/* Thought for 7s & Designing Project Structure (STREAMING TYPING EFFECT) */}
+      {/* Thought for 7s & Designing Project Structure (FAST STREAMING EFFECT) */}
       {step4 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingLeft: 24 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -106,10 +107,10 @@ export const WorkingProcess: React.FC = () => {
             <span style={{ fontWeight: 700, fontSize: 13 }}>Designing Project Structure</span>
             <span style={{ fontSize: 12.5, color: "#555555", lineHeight: 1.5 }}>
               {thoughtText.slice(0, thoughtTypedLength)}
-              {frame >= 330 && frame < 510 && (
+              {frame >= 190 && frame < 265 && (
                 <span
                   style={{
-                    opacity: Math.floor(frame / 10) % 2 === 0 ? 1 : 0,
+                    opacity: Math.floor(frame / 6) % 2 === 0 ? 1 : 0,
                     color: "#0088FF",
                     fontWeight: 700,
                     marginLeft: 2,

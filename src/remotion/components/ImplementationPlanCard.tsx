@@ -5,25 +5,25 @@ import { FileText, Copy, ThumbsUp, ThumbsDown, CheckCircle2 } from "lucide-react
 export const ImplementationPlanCard: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // Appears around frame 1130 at 60fps
-  const opacity = interpolate(frame, [1130, 1160], [0, 1], {
+  // Fast Snappy Appearance around frame 590
+  const opacity = interpolate(frame, [590, 610], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const scale = interpolate(frame, [1130, 1170], [0.97, 1], {
+  const scale = interpolate(frame, [590, 620], [0.97, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.16, 1, 0.3, 1),
   });
 
-  if (frame < 1130) return null;
+  if (frame < 590) return null;
 
-  // Proceed button click animation at frame 1260
-  const isClicked = frame >= 1260;
+  // Fast Snappy Proceed button click animation at frame 650
+  const isClicked = frame >= 650;
   const buttonScale = interpolate(
     frame,
-    [1250, 1260, 1270, 1280],
+    [640, 650, 660, 670],
     [1, 0.92, 1.05, 1],
     {
       extrapolateLeft: "clamp",
