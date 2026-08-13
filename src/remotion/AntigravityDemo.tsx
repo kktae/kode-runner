@@ -8,6 +8,7 @@ import { PlanResponse } from "./components/PlanResponse";
 import { ImplementationPlanCard } from "./components/ImplementationPlanCard";
 import { ToolExecution } from "./components/ToolExecution";
 import { ExecutionSuccessCard } from "./components/ExecutionSuccessCard";
+import { AgentStepShowcase } from "./components/AgentStepShowcase";
 import { MouseCursor } from "./components/MouseCursor";
 
 export const AntigravityDemo: React.FC = () => {
@@ -174,6 +175,9 @@ export const AntigravityDemo: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* User Image Step Showcase Slide Overlays */}
+          <AgentStepShowcase />
 
           {/* Interactive Mouse Cursor nested INSIDE window for 100% pixel lockstep */}
           <MouseCursor x={mouseX} y={mouseY} clicking={isMouseClicking} />
