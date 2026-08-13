@@ -122,8 +122,9 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       });
 
       socket.on('state_sync', (state: PlayerGameState) => {
-        if (state.isGameOver && get().status === 'PLAYING') {
-          // 상대방이 먼저 KO 되었으므로 내가 승리!
+        const current = get();
+        if (state.isGameOver && current.status === 'PLAYING') {
+          // 상대방이 게임 중 먼저 KO 되었으므로 내가 승리!
           set({ opponentState: state, gameWinner: 'ME', status: 'GAME_OVER' });
         } else {
           set({ opponentState: state });
@@ -131,7 +132,8 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       });
 
       socket.on('game_over', () => {
-        if (get().status === 'PLAYING') {
+        const current = get();
+        if (current.status === 'PLAYING') {
           set({ gameWinner: 'ME', status: 'GAME_OVER' });
         }
       });
@@ -236,7 +238,10 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   },
 
   sendGameOver: (finalScore: number, survivedTime: number) => {
-    const { socket } = get();
+    const { socket, status } = get();
+    // 이미 승패가 결정되었거나 상대방이 먼저 KO되어 GAME_OVER 상태인 경우 재설정 방지
+    if (status === 'GAME_OVER') return;
+
     set({ status: 'GAME_OVER', gameWinner: 'OPPONENT' });
     if (socket && socket.connected) {
       socket.emit('game_over', { finalScore, survivedTime });
