@@ -92,7 +92,7 @@ resource "google_compute_url_map" "https_url_map" {
 
 # Target HTTPS Proxy using Certificate Map (Certificate Manager Integration)
 resource "google_compute_target_https_proxy" "https_proxy" {
-  name            = "${var.app_name}-https-proxy"
+  name            = "${var.app_name}-https-proxy-v2"
   url_map         = google_compute_url_map.https_url_map.id
   certificate_map = "//certificatemanager.googleapis.com/${google_certificate_manager_certificate_map.cert_map.id}"
 
