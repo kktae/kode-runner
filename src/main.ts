@@ -804,6 +804,9 @@ if (randomNicknameBtn && multiNicknameInput) {
 }
 
 const opponentPanel = document.getElementById('opponent-panel');
+const boardReadyOverlay = document.getElementById('board-ready-overlay');
+const boardVsDivider = document.getElementById('board-vs-divider');
+const garbageIndicator = document.getElementById('garbage-indicator');
 const singleLeaderboardPanel = document.getElementById('single-leaderboard-panel');
 const opponentCanvas = document.getElementById('opponent-canvas') as HTMLCanvasElement;
 const opponentNameTag = document.getElementById('opponent-name-tag');
@@ -825,11 +828,27 @@ function startMultiplayerGame(roomId: string) {
   const nickname = multiNicknameInput?.value.trim() || generateKoreanNickname();
   useMultiplayerStore.getState().joinRoom(roomId, nickname);
 
-  // Switch Right Panel Layout for 1v1 PvP
+  // Switch Layout for 1v1 Dual-Board Arena
   if (opponentPanel) opponentPanel.classList.remove('hidden');
+  if (boardReadyOverlay) boardReadyOverlay.classList.remove('hidden');
+  if (boardVsDivider) boardVsDivider.classList.remove('hidden');
   if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
 
   showGameView(true, false); // Enter lobby view without starting game loop
+}
+
+const joinRoomBtn = document.getElementById('join-room-btn');
+
+if (joinRoomBtn) {
+  joinRoomBtn.addEventListener('click', () => {
+    const customRoom = multiRoomIdInput?.value.trim();
+    if (!customRoom || customRoom.length !== 4) {
+      alert('입장할 4자리 방 코드를 올바르게 입력해주세요 (예: 4829)');
+      multiRoomIdInput?.focus();
+      return;
+    }
+    startMultiplayerGame(customRoom);
+  });
 }
 
 if (quickMatchBtn) {
@@ -840,19 +859,14 @@ if (quickMatchBtn) {
       opponentRenderer.clear();
     }
 
-    const customRoom = multiRoomIdInput?.value.trim();
     const nickname = multiNicknameInput?.value.trim() || generateKoreanNickname();
 
-    if (customRoom && customRoom.length === 4) {
-      // 4자리 지정 방 코드가 있는 경우 직통 입장
-      startMultiplayerGame(customRoom);
-    } else {
-      // 빠른 무작위 매칭: 서버 매치메이킹 큐에 대기 요청!
-      if (opponentPanel) opponentPanel.classList.remove('hidden');
-      if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
-      useMultiplayerStore.getState().requestQuickMatch(nickname);
-      showGameView(true, false); // Enter lobby view without starting game loop
-    }
+    if (opponentPanel) opponentPanel.classList.remove('hidden');
+    if (boardReadyOverlay) boardReadyOverlay.classList.remove('hidden');
+    if (boardVsDivider) boardVsDivider.classList.remove('hidden');
+    if (singleLeaderboardPanel) singleLeaderboardPanel.classList.add('hidden');
+    useMultiplayerStore.getState().requestQuickMatch(nickname);
+    showGameView(true, false); // Enter lobby view without starting game loop
   });
 }
 
@@ -894,6 +908,36 @@ let lastMultiStatus = 'IDLE';
 useMultiplayerStore.subscribe((state) => {
   if (state.roomId && multiRoomIdInput) {
     multiRoomIdInput.value = state.roomId;
+  }
+
+  // Interactive Board Ready Overlay Toggle & Button Text Update
+  if (toggleReadyBtn) {
+    const readySpan = toggleReadyBtn.querySelector('span');
+    if (state.isReady) {
+      toggleReadyBtn.classList.add('is-ready');
+      if (readySpan) readySpan.innerText = '✓ READY 완료 (상대 대기중)';
+    } else {
+      toggleReadyBtn.classList.remove('is-ready');
+      if (readySpan) readySpan.innerText = '⚡ 게임 준비 (READY)';
+    }
+  }
+
+  // Interactive Garbage Attack Indicator Badge Update
+  if (garbageIndicator && garbageCountTag) {
+    if (state.pendingGarbageLines > 0) {
+      garbageCountTag.innerText = state.pendingGarbageLines.toString();
+      garbageIndicator.classList.remove('hidden');
+    } else {
+      garbageIndicator.classList.add('hidden');
+    }
+  }
+
+  if (state.status === 'PLAYING') {
+    if (boardReadyOverlay) boardReadyOverlay.classList.add('hidden');
+  } else if (state.status === 'WAITING' || state.status === 'CONNECTING') {
+    if (boardReadyOverlay && opponentPanel && !opponentPanel.classList.contains('hidden')) {
+      boardReadyOverlay.classList.remove('hidden');
+    }
   }
 
   // Transition to Game View on BOTH PLAYERS READY -> PLAYING

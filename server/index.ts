@@ -94,7 +94,8 @@ interface PlayerSession {
 }
 
 const roomSessions = new Map<string, PlayerSession[]>();
-let waitingRoomId: string | null = null;
+let fallbackWaitingRoomId: string | null = null;
+let fallbackWaitingRoomTime = 0;
 
 function generate4DigitCode(): string {
   return Math.floor(1000 + Math.random() * 9000).toString();
@@ -121,6 +122,9 @@ if (REDIS_URL) {
   }
 }
 
+// Disconnect Grace Period Timeouts to prevent accidental game overs during short socket dropouts
+const disconnectTimeouts = new Map<string, NodeJS.Timeout>();
+
 // In-Memory Leaderboard Fallback Data Store
 interface LeaderboardRecord {
   id: string;
@@ -140,7 +144,6 @@ async function fetchLeaderboardFromStorage(mode: string): Promise<LeaderboardRec
   const key = `leaderboard:${mode}`;
   if (redisClient && redisClient.status === 'ready') {
     try {
-      // Fetch top 20 entries sorted by score DESC
       const rawData = await (redisClient as any).zrevrange(key, 0, 19, 'WITHSCORES');
       const results: LeaderboardRecord[] = [];
       for (let i = 0; i < rawData.length; i += 2) {
@@ -188,9 +191,7 @@ async function saveScoreToStorage(entry: LeaderboardRecord): Promise<Leaderboard
         lines: entry.lines,
         date: entry.date,
       });
-      // ZADD leaderboard:mode SCORE MEMBER
       await redisClient.zadd(key, entry.score, memberStr);
-      // Keep top 100 entries in Redis Sorted Set
       await redisClient.zremrangebyrank(key, 0, -101);
       logInfo('Score successfully saved to Redis Leaderboard', { name: entry.name, score: entry.score, mode });
     } catch (err: any) {
@@ -198,7 +199,6 @@ async function saveScoreToStorage(entry: LeaderboardRecord): Promise<Leaderboard
     }
   }
 
-  // Also update in-memory store
   const list = inMemoryLeaderboard[mode] || [];
   list.push(entry);
   list.sort((a, b) => b.score - a.score);
@@ -234,33 +234,65 @@ io.on('connection', (socket: Socket) => {
     io.emit('leaderboard_update', { mode: entry.mode, entries: updatedList });
   });
 
-  // 1. Quick Matchmaking Request
-  socket.on('quick_match_request', (data: { nickname: string }) => {
+  // 1. Quick Matchmaking Request (Distributed Redis Match Queue)
+  socket.on('quick_match_request', async (data: { nickname: string }) => {
     currentNickname = data.nickname || '플레이어';
 
-    if (waitingRoomId && roomSessions.has(waitingRoomId) && (roomSessions.get(waitingRoomId)?.length || 0) < 2) {
-      const assignedRoom = waitingRoomId;
-      waitingRoomId = null;
-      logInfo('Quick match assigned to existing room', { socketId: socket.id, roomId: assignedRoom, nickname: currentNickname });
-      socket.emit('quick_match_assigned', { roomId: assignedRoom });
-    } else {
-      const newRoom = generate4DigitCode();
-      waitingRoomId = newRoom;
-      logInfo('Quick match created new room', { socketId: socket.id, roomId: newRoom, nickname: currentNickname });
-      socket.emit('quick_match_assigned', { roomId: newRoom });
+    let assignedRoom: string | null = null;
+
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        const REDIS_QUEUE_KEY = 'quick_match_waiting_room';
+        const existingRoom = await redisClient.get(REDIS_QUEUE_KEY);
+
+        if (existingRoom) {
+          assignedRoom = existingRoom;
+          await redisClient.del(REDIS_QUEUE_KEY);
+          logInfo('Distributed Quick Match: assigned to existing Redis room', { socketId: socket.id, roomId: assignedRoom, nickname: currentNickname });
+        } else {
+          const newRoom = generate4DigitCode();
+          assignedRoom = newRoom;
+          await redisClient.set(REDIS_QUEUE_KEY, newRoom, 'EX', 30);
+          logInfo('Distributed Quick Match: created new Redis room', { socketId: socket.id, roomId: newRoom, nickname: currentNickname });
+        }
+      } catch (err: any) {
+        logWarn('Redis Quick Match lookup error, falling back to local memory', { error: err.message });
+      }
     }
+
+    if (!assignedRoom) {
+      const now = Date.now();
+      if (fallbackWaitingRoomId && now - fallbackWaitingRoomTime < 30000) {
+        assignedRoom = fallbackWaitingRoomId;
+        fallbackWaitingRoomId = null;
+        logInfo('Fallback Quick Match: assigned to existing local room', { socketId: socket.id, roomId: assignedRoom, nickname: currentNickname });
+      } else {
+        const newRoom = generate4DigitCode();
+        assignedRoom = newRoom;
+        fallbackWaitingRoomId = newRoom;
+        fallbackWaitingRoomTime = now;
+        logInfo('Fallback Quick Match: created new local room', { socketId: socket.id, roomId: newRoom, nickname: currentNickname });
+      }
+    }
+
+    socket.emit('quick_match_assigned', { roomId: assignedRoom });
   });
 
-  // 2. Join Room (Manual Ready required before start)
+  // 2. Join Room (or Rejoin Room after temporary disconnect)
   socket.on('join_room', (data: { roomId: string; nickname: string }) => {
     const { roomId, nickname } = data;
     currentRoomId = roomId;
     currentNickname = nickname || '플레이어';
 
+    if (disconnectTimeouts.has(socket.id)) {
+      clearTimeout(disconnectTimeouts.get(socket.id));
+      disconnectTimeouts.delete(socket.id);
+    }
+
     socket.join(roomId);
 
     let sessionList = roomSessions.get(roomId) || [];
-    sessionList = sessionList.filter((s) => s.socketId !== socket.id);
+    sessionList = sessionList.filter((s) => s.socketId !== socket.id && s.nickname !== currentNickname);
     sessionList.push({ socketId: socket.id, nickname: currentNickname, isReady: false });
     roomSessions.set(roomId, sessionList);
 
@@ -293,9 +325,7 @@ io.on('connection', (socket: Socket) => {
     logInfo('Player toggled ready state', { socketId: socket.id, roomId: currentRoomId, isReady: data.isReady });
     io.in(currentRoomId).emit('room_info', { roomId: currentRoomId, players });
 
-    // Start Game when at least 2 players are present and ALL are ready
     if (sessionList.length >= 2 && sessionList.every((s) => s.isReady)) {
-      // Reset ready states for next round
       sessionList.forEach((s) => (s.isReady = false));
 
       logInfo('Multiplayer PvP match started', { roomId: currentRoomId, players: players.map((p) => p.nickname) });
@@ -322,13 +352,11 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
-  // 6. Realtime 1v1 Chat Message (with Korean Profanity Filter & Length Limit)
+  // 6. Realtime 1v1 Chat Message
   socket.on('chat_message', (data: { message: string }) => {
     if (currentRoomId && data.message && data.message.trim().length > 0) {
       const rawText = data.message.trim().slice(0, 100);
       const sanitized = rawText.replace(/시[발바빨벌발발]+|씨[발바빨벌발발]+|개[새새끼씨끼씹]+|병[신신씬]+|미[친친친놈년]+/g, '***');
-      
-      logDebug('Chat message processed', { socketId: socket.id, roomId: currentRoomId, isFiltered: sanitized !== rawText });
 
       io.in(currentRoomId).emit('chat_message', {
         message: sanitized,
@@ -347,17 +375,17 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
-  // 8. Leave Room or Disconnect
+  // 8. Leave Room or Disconnect with 4-second Grace Period
   socket.on('leave_room', () => {
     if (currentRoomId) {
-      logInfo('Player left room', { socketId: socket.id, roomId: currentRoomId });
+      logInfo('Player left room explicitly', { socketId: socket.id, roomId: currentRoomId });
       socket.leave(currentRoomId);
       let sessionList = roomSessions.get(currentRoomId) || [];
       sessionList = sessionList.filter((s) => s.socketId !== socket.id);
       roomSessions.set(currentRoomId, sessionList);
 
-      if (waitingRoomId === currentRoomId) {
-        waitingRoomId = null;
+      if (fallbackWaitingRoomId === currentRoomId) {
+        fallbackWaitingRoomId = null;
       }
 
       socket.to(currentRoomId).emit('opponent_left', { socketId: socket.id });
@@ -368,19 +396,25 @@ io.on('connection', (socket: Socket) => {
   socket.on('disconnect', () => {
     logInfo('Socket client disconnected', { socketId: socket.id, roomId: currentRoomId });
     if (currentRoomId) {
-      let sessionList = roomSessions.get(currentRoomId) || [];
-      sessionList = sessionList.filter((s) => s.socketId !== socket.id);
-      roomSessions.set(currentRoomId, sessionList);
+      const roomToNotify = currentRoomId;
+      const leavingSocketId = socket.id;
 
-      if (waitingRoomId === currentRoomId) {
-        waitingRoomId = null;
-      }
+      // 4-second grace period for automatic socket reconnection before declaring opponent left
+      const timeout = setTimeout(() => {
+        disconnectTimeouts.delete(leavingSocketId);
+        let sessionList = roomSessions.get(roomToNotify) || [];
+        sessionList = sessionList.filter((s) => s.socketId !== leavingSocketId);
+        roomSessions.set(roomToNotify, sessionList);
 
-      socket.to(currentRoomId).emit('opponent_left', { socketId: socket.id });
+        if (fallbackWaitingRoomId === roomToNotify) {
+          fallbackWaitingRoomId = null;
+        }
+
+        logInfo('Grace period expired: emitting opponent_left', { socketId: leavingSocketId, roomId: roomToNotify });
+        io.in(roomToNotify).emit('opponent_left', { socketId: leavingSocketId });
+      }, 4000);
+
+      disconnectTimeouts.set(leavingSocketId, timeout);
     }
   });
-});
-
-httpServer.listen(PORT, () => {
-  logInfo(`Cloud Run Serverless Socket Server listening on port ${PORT}`, { port: PORT, env: process.env.NODE_ENV || 'development' });
 });

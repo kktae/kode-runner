@@ -118,15 +118,20 @@
                   <input type="text" id="multi-nickname" placeholder="한글 닉네임 생성 중..." maxlength="12" />
                 </div>
                 <div class="input-group">
-                  <label for="multi-room-id">방 코드 (4자리 정수)</label>
-                  <input type="number" id="multi-room-id" placeholder="예: 4829 (4자리 숫자)" min="1000" max="9999" maxlength="4" />
+                  <label for="multi-room-id">초대 방 코드 (입장용)</label>
+                  <div class="room-join-input-row">
+                    <input type="number" id="multi-room-id" placeholder="예: 4829 (4자리 숫자)" min="1000" max="9999" maxlength="4" />
+                    <button id="join-room-btn" class="primary-btn join-btn" type="button">
+                      <span>코드 방 입장</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
               <div class="multiplayer-actions">
-                <button id="quick-match-btn" class="primary-btn flex-btn">
+                <button id="quick-match-btn" class="primary-btn flex-btn wide-quick-match">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                  <span>빠른 무작위 매칭</span>
+                  <span>⚡ 빠른 무작위 자동 매칭</span>
                 </button>
                 <button id="create-room-btn" class="secondary-btn flex-btn">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -173,7 +178,7 @@
       <!-- Main In-Game View (Hidden when on Home Screen) -->
       <div id="game-view" class="game-screen-view hidden">
         <main class="game-grid">
-          <!-- Left Panel: HOLD, NEXT & Stats -->
+          <!-- Left Panel: STATS, HOLD & NEXT Queue Integrated -->
           <section class="side-panel left-panel">
             <div class="glass-card panel-stats">
               <div class="stat-item">
@@ -194,27 +199,26 @@
               </div>
             </div>
 
-            <div class="hold-next-row">
-              <div class="glass-card panel-hold">
-                <h3 class="panel-title">HOLD</h3>
-                <div class="preview-box">
-                  <canvas id="hold-canvas" width="100" height="100"></canvas>
-                </div>
-                <span class="key-hint">[Shift / C]</span>
+            <div class="glass-card panel-hold">
+              <h3 class="panel-title">HOLD</h3>
+              <div class="preview-box">
+                <canvas id="hold-canvas" width="100" height="100"></canvas>
               </div>
+              <span class="key-hint">[Shift / C]</span>
+            </div>
 
-              <div class="glass-card panel-next">
-                <h3 class="panel-title">NEXT</h3>
-                <div class="next-queue">
-                  <div class="preview-box mini"><canvas id="next1-canvas" width="60" height="60"></canvas></div>
-                  <div class="preview-box mini"><canvas id="next2-canvas" width="60" height="60"></canvas></div>
-                  <div class="preview-box mini"><canvas id="next3-canvas" width="60" height="60"></canvas></div>
-                </div>
+            <!-- NEXT Queue Panel Integrated into Left Sidebar -->
+            <div class="glass-card panel-next">
+              <h3 class="panel-title">NEXT</h3>
+              <div class="next-queue vertical">
+                <div class="preview-box mini"><canvas id="next1-canvas" width="60" height="60"></canvas></div>
+                <div class="preview-box mini"><canvas id="next2-canvas" width="60" height="60"></canvas></div>
+                <div class="preview-box mini"><canvas id="next3-canvas" width="60" height="60"></canvas></div>
               </div>
             </div>
           </section>
 
-          <!-- Center Panel: Main Canvas & Timer -->
+          <!-- Center Panel: Dual Board Arena & Timer -->
           <section class="center-panel">
             <!-- Mode Status / Timer Bar -->
             <div class="timer-bar-container glass-card">
@@ -241,31 +245,39 @@
               </div>
             </div>
 
-            <!-- Dual Board Container for 1v1 PvP Alignment -->
+            <!-- Dual Board Arena: 1:1 Side-by-Side Arena -->
             <div class="pvp-boards-container">
-              <!-- Tetris Board Wrapper -->
+              <!-- Player 1 Board (My Board with Interactive Overlays) -->
               <div id="canvas-wrapper" class="board-wrapper glass-card">
-                <canvas id="tetris-canvas" width="300" height="600"></canvas>
+                <!-- In-Board Interactive Attack Indicator -->
+                <div id="garbage-indicator" class="board-attack-badge hidden">
+                  <span>💥 수신 공격: <strong id="garbage-count">0</strong>줄</span>
+                </div>
+
+                <canvas id="tetris-canvas" width="280" height="560"></canvas>
+
+                <!-- In-Board Interactive READY Overlay -->
+                <div id="board-ready-overlay" class="board-ready-overlay hidden">
+                  <button id="toggle-ready-btn" class="primary-btn ready-overlay-btn" type="button">
+                    <span>⚡ 게임 준비 (READY)</span>
+                  </button>
+                </div>
               </div>
 
-              <!-- Multiplayer Opponent Canvas Panel (Top Eye-Level in 1v1 PvP) -->
+              <!-- Arena Center Divider (Clean VS Glow Line) -->
+              <div id="board-vs-divider" class="board-vs-divider hidden">
+                <span class="vs-text">VS</span>
+              </div>
+
+              <!-- Player 2 Board (Opponent Board - 100% Pure Identical Canvas Height) -->
               <div id="opponent-panel" class="glass-card panel-opponent hidden">
-                <div class="opponent-header">
-                  <span class="opponent-badge">1v1 PvP 대전</span>
-                  <h4 id="opponent-name-tag">상대방 대기중</h4>
+                <!-- Floating In-Board Header Badge (Does NOT squeeze canvas height!) -->
+                <div class="opponent-board-header-overlay">
+                  <span class="opponent-badge">OPPONENT</span>
+                  <span id="opponent-name-tag" class="opponent-name-text">상대방 접속 대기 중...</span>
                 </div>
 
-                <button id="toggle-ready-btn" class="primary-btn wide-btn ready-btn" type="button">
-                  <span>게임 준비 (READY)</span>
-                </button>
-
-                <div class="opponent-canvas-wrapper">
-                  <canvas id="opponent-canvas" width="160" height="320"></canvas>
-                </div>
-
-                <div id="garbage-indicator" class="garbage-indicator-box">
-                  <span>수신 공격: <strong id="garbage-count">0</strong>줄</span>
-                </div>
+                <canvas id="opponent-canvas" width="280" height="560"></canvas>
               </div>
             </div>
 

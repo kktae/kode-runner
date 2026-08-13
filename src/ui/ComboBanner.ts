@@ -49,24 +49,26 @@ export class ComboBanner {
 
     this.bannerEl.innerText = text;
     this.bannerEl.style.color = textColor;
+    this.bannerEl.style.borderColor = textColor;
     this.bannerEl.style.textShadow = textGlow;
 
     gsap.killTweensOf(this.bannerEl);
     gsap.fromTo(
       this.bannerEl,
-      { scale: 0.5, opacity: 0, y: 20 },
+      { scale: 0.6, opacity: 0, y: -15, xPercent: -50 },
       {
         scale: 1,
         opacity: 1,
         y: 0,
-        duration: 0.35,
-        ease: 'back.out(1.8)',
+        xPercent: -50,
+        duration: 0.3,
+        ease: 'back.out(1.6)',
         onComplete: () => {
           gsap.to(this.bannerEl, {
             opacity: 0,
-            y: -20,
-            scale: 0.9,
-            delay: 0.7,
+            y: -15,
+            scale: 0.85,
+            delay: 0.65,
             duration: 0.25,
             ease: 'power2.in',
           });

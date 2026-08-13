@@ -561,25 +561,29 @@ section.hidden,
 }
 
 .board-wrapper.is-fever {
-  border-color: #ffd700;
+  border-color: #ff4500 !important;
   box-shadow:
-    0 0 35px rgba(255, 215, 0, 0.6),
-    0 0 15px rgba(255, 69, 0, 0.4),
-    var(--shadow-main);
-  animation: feverBoardGlow 0.8s infinite alternate ease-in-out;
+    0 0 35px rgba(255, 69, 0, 0.85),
+    0 0 15px rgba(254, 229, 0, 0.7),
+    inset 0 0 12px rgba(255, 69, 0, 0.15),
+    var(--shadow-main) !important;
+  animation: feverBorderFire 0.6s infinite alternate ease-in-out !important;
 }
 
-@keyframes feverBoardGlow {
+@keyframes feverBorderFire {
   0% {
+    border-color: #ff4500 !important;
     box-shadow:
-      0 0 25px rgba(255, 215, 0, 0.5),
-      var(--shadow-main);
+      0 0 25px rgba(255, 69, 0, 0.7),
+      0 0 10px rgba(254, 229, 0, 0.5),
+      var(--shadow-main) !important;
   }
   100% {
+    border-color: #fee500 !important;
     box-shadow:
-      0 0 45px rgba(255, 215, 0, 0.85),
-      0 0 20px rgba(255, 69, 0, 0.6),
-      var(--shadow-main);
+      0 0 45px rgba(255, 69, 0, 0.95),
+      0 0 25px rgba(254, 229, 0, 0.85),
+      var(--shadow-main) !important;
   }
 }
 
@@ -598,25 +602,28 @@ section.hidden,
   animation: boardFlash 0.35s ease-out;
 }
 
-/* Pure Floating Text Combo Overlay (No Background) */
+/* Pure Floating Text Combo Overlay - Top Compact Banner (Zero playfield block obstruction) */
 .combo-text-overlay {
   position: absolute;
-  top: 40%;
+  top: 18px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   pointer-events: none;
   z-index: 100;
   text-align: center;
   white-space: pre-line;
   font-family: "Outfit", "Pretendard", sans-serif;
-  font-size: 2.1rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-  background: none !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  background: rgba(18, 16, 17, 0.82) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  border: 1px solid rgba(254, 229, 0, 0.4) !important;
+  padding: 4px 16px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
 }
 
 #tetris-canvas {
@@ -1568,47 +1575,59 @@ kbd {
   box-shadow: 0 0 20px rgba(0, 199, 60, 0.35) !important;
 }
 
-/* Compact Horizontal NEXT Queue Layout */
+/* Enlarged Vertical NEXT Queue Layout (Positioned Top of Right Board Column) */
 .panel-next {
-  padding: 8px 12px !important;
+  width: 100% !important;
+  padding: 10px 8px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  gap: 4px !important;
-  width: 100% !important;
+  gap: 6px !important;
+  box-sizing: border-box !important;
 }
 
-.next-queue {
+.next-queue,
+.next-queue.vertical {
   display: flex !important;
-  flex-direction: row !important;
+  flex-direction: column !important;
   justify-content: center !important;
-  gap: 8px !important;
+  align-items: center !important;
+  gap: 6px !important;
   width: 100% !important;
 }
 
 .preview-box.mini {
-  width: 48px !important;
-  height: 48px !important;
-  background: rgba(0, 0, 0, 0.4) !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: 6px !important;
+  width: 60px !important;
+  height: 60px !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid var(--border-active) !important;
+  border-radius: 8px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .preview-box.mini canvas {
-  width: 44px !important;
-  height: 44px !important;
+  width: 54px !important;
+  height: 54px !important;
 }
 
 /* Realtime 1v1 Chat Panel */
+.side-panel.right-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
 .panel-chat:not(.hidden) {
   display: flex !important;
   flex-direction: column !important;
   gap: 8px !important;
-  padding: 10px 12px !important;
+  padding: 12px !important;
   width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .chat-header {
@@ -1626,7 +1645,8 @@ kbd {
 }
 
 .chat-messages-box {
-  height: 110px;
+  flex: 1 !important;
+  min-height: 220px !important;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -2020,6 +2040,27 @@ kbd {
   border-color: var(--kakao-yellow);
 }
 
+.room-join-input-row {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.room-join-input-row input {
+  flex: 1 !important;
+}
+
+.join-btn {
+  white-space: nowrap !important;
+  padding: 0 16px !important;
+  height: 42px !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  flex-shrink: 0 !important;
+  border-radius: var(--radius-btn) !important;
+}
+
 .multiplayer-actions {
   display: flex;
   gap: 12px;
@@ -2039,32 +2080,177 @@ kbd {
 }
 
 /* ==========================================
-   Multiplayer 1v1 PvP Dual Boards Container
+   Multiplayer 1v1 Dual Arena Container (Full Height 1:1 Standard Symmetry)
    ========================================== */
 .pvp-boards-container {
   display: flex !important;
   justify-content: center !important;
-  align-items: flex-start !important;
-  gap: 16px !important;
+  align-items: stretch !important; /* Top & bottom lines perfectly aligned! */
+  gap: 20px !important;
   width: 100% !important;
 }
 
-.panel-opponent:not(.hidden) {
+/* Player 1 Board (My Board) */
+#canvas-wrapper {
+  position: relative !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+  width: 300px !important;
+  min-width: 300px !important;
+  max-width: 300px !important;
+  flex: 0 0 300px !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
   align-items: center !important;
-  padding: 8px 10px !important;
-  width: 160px !important;
-  max-width: 160px !important;
-  flex: 0 0 160px !important;
-  align-self: flex-start !important;
-  box-sizing: border-box !important;
+  justify-content: center !important;
 }
 
-.opponent-header {
-  text-align: center;
-  width: 100%;
+#canvas-wrapper #tetris-canvas {
+  width: 280px !important;
+  height: 560px !important; /* Standard 10x20 1:2 Tetris Aspect Ratio */
+  display: block !important;
+  border-radius: 8px !important;
+}
+
+/* In-Board Interactive READY Overlay */
+.board-ready-overlay {
+  position: absolute !important;
+  bottom: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 30 !important;
+  width: 85% !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.ready-overlay-btn {
+  width: 100% !important;
+  padding: 14px 18px !important;
+  font-size: 1.05rem !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.01em !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(254, 229, 0, 0.4), 0 0 16px rgba(0, 0, 0, 0.8) !important;
+  transition: all 0.2s ease !important;
+}
+
+.ready-overlay-btn.is-ready {
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4), 0 0 16px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* In-Board Interactive Attack Indicator Badge */
+.board-attack-badge {
+  position: absolute !important;
+  top: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 25 !important;
+  background: rgba(220, 38, 38, 0.9) !important;
+  border: 1px solid rgba(252, 165, 165, 0.8) !important;
+  color: #ffffff !important;
+  padding: 6px 14px !important;
+  border-radius: 20px !important;
+  font-size: 0.85rem !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.6) !important;
+  white-space: nowrap !important;
+}
+
+/* Arena Center VS Glow Divider Line */
+.board-vs-divider:not(.hidden) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  height: 560px !important;
+  width: 24px !important;
+}
+
+.board-vs-divider::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 2px !important;
+  background: linear-gradient(180deg, transparent, rgba(254, 229, 0, 0.6), transparent) !important;
+  z-index: 1 !important;
+}
+
+.vs-text {
+  position: relative !important;
+  z-index: 2 !important;
+  background: #0f172a !important;
+  border: 1px solid var(--kakao-yellow) !important;
+  color: var(--kakao-yellow) !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 0.85rem !important;
+  font-weight: 900 !important;
+  padding: 6px 4px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 12px rgba(254, 229, 0, 0.5) !important;
+}
+
+/* Player 2 Opponent Board (100% Pure Identical Full-Height Structure with My Board) */
+.panel-opponent:not(.hidden) {
+  position: relative !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+  width: 300px !important;
+  min-width: 300px !important;
+  max-width: 300px !important;
+  flex: 0 0 300px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+
+#opponent-canvas {
+  width: 280px !important;
+  height: 560px !important; /* Standard 10x20 1:2 Tetris Aspect Ratio */
+  display: block !important;
+  border-radius: 8px !important;
+}
+
+/* Floating In-Board Header Overlay for Opponent */
+.opponent-board-header-overlay {
+  position: absolute !important;
+  top: 18px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 25 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 2px !important;
+  background: rgba(15, 23, 42, 0.88) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 4px 14px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  pointer-events: none !important;
+}
+
+.opponent-badge {
+  font-size: 0.65rem !important;
+  font-weight: 900 !important;
+  color: #38bdf8 !important;
+  letter-spacing: 0.08em !important;
+}
+
+.opponent-name-text {
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
 }
 
 .opponent-badge {
@@ -2091,26 +2277,15 @@ kbd {
 }
 
 .opponent-canvas-wrapper {
-  border: 1px solid var(--border-active);
-  border-radius: var(--radius-inner);
-  overflow: hidden;
-  background: #0f172a;
-  display: inline-flex !important;
+  display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-  padding: 2px !important;
-  width: fit-content !important;
-  height: fit-content !important;
+  background: #0d0a0b !important;
+  border-radius: 12px !important;
+  padding: 6px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  width: 100% !important;
   box-sizing: border-box !important;
-}
-
-#opponent-canvas {
-  display: block !important;
-  height: min(32vh, 260px) !important;
-  aspect-ratio: 1 / 2 !important;
-  width: auto !important;
-  max-width: 100% !important;
-  object-fit: contain !important;
 }
 
 .garbage-indicator-box {
@@ -2323,7 +2498,7 @@ kbd {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
-    align-items: flex-start !important;
+    align-items: flex-end !important; /* Bottom line alignment for player board, next panel, and opponent board */
     gap: 8px !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -2563,7 +2738,7 @@ kbd {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
-    align-items: flex-start !important;
+    align-items: flex-end !important;
     gap: 8px !important;
     width: 100% !important;
     box-sizing: border-box !important;

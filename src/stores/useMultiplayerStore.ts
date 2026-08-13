@@ -63,6 +63,14 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
         autoConnect: true,
       });
 
+      const activeSocket = socket;
+      activeSocket.on('connect', () => {
+        const { roomId, nickname } = get();
+        if (roomId && nickname) {
+          activeSocket.emit('join_room', { roomId, nickname });
+        }
+      });
+
       socket.on('leaderboard_data', (data: { mode: any; entries: any[] }) => {
         if (data && data.mode && Array.isArray(data.entries)) {
           window.dispatchEvent(new CustomEvent('leaderboard_updated', { detail: data }));

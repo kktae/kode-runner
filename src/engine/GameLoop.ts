@@ -394,11 +394,24 @@ export class GameLoop {
       this.stats.score += earned;
       this.stats.lines += clearEvent.count;
 
-      // Multiplayer Attack Dispatch (2줄 이상 클리어 또는 콤보 발생 시 상대방 가비지 공격)
+      // Multiplayer Garbage Lines Offset & Application Logic
       const mpState = useMultiplayerStore.getState();
       if (mpState.status === 'PLAYING') {
         const attackLines = Math.max(0, (clearEvent.count - 1) + Math.floor(this.stats.combo / 2));
-        if (attackLines > 0) {
+
+        if (mpState.pendingGarbageLines > 0) {
+          // 내가 줄을 지웠다면 들어오는 대기 공격을 먼저 상쇄(Offset)
+          const offset = Math.min(mpState.pendingGarbageLines, attackLines);
+          const remainingPending = mpState.pendingGarbageLines - offset;
+          const remainingAttack = attackLines - offset;
+
+          useMultiplayerStore.setState({ pendingGarbageLines: remainingPending });
+
+          if (remainingAttack > 0) {
+            const holePos = Math.floor(Math.random() * BOARD_WIDTH);
+            mpState.sendGarbageAttack(remainingAttack, holePos);
+          }
+        } else if (attackLines > 0) {
           const holePos = Math.floor(Math.random() * BOARD_WIDTH);
           mpState.sendGarbageAttack(attackLines, holePos);
         }
@@ -443,6 +456,13 @@ export class GameLoop {
       this.callbacks.onCombo(this.stats.combo, clearEvent.isTetris);
     } else {
       this.stats.combo = 0;
+      // 줄을 지우지 않고 블록을 고정했을 때 대기 중인 수신 공격(Garbage Lines)을 내 보드 바닥에 실제 주입!
+      const mpState = useMultiplayerStore.getState();
+      if (mpState.status === 'PLAYING' && mpState.pendingGarbageLines > 0) {
+        const linesToApply = Math.min(8, mpState.pendingGarbageLines);
+        this.board.addGarbageLines(linesToApply);
+        useMultiplayerStore.setState({ pendingGarbageLines: mpState.pendingGarbageLines - linesToApply });
+      }
     }
 
     // 3. Spawn next piece

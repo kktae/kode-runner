@@ -111,17 +111,46 @@ export class ParticleSystem {
     const width = this.canvasElement.width;
     const height = this.canvasElement.height;
 
-    for (let i = 0; i < 3; i++) {
+    // Create particles strictly along the outer borders so playfield blocks are 100% clear
+    for (let i = 0; i < 2; i++) {
+      const edge = Math.floor(Math.random() * 4); // 0: Top, 1: Bottom, 2: Left, 3: Right
+      let x = 0;
+      let y = 0;
+      let vx = 0;
+      let vy = 0;
+
+      if (edge === 0) {
+        x = Math.random() * width;
+        y = 2;
+        vx = (Math.random() - 0.5) * 2;
+        vy = -1 - Math.random() * 3;
+      } else if (edge === 1) {
+        x = Math.random() * width;
+        y = height - 2;
+        vx = (Math.random() - 0.5) * 2;
+        vy = 1 + Math.random() * 3;
+      } else if (edge === 2) {
+        x = 2;
+        y = Math.random() * height;
+        vx = -1 - Math.random() * 3;
+        vy = (Math.random() - 0.5) * 2;
+      } else {
+        x = width - 2;
+        y = Math.random() * height;
+        vx = 1 + Math.random() * 3;
+        vy = (Math.random() - 0.5) * 2;
+      }
+
       this.particles.push({
-        x: Math.random() * width,
-        y: height - Math.random() * 50,
-        vx: (Math.random() - 0.5) * 2,
-        vy: -2 - Math.random() * 4,
-        color: Math.random() > 0.5 ? '#FEE500' : '#FFD700',
-        size: 2 + Math.random() * 4,
-        alpha: 1,
+        x,
+        y,
+        vx,
+        vy,
+        color: Math.random() > 0.5 ? '#FF4500' : '#FEE500',
+        size: 2 + Math.random() * 3,
+        alpha: 0.9,
         life: 0,
-        maxLife: 25 + Math.random() * 15,
+        maxLife: 20 + Math.random() * 10,
       });
     }
   }
