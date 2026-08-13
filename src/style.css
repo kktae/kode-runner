@@ -2097,16 +2097,10 @@ kbd {
 }
 
 /* ==========================================
-   Mobile On-Screen Virtual Touch D-Pad Controls
+   Mobile On-Screen Virtual Touch D-Pad Controls (Hidden on Desktop)
    ========================================== */
 .touch-controls-root {
-  width: 100%;
-  max-width: 300px;
-  margin: 12px auto 0 auto;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: none;
 }
 
 .control-mode-switcher {
@@ -2241,6 +2235,16 @@ kbd {
     width: 100% !important;
     max-width: 100% !important;
     overflow-x: hidden !important;
+  }
+
+  /* Mobile Touch Controls Display */
+  .touch-controls-root {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+    max-width: 300px !important;
+    margin: 10px auto 0 auto !important;
   }
 
   /* Header Optimization */
