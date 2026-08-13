@@ -408,13 +408,13 @@ body {
 }
 
 .board-wrapper {
-  width: 290px !important;
-  max-width: 290px !important;
+  width: fit-content !important;
+  height: fit-content !important;
   box-sizing: border-box !important;
-  display: flex !important;
+  display: inline-flex !important;
   justify-content: center !important;
   align-items: center !important;
-  padding: 10px !important;
+  padding: 8px !important;
 }
 
 .timer-bar-container {
@@ -612,11 +612,12 @@ body {
 #tetris-canvas {
   background: #121011;
   border-radius: var(--radius-inner);
-  display: block;
-  width: 270px !important;
-  max-width: 100%;
-  height: 540px !important;
-  aspect-ratio: 1 / 2;
+  display: block !important;
+  height: min(62vh, 560px) !important;
+  aspect-ratio: 1 / 2 !important;
+  width: auto !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
 }
 
 /* Next Queue Horizontal Compact Mini Layout */
@@ -2060,21 +2061,22 @@ kbd {
   border-radius: var(--radius-inner);
   overflow: hidden;
   background: #0f172a;
-  display: flex !important;
+  display: inline-flex !important;
   justify-content: center !important;
   align-items: center !important;
   padding: 2px !important;
-  width: 124px !important;
-  height: 244px !important;
+  width: fit-content !important;
+  height: fit-content !important;
   box-sizing: border-box !important;
 }
 
 #opponent-canvas {
   display: block !important;
-  width: 120px !important;
-  height: 240px !important;
-  max-width: 120px !important;
-  max-height: 240px !important;
+  height: min(32vh, 260px) !important;
+  aspect-ratio: 1 / 2 !important;
+  width: auto !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
 }
 
 .garbage-indicator-box {
