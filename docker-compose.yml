@@ -11,8 +11,10 @@ services:
       - '8080:8080'
     environment:
       - PORT=8080
-      - VITE_SERVER_URL=http://localhost:8080
-      - VITE_REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
+      # 서버가 실제로 읽는 변수. 이게 없으면 방 상태·리더보드가 조용히 인메모리로 떨어져
+      # Redis 경로가 로컬에서 전혀 검증되지 않는다.
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - redis
 

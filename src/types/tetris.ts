@@ -7,26 +7,12 @@ export interface Point {
   y: number;
 }
 
+/** drawMinoCell이 실제로 사용하는 것만 남긴다 (이름 + 2색 팔레트). */
 export interface CharacterInfo {
   name: string;
   koreanName: string;
   primaryColor: string;
   secondaryColor: string;
-  accentColor: string;
-  description: string;
-  drawFace: (
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    size: number,
-  ) => void;
-}
-
-export interface MinoDefinition {
-  type: MinoType;
-  shape: number[][];
-  color: string;
-  character: CharacterInfo;
 }
 
 export interface CellState {

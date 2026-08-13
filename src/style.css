@@ -1896,6 +1896,10 @@ kbd {
   .touch-controller-container {
     display: flex;
   }
+  /* 제스처 모드에서는 미디어쿼리 안에서도 숨긴다 */
+  .touch-controller-container.is-hidden {
+    display: none;
+  }
   .home-mode-section {
     grid-template-columns: 1fr;
   }
@@ -2340,7 +2344,10 @@ kbd {
 }
 
 .touch-controller-container {
-  display: flex;
+  /* display는 의도적으로 선언하지 않는다.
+     기본 display:none(위쪽 규칙) + @media (max-width: 900px)의 display:flex 로만 제어한다.
+     여기서 display를 다시 선언하면 뒤쪽 규칙이 이겨 모바일 전용 미디어쿼리가 무력화된다.
+     제스처 모드로 전환하면 JS가 .is-hidden을 붙인다. */
   flex-direction: column;
   gap: 8px;
   width: 100%;

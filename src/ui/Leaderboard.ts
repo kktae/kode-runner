@@ -59,14 +59,9 @@ export class LeaderboardManager {
       Math.round((1 - lowerCount / (entries.length + 1)) * 100),
     );
     if (percentile <= 5) return `BOOTH TOP ${percentile}%`;
-    if (percentile <= 20) return `상위 ${percentile}%`;
-    return `상위 ${percentile}%`;
-  }
-
-  public static isHighScore(score: number, mode: GameMode): boolean {
-    const entries = LeaderboardManager.getEntries(mode);
-    if (entries.length < 5) return true;
-    return score > entries[entries.length - 1].score;
+    if (percentile <= 50) return `상위 ${percentile}%`;
+    // 하위권에게 "상위 100%"를 보여주지 않는다 — 부스 방문객에게 등수를 들이밀 이유가 없다.
+    return '참가해주셔서 감사합니다!';
   }
 
   public static addEntry(

@@ -40,6 +40,17 @@ export class GameLoop {
   private timerIntervalId: number | null = null;
   private tickerWorker: Worker | null = null;
 
+  /**
+   * 물리 스텝은 정확히 하나의 드라이버만 돌린다.
+   * Worker 티커와 rAF가 둘 다 updatePhysics()를 호출하면 파티클이 2배속으로 갱신되고
+   * 120Hz 화면에서는 물리가 불필요하게 ~185Hz로 돈다.
+   */
+  private physicsDriver: 'worker' | 'raf' = 'raf';
+
+  /** 타임어택 잔여 시간은 틱 카운트가 아니라 벽시계로 계산한다(백그라운드 탭 스로틀링 대응). */
+  private startedAt = 0;
+  private readonly timeAttackSeconds = 90;
+
   constructor(canvas: HTMLCanvasElement, callbacks: GameLoopCallbacks) {
     this.canvas = canvas;
     this.canvas.width = 300;
@@ -75,12 +86,13 @@ export class GameLoop {
       `;
       const blob = new Blob([workerCode], { type: 'application/javascript' });
       this.tickerWorker = new Worker(URL.createObjectURL(blob));
+      this.physicsDriver = 'worker';
 
       this.tickerWorker.onmessage = () => {
         if (!this.isRunning || this.isPaused) return;
         const now = performance.now();
         const deltaTime = now - this.lastTime;
-        const safeDelta = Math.min(deltaTime, 100);
+        const safeDelta = Math.min(Math.max(deltaTime, 0), 100);
         this.lastTime = now;
 
         this.updatePhysics(safeDelta);
@@ -91,7 +103,8 @@ export class GameLoop {
         }
       };
     } catch (e) {
-      console.warn('Web Worker ticker fallback initialized', e);
+      this.physicsDriver = 'raf';
+      console.warn('Web Worker ticker unavailable; falling back to rAF-driven physics', e);
     }
   }
 
@@ -119,10 +132,15 @@ export class GameLoop {
     return this.mode;
   }
 
-  public start() {
-    this.reset();
+  /**
+   * @param seed 멀티플레이 대전 시 서버가 배포한 공용 7-Bag 시드.
+   *             생략하면 싱글 플레이용 비결정론적 시퀀스를 쓴다.
+   */
+  public start(seed?: number) {
+    this.reset(seed);
     this.isRunning = true;
     this.isPaused = false;
+    this.startedAt = Date.now();
 
     this.board.spawnPiece();
     this.updateQueueAndHold();
@@ -137,38 +155,54 @@ export class GameLoop {
 
     // Timer Interval for 1 second ticks
     if (this.timerIntervalId) clearInterval(this.timerIntervalId);
-    this.timerIntervalId = window.setInterval(() => {
-      if (!this.isRunning || this.isPaused) return;
-
-      this.stats.elapsedTime++;
-
-      // Fever Mode Countdown
-      if (this.stats.isFever) {
-        this.stats.feverTimeRemaining--;
-        this.stats.feverGauge = (this.stats.feverTimeRemaining / 10) * 100;
-        if (this.stats.feverTimeRemaining <= 0) {
-          this.stats.isFever = false;
-          this.stats.feverGauge = 0;
-          const wrapper = document.getElementById('canvas-wrapper');
-          if (wrapper) wrapper.classList.remove('is-fever');
-        }
-      }
-
-      if (this.mode === 'timeattack') {
-        this.stats.timeRemaining--;
-        if (this.stats.timeRemaining <= 10 && this.stats.timeRemaining > 0) {
-          this.soundManager.playTick();
-        }
-        if (this.stats.timeRemaining <= 0) {
-          this.gameOver();
-          return;
-        }
-      }
-      this.callbacks.onStatsUpdate(this.stats);
-    }, 1000);
+    this.timerIntervalId = window.setInterval(() => this.tickClock(), 1000);
   }
 
-  public reset() {
+  /**
+   * 경과/잔여 시간을 벽시계 기준으로 재계산한다.
+   * setInterval 틱을 누적하면 백그라운드 탭 스로틀링 시 카운트다운이 사실상 멈춰
+   * 탭 전환만으로 타임어택 시간을 벌 수 있었다.
+   */
+  private tickClock() {
+    if (!this.isRunning || this.isPaused) return;
+
+    const previousElapsed = this.stats.elapsedTime;
+    this.stats.elapsedTime = Math.max(0, Math.floor((Date.now() - this.startedAt) / 1000));
+    const elapsedDelta = this.stats.elapsedTime - previousElapsed;
+
+    // Fever Mode Countdown (실제 경과 초만큼 차감)
+    if (this.stats.isFever && elapsedDelta > 0) {
+      this.stats.feverTimeRemaining -= elapsedDelta;
+      this.stats.feverGauge = Math.max(0, (this.stats.feverTimeRemaining / 10) * 100);
+      if (this.stats.feverTimeRemaining <= 0) {
+        this.stats.isFever = false;
+        this.stats.feverTimeRemaining = 0;
+        this.stats.feverGauge = 0;
+        const wrapper = document.getElementById('canvas-wrapper');
+        if (wrapper) wrapper.classList.remove('is-fever');
+      }
+    }
+
+    if (this.mode === 'timeattack') {
+      this.stats.timeRemaining = Math.max(0, this.timeAttackSeconds - this.stats.elapsedTime);
+      if (this.stats.timeRemaining <= 10 && this.stats.timeRemaining > 0 && elapsedDelta > 0) {
+        this.soundManager.playTick();
+      }
+      if (this.stats.timeRemaining <= 0) {
+        this.callbacks.onStatsUpdate(this.stats);
+        this.gameOver();
+        return;
+      }
+    }
+    this.callbacks.onStatsUpdate(this.stats);
+  }
+
+  /** 탭 복귀 시 스로틀링으로 밀린 시간을 즉시 반영한다. */
+  public syncClock() {
+    this.tickClock();
+  }
+
+  public reset(seed?: number) {
     this.isRunning = false;
     this.isPaused = false;
     this.tickerWorker?.postMessage('stop');
@@ -181,12 +215,13 @@ export class GameLoop {
       this.timerIntervalId = null;
     }
 
-    this.factory = new MinoFactory();
+    this.factory = new MinoFactory(seed);
     this.board = new TetrisBoard(this.factory);
     this.stats = this.createInitialStats();
     this.dropInterval = 800;
     this.dropCounter = 0;
     this.lockDelayCounter = 0;
+    this.startedAt = Date.now();
 
     // Clear main board canvas & particle system
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -399,21 +434,13 @@ export class GameLoop {
       if (mpState.status === 'PLAYING') {
         const attackLines = Math.max(0, (clearEvent.count - 1) + Math.floor(this.stats.combo / 2));
 
-        if (mpState.pendingGarbageLines > 0) {
-          // 내가 줄을 지웠다면 들어오는 대기 공격을 먼저 상쇄(Offset)
-          const offset = Math.min(mpState.pendingGarbageLines, attackLines);
-          const remainingPending = mpState.pendingGarbageLines - offset;
-          const remainingAttack = attackLines - offset;
+        // 내가 줄을 지웠다면 들어오는 대기 공격을 먼저 상쇄(Offset)한 뒤 남은 만큼만 보낸다
+        const offset = attackLines > 0 ? mpState.offsetPendingGarbage(attackLines) : 0;
+        const remainingAttack = attackLines - offset;
 
-          useMultiplayerStore.setState({ pendingGarbageLines: remainingPending });
-
-          if (remainingAttack > 0) {
-            const holePos = Math.floor(Math.random() * BOARD_WIDTH);
-            mpState.sendGarbageAttack(remainingAttack, holePos);
-          }
-        } else if (attackLines > 0) {
+        if (remainingAttack > 0) {
           const holePos = Math.floor(Math.random() * BOARD_WIDTH);
-          mpState.sendGarbageAttack(attackLines, holePos);
+          mpState.sendGarbageAttack(remainingAttack, holePos);
         }
       }
 
@@ -457,11 +484,12 @@ export class GameLoop {
     } else {
       this.stats.combo = 0;
       // 줄을 지우지 않고 블록을 고정했을 때 대기 중인 수신 공격(Garbage Lines)을 내 보드 바닥에 실제 주입!
+      // 공격자가 보낸 구멍 위치를 그대로 적용해야 양쪽 화면의 보드가 일치한다.
       const mpState = useMultiplayerStore.getState();
-      if (mpState.status === 'PLAYING' && mpState.pendingGarbageLines > 0) {
-        const linesToApply = Math.min(8, mpState.pendingGarbageLines);
-        this.board.addGarbageLines(linesToApply);
-        useMultiplayerStore.setState({ pendingGarbageLines: mpState.pendingGarbageLines - linesToApply });
+      if (mpState.status === 'PLAYING') {
+        for (const attack of mpState.takePendingGarbage(8)) {
+          this.board.addGarbageLines(attack.lines, attack.hole);
+        }
       }
     }
 
@@ -506,10 +534,13 @@ export class GameLoop {
   private loop(timestamp: number) {
     if (!this.isRunning) return;
 
-    const deltaTime = timestamp - this.lastTime;
-    this.lastTime = timestamp;
+    // Worker 티커가 살아 있으면 물리는 그쪽 전담이고 rAF는 렌더만 담당한다.
+    if (this.physicsDriver === 'raf') {
+      const deltaTime = Math.min(Math.max(timestamp - this.lastTime, 0), 100);
+      this.lastTime = timestamp;
+      this.updatePhysics(deltaTime);
+    }
 
-    this.updatePhysics(deltaTime);
     this.render();
     this.animationFrameId = requestAnimationFrame((ts) => this.loop(ts));
   }
@@ -621,8 +652,11 @@ export class GameLoop {
     if (mpState.status !== 'PLAYING') return;
 
     const now = performance.now();
-    // 33ms 스로틀링 (초당 30회 실시간 동기화)으로 딜레이 없는 실시간 피스 낙하 표현
-    if (!force && now - this.lastSyncTime < 33) {
+    // 기본 66ms(15Hz) 스로틀. 조작 시(force)에는 33ms(30Hz)까지 앞당겨 반응성을 유지하되,
+    // 완전히 우회하지는 않는다 — 키 리피트마다 패킷을 내보내면 서버의 state_sync
+    // 레이트리밋을 넘겨 패킷이 조용히 드롭되고 상대 화면이 끊긴다.
+    const minInterval = force ? 33 : 66;
+    if (now - this.lastSyncTime < minInterval) {
       return;
     }
     this.lastSyncTime = now;
@@ -630,6 +664,8 @@ export class GameLoop {
     const typeMap: Record<string, number> = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7 };
     const piece = this.board.activePiece;
 
+    // shape(4x4 배열)는 보내지 않는다 — 수신 측 OpponentBoardRenderer가 type + rotation으로
+    // 동일한 형상을 복원하고, 월킥 보정은 x/y에 이미 반영되어 있다.
     mpState.sendStateSync({
       board: this.board.getGridMatrix(),
       score: this.stats.score,
@@ -641,7 +677,6 @@ export class GameLoop {
             x: piece.x,
             y: piece.y,
             rotation: piece.rotation,
-            shape: piece.shape,
           }
         : null,
       isGameOver: !this.isRunning,

@@ -27,12 +27,12 @@ export class TetrisBoard {
     this.grid = this.createEmptyGrid();
   }
 
-  public reset() {
+  public reset(seed?: number) {
     this.grid = this.createEmptyGrid();
     this.activePiece = null;
     this.holdType = null;
     this.canHold = true;
-    this.factory.reset();
+    this.factory.reset(seed);
   }
 
   private createEmptyGrid(): CellState[][] {

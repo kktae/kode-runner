@@ -1,5 +1,3 @@
-import React from 'react';
-import { createRoot, type Root } from 'react-dom/client';
 import { drawMinoCell } from './assets/characters';
 import { SoundManager } from './audio/SoundManager';
 import { GameLoop } from './engine/GameLoop';
@@ -7,14 +5,14 @@ import { SHAPES } from './engine/MinoFactory';
 import type { GameMode, GameStats, MinoType } from './types/tetris';
 import { ComboBanner } from './ui/ComboBanner';
 import { LeaderboardManager } from './ui/Leaderboard';
-import { RemotionModal } from './ui/RemotionModal';
 import { TouchController } from './ui/TouchController';
 import { GestureController } from './ui/GestureController';
 import confetti from 'canvas-confetti';
-import { useMultiplayerStore } from './stores/useMultiplayerStore';
+import { useMultiplayerStore, type ChatMessage } from './stores/useMultiplayerStore';
 import { OpponentBoardRenderer } from './ui/OpponentBoard';
 import { generateKoreanNickname, generate4DigitRoomCode } from './utils/nicknameGenerator';
 import { sanitizeMessage, checkChatCooldown } from './utils/profanityFilter';
+import { escapeHtml } from './utils/escapeHtml';
 
 // DOM Elements
 const tetrisCanvas = document.getElementById(
@@ -91,30 +89,62 @@ let currentStats: GameStats | null = null;
 let currentModalMode: GameMode = 'timeattack';
 
 // Remotion Player React Root Instance
-let remotionRoot: Root | null = null;
+// React + @remotion/player + 데모 컴포넌트는 전체 번들의 절반이 넘는다(약 370KB).
+// 테트리스만 하러 온 방문객이 이를 내려받지 않도록 클릭 시점에 동적으로 불러온다.
+type ReactRoot = import('react-dom/client').Root;
+let remotionRoot: ReactRoot | null = null;
+let remotionLoading = false;
 
-function openRemotionModal() {
+async function openRemotionModal(trigger?: HTMLElement | null) {
   const container = document.getElementById('remotion-modal-root');
-  if (!container) return;
-  if (!remotionRoot) {
-    remotionRoot = createRoot(container);
+  if (!container || remotionLoading) return;
+
+  // 게임 진행 중에는 열지 않는다. 전체화면 모달이 떠도 게임 루프는 계속 돌고,
+  // window keydown 핸들러가 Space/방향키를 보드로 계속 전달하기 때문이다.
+  if (gameLoop.getIsRunning()) return;
+
+  // 라벨은 SVG 아이콘 옆 <span>에만 들어있다. textContent를 건드리면 아이콘이 지워진다.
+  const labelEl = trigger?.querySelector('span') ?? null;
+  const originalLabel = labelEl?.textContent ?? '';
+
+  remotionLoading = true;
+  if (trigger) trigger.setAttribute('disabled', 'true');
+  if (labelEl) labelEl.textContent = '로딩 중…';
+
+  try {
+    const [React, { createRoot }, { RemotionModal }] = await Promise.all([
+      import('react'),
+      import('react-dom/client'),
+      import('./ui/RemotionModal'),
+    ]);
+
+    if (!remotionRoot) {
+      remotionRoot = createRoot(container);
+    }
+    remotionRoot.render(
+      React.createElement(RemotionModal, {
+        onClose: () => {
+          if (remotionRoot) {
+            remotionRoot.render(null);
+          }
+        },
+      }),
+    );
+  } catch (e) {
+    console.error('AI 생성 시연 모듈을 불러오지 못했습니다', e);
+    alert('시연 영상을 불러오지 못했습니다. 네트워크를 확인해주세요.');
+  } finally {
+    remotionLoading = false;
+    if (trigger) trigger.removeAttribute('disabled');
+    if (labelEl) labelEl.textContent = originalLabel;
   }
-  remotionRoot.render(
-    React.createElement(RemotionModal, {
-      onClose: () => {
-        if (remotionRoot) {
-          remotionRoot.render(null);
-        }
-      },
-    }),
-  );
 }
 
 if (remotionDemoBtn) {
-  remotionDemoBtn.addEventListener('click', openRemotionModal);
+  remotionDemoBtn.addEventListener('click', () => openRemotionModal(remotionDemoBtn));
 }
 if (homeRemotionDemoBtn) {
-  homeRemotionDemoBtn.addEventListener('click', openRemotionModal);
+  homeRemotionDemoBtn.addEventListener('click', () => openRemotionModal(homeRemotionDemoBtn));
 }
 
 // View Navigation Manager
@@ -123,6 +153,12 @@ function showHomeView() {
   pauseModal.classList.add('hidden');
   leaderboardModal.classList.add('hidden');
   gameoverModal.classList.add('hidden');
+
+  // 대전방을 떠나지 않고 홈으로 나가면 스토어 status가 PLAYING으로 남아, 이후 싱글 게임의
+  // 보드가 방으로 계속 방송되고 상대의 가비지가 싱글 보드에 주입된다.
+  if (useMultiplayerStore.getState().roomId !== null) {
+    useMultiplayerStore.getState().leaveRoom();
+  }
 
   gameLoop.stop();
   gameLoop.reset();
@@ -149,6 +185,8 @@ function showHomeView() {
 
   if (pauseBtn) pauseBtn.style.display = 'none';
   if (modeChangeBtn) modeChangeBtn.style.display = 'none';
+  // 홈에서는 시연 버튼을 다시 노출한다
+  if (remotionDemoBtn) remotionDemoBtn.style.display = '';
 }
 
 function showGameView(isMultiplayer = false, autoStartGame = true) {
@@ -158,6 +196,11 @@ function showGameView(isMultiplayer = false, autoStartGame = true) {
   if (pauseBtn) pauseBtn.style.display = 'inline-flex';
   if (modeChangeBtn) modeChangeBtn.style.display = 'inline-flex';
 
+  // 게임 화면에서는 시연 버튼을 감춘다. 전체화면 자동재생 모달이 떠도 게임은 계속 돌고
+  // 키 입력이 보드로 그대로 전달되어, 특히 일시정지가 불가능한 1v1에서는 판을 망친다.
+  // 홈 화면의 시연 버튼(home-remotion-demo-btn)은 그대로 두어 스태프 시연은 가능하다.
+  if (remotionDemoBtn) remotionDemoBtn.style.display = 'none';
+
   const chatPanel = document.getElementById('chat-panel');
 
   if (isMultiplayer) {
@@ -165,14 +208,18 @@ function showGameView(isMultiplayer = false, autoStartGame = true) {
     if (opponentPanel) opponentPanel.classList.remove('hidden');
     if (chatPanel) chatPanel.classList.remove('hidden');
 
+    // 1v1에서는 일시정지가 무적 악용이 되므로 버튼 자체를 노출하지 않는다 (handleTogglePause도 가드됨)
+    if (pauseBtn) pauseBtn.style.display = 'none';
+
     modeDisplayTag.innerHTML = `<svg class="inline-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span>1v1 클래식 대전</span>`;
     gameLoop.setMode('classic');
     if (timerVal) timerVal.innerText = '00:00';
     if (timerFill) timerFill.style.width = '100%';
 
-    const mpStatus = useMultiplayerStore.getState().status;
-    if (mpStatus === 'PLAYING') {
-      gameLoop.start();
+    const mpState = useMultiplayerStore.getState();
+    if (mpState.status === 'PLAYING') {
+      // 서버가 배포한 공용 시드로 시작해야 두 플레이어의 7-Bag 순서가 일치한다.
+      gameLoop.start(mpState.gameSeed ?? undefined);
       soundManager.startBGM();
     } else {
       gameLoop.reset(); // Lobby waiting mode: board is reset, but game is NOT started automatically!
@@ -334,11 +381,13 @@ const gameLoop = new GameLoop(tetrisCanvas, {
 
     if (isMulti) {
       const mpState = useMultiplayerStore.getState();
+      // 멀티 결과 화면(제목·뱃지·모달 노출)은 전적으로 스토어 구독이 담당한다.
+      // sendGameOver가 status를 GAME_OVER로 바꾸는 순간 구독이 동기적으로 실행되어
+      // VICTORY/DEFEAT를 그리므로, 여기서 제목을 덮어쓰면 패자에게 DEFEAT 대신
+      // 중립 문구가 남는다(실제로 그랬음).
       if (mpState.status === 'PLAYING') {
         mpState.sendGameOver(finalStats.score, finalStats.elapsedTime);
       }
-      gameoverTitle.innerText = '멀티 플레이 대전 종료!';
-      if (celebrationBadge) celebrationBadge.innerText = '1v1 MATCH';
       if (multiActions) multiActions.classList.remove('hidden');
       if (singleForm) singleForm.classList.add('hidden');
       if (singleRestartBtn) singleRestartBtn.classList.add('hidden');
@@ -442,7 +491,7 @@ function renderLeaderboard(mode: GameMode) {
     li.className = 'leader-item';
     li.innerHTML = `
       <span class="leader-rank">${index + 1}</span>
-      <span class="leader-name">${entry.name}</span>
+      <span class="leader-name">${escapeHtml(entry.name)}</span>
       <span class="leader-score">${entry.score.toLocaleString()}</span>
     `;
     leaderboardList.appendChild(li);
@@ -472,7 +521,7 @@ function renderModalLeaderboard(mode: GameMode, searchQuery = '') {
     li.className = 'leader-item';
     li.innerHTML = `
       <span class="leader-rank">${index + 1}</span>
-      <span class="leader-name">${entry.name}</span>
+      <span class="leader-name">${escapeHtml(entry.name)}</span>
       <span class="leader-score">${entry.score.toLocaleString()}</span>
     `;
     modalLeaderboardList.appendChild(li);
@@ -523,6 +572,13 @@ const pauseRestartBtn = document.getElementById('pause-restart-btn')!;
 
 function handleTogglePause() {
   if (!gameLoop.getIsRunning()) return;
+
+  // 1v1 대전에서는 일시정지를 허용하지 않는다.
+  // 가비지 라인은 블록이 고정될 때(lockAndNext)만 주입되는데, 일시정지하면 updatePhysics가
+  // 즉시 반환되어 블록이 영원히 고정되지 않는다. 즉 상대가 아무리 공격해도 내 보드는
+  // 무한히 안전한 반면, 상대에게는 멈춘 보드만 계속 방송된다.
+  if (useMultiplayerStore.getState().roomId !== null) return;
+
   gameLoop.togglePause();
   const isPaused = gameLoop.getIsPaused();
 
@@ -676,6 +732,13 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+// 탭 복귀 시 백그라운드 스로틀링으로 밀린 게임 시계를 즉시 따라잡는다.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    gameLoop.syncClock();
+  }
+});
+
 // Home Navigation Button (KakaoBank Logo Click)
 const homeLogoBtn = document.getElementById('home-logo-btn')!;
 
@@ -720,8 +783,11 @@ window.addEventListener('leaderboard_updated', (e: any) => {
   const detail = e.detail;
   if (detail && detail.mode && Array.isArray(detail.entries)) {
     LeaderboardManager.setRemoteEntries(detail.mode, detail.entries);
-    renderLeaderboard(selectedMode);
-    if (!leaderboardModal.classList.contains('hidden')) {
+    // 갱신된 모드가 현재 화면에 떠 있는 모드일 때만 다시 그린다.
+    if (detail.mode === selectedMode) {
+      renderLeaderboard(selectedMode);
+    }
+    if (!leaderboardModal.classList.contains('hidden') && detail.mode === currentModalMode) {
       renderModalLeaderboard(currentModalMode, leaderboardSearch?.value || '');
     }
   }
@@ -845,7 +911,9 @@ const joinRoomBtn = document.getElementById('join-room-btn');
 if (joinRoomBtn) {
   joinRoomBtn.addEventListener('click', () => {
     const customRoom = multiRoomIdInput?.value.trim();
-    if (!customRoom || customRoom.length !== 4) {
+    // 숫자 4자리만 허용. 길이만 검사하면 `<b>x` 같은 값이 방 코드로 통과해
+    // 방 코드를 표시하는 innerHTML 경로로 흘러든다.
+    if (!customRoom || !/^\d{4}$/.test(customRoom)) {
       alert('입장할 4자리 방 코드를 올바르게 입력해주세요 (예: 4829)');
       multiRoomIdInput?.focus();
       return;
@@ -907,14 +975,70 @@ if (multiLeaveBtn) {
 
 let lastMultiStatus = 'IDLE';
 
+/**
+ * 채팅 행을 DOM API로 조립한다.
+ *
+ * innerHTML 템플릿에 상대가 보낸 message/sender를 그대로 끼워 넣으면 임의 스크립트가
+ * 내 브라우저에서 실행된다. textContent는 구조적으로 그 경로를 차단한다.
+ */
+function buildChatRow(msg: ChatMessage, mySocketId: string): HTMLElement {
+  if (msg.socketId === 'system') {
+    const systemRow = document.createElement('div');
+    systemRow.className = 'chat-system-msg warn';
+    systemRow.textContent = msg.message;
+    return systemRow;
+  }
+
+  const isMe = msg.socketId === mySocketId;
+
+  const row = document.createElement('div');
+  row.className = `chat-msg-row ${isMe ? 'me' : 'opponent'}`;
+
+  const sender = document.createElement('span');
+  sender.className = 'chat-msg-sender';
+  sender.textContent = isMe ? '나' : msg.sender;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-msg-bubble';
+  bubble.textContent = msg.message;
+
+  row.appendChild(sender);
+  row.appendChild(bubble);
+  return row;
+}
+
+/**
+ * 직전에 DOM에 반영한 값들.
+ *
+ * 이 구독 콜백은 모든 상태 변화에 발화하는데, 대전 중에는 opponentState가 초당 15회
+ * 갱신된다. 매번 채팅 박스를 통째로 다시 만들고 상대 보드를 재렌더하면(이미 GameLoop가
+ * 프레임마다 그리고 있다) 그대로 프레임 드랍으로 이어진다. 바뀐 블록만 건드린다.
+ */
+const rendered = {
+  roomId: null as string | null,
+  isReady: null as boolean | null,
+  garbageLines: -1,
+  status: '' as string,
+  opponentNickname: null as string | null,
+  opponentReady: null as boolean | null,
+  chatCount: -1,
+  joinError: null as string | null,
+};
+
 // Subscribe to Multiplayer Store Updates
 useMultiplayerStore.subscribe((state) => {
-  if (state.roomId && multiRoomIdInput) {
+  if (state.roomId && multiRoomIdInput && state.roomId !== rendered.roomId) {
     multiRoomIdInput.value = state.roomId;
   }
 
+  if (state.joinError && state.joinError !== rendered.joinError) {
+    alert(state.joinError);
+    showHomeView();
+  }
+  rendered.joinError = state.joinError;
+
   // Interactive Board Ready Overlay Toggle & Button Text Update
-  if (toggleReadyBtn) {
+  if (toggleReadyBtn && state.isReady !== rendered.isReady) {
     const readySpan = toggleReadyBtn.querySelector('span');
     if (state.isReady) {
       toggleReadyBtn.classList.add('is-ready');
@@ -926,9 +1050,9 @@ useMultiplayerStore.subscribe((state) => {
   }
 
   // Interactive Garbage Attack Indicator Badge Update
-  if (garbageIndicator && garbageCountTag) {
+  if (garbageIndicator && garbageCountTag && state.pendingGarbageLines !== rendered.garbageLines) {
+    garbageCountTag.innerText = state.pendingGarbageLines.toString();
     if (state.pendingGarbageLines > 0) {
-      garbageCountTag.innerText = state.pendingGarbageLines.toString();
       garbageIndicator.classList.remove('hidden');
     } else {
       garbageIndicator.classList.add('hidden');
@@ -978,9 +1102,9 @@ useMultiplayerStore.subscribe((state) => {
     gameoverModal.classList.remove('hidden');
   }
 
-  lastMultiStatus = state.status;
+  const statusChanged = state.status !== rendered.status;
 
-  if (toggleReadyBtn) {
+  if (toggleReadyBtn && (statusChanged || state.isReady !== rendered.isReady)) {
     if (state.status === 'PLAYING') {
       toggleReadyBtn.style.display = 'none';
     } else {
@@ -990,20 +1114,31 @@ useMultiplayerStore.subscribe((state) => {
     }
   }
 
-  if (opponentNameTag) {
+  if (
+    opponentNameTag &&
+    (statusChanged ||
+      state.opponentNickname !== rendered.opponentNickname ||
+      state.opponentReady !== rendered.opponentReady ||
+      state.roomId !== rendered.roomId)
+  ) {
+    // 닉네임과 방 코드는 상대 클라이언트가 보낸 값이므로 반드시 이스케이프한다.
+    const safeNickname = escapeHtml(state.opponentNickname);
     if (state.opponentNickname) {
       if (state.status === 'PLAYING') {
-        opponentNameTag.innerHTML = `${state.opponentNickname} <span class="ingame-status-badge">대전 중 🔥</span>`;
+        opponentNameTag.innerHTML = `${safeNickname} <span class="ingame-status-badge">대전 중 🔥</span>`;
         opponentPanel?.classList.remove('opponent-is-ready');
       } else if (state.opponentReady) {
-        opponentNameTag.innerHTML = `${state.opponentNickname} <span class="ready-status-badge">READY!</span>`;
+        opponentNameTag.innerHTML = `${safeNickname} <span class="ready-status-badge">READY!</span>`;
         opponentPanel?.classList.add('opponent-is-ready');
       } else {
-        opponentNameTag.innerHTML = `${state.opponentNickname} <span class="waiting-status-badge">대기중</span>`;
+        opponentNameTag.innerHTML = `${safeNickname} <span class="waiting-status-badge">대기중</span>`;
         opponentPanel?.classList.remove('opponent-is-ready');
       }
     } else {
-      opponentNameTag.innerHTML = state.status === 'WAITING' ? `방 코드 [${state.roomId}] 대기 중...` : '상대방 연결 대기';
+      opponentNameTag.innerHTML =
+        state.status === 'WAITING'
+          ? `방 코드 [${escapeHtml(state.roomId)}] 대기 중...`
+          : '상대방 연결 대기';
       opponentPanel?.classList.remove('opponent-is-ready');
     }
   }
@@ -1018,36 +1153,42 @@ useMultiplayerStore.subscribe((state) => {
     }
   }
 
-  // Render Realtime Chat Messages
-  if (chatMessagesBox && state.chatMessages) {
-    const curSocket = state.socket;
-    const mySocketId = curSocket ? curSocket.id : '';
-    chatMessagesBox.innerHTML = state.chatMessages.length === 0
-      ? '<div class="chat-system-msg">채팅방에 연결되었습니다.</div>'
-      : state.chatMessages
-          .map((msg) => {
-            if (msg.socketId === 'system') {
-              return `<div class="chat-system-msg warn">${msg.message}</div>`;
-            }
-            const isMe = msg.socketId === mySocketId;
-            return `
-              <div class="chat-msg-row ${isMe ? 'me' : 'opponent'}">
-                <span class="chat-msg-sender">${isMe ? '나' : msg.sender}</span>
-                <div class="chat-msg-bubble">${msg.message}</div>
-              </div>
-            `;
-          })
-          .join('');
+  // Render Realtime Chat Messages — 신규 메시지만 append (전체 재구성 금지)
+  if (chatMessagesBox && state.chatMessages.length !== rendered.chatCount) {
+    const mySocketId = state.socket?.id ?? '';
+    const isReset = state.chatMessages.length < rendered.chatCount || rendered.chatCount < 0;
+
+    if (isReset) {
+      chatMessagesBox.replaceChildren();
+      if (state.chatMessages.length === 0) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'chat-system-msg';
+        placeholder.innerText = '채팅방에 연결되었습니다.';
+        chatMessagesBox.appendChild(placeholder);
+      }
+    }
+
+    const startIndex = isReset ? 0 : rendered.chatCount;
+    for (const msg of state.chatMessages.slice(startIndex)) {
+      chatMessagesBox.appendChild(buildChatRow(msg, mySocketId));
+    }
+
     chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
   }
 
-  if (garbageCountTag) {
-    garbageCountTag.innerText = state.pendingGarbageLines.toString();
-  }
-
-  if (opponentRenderer) {
+  // 대전 중에는 GameLoop.render()가 매 프레임 상대 보드를 그린다. 여기서 또 그리면 중복이다.
+  if (opponentRenderer && state.status !== 'PLAYING') {
     opponentRenderer.render(state.opponentState, state.opponentNickname);
   }
+
+  rendered.roomId = state.roomId;
+  rendered.isReady = state.isReady;
+  rendered.garbageLines = state.pendingGarbageLines;
+  rendered.status = state.status;
+  rendered.opponentNickname = state.opponentNickname;
+  rendered.opponentReady = state.opponentReady;
+  rendered.chatCount = state.chatMessages.length;
+  lastMultiStatus = state.status;
 });
 
 // Chat UI Controls

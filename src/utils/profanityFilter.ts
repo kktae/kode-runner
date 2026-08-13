@@ -4,10 +4,10 @@ const badWordsFilter = new BadWordsFilter();
 
 // Additional Korean Profanity Regex Rules for Edge Cases
 const EXTRA_KOREAN_PROFANITY_PATTERNS = [
-  /시[발바빨벌발발]+|씨[발바빨벌발발]+/g,
-  /개[새새끼씨끼씹]+|존[나나나맛마게]+/g,
-  /병[신신씬]+|미[친친친놈년]+/g,
-  /지[랄랄]+|느[금금엄마]+/g,
+  /[시씨][발바빨벌]+/g,
+  /개[새끼씨씹]+|존[나맛마게]+/g,
+  /병[신씬]+|미[친놈년]+/g,
+  /지[랄]+|느[금엄마]+/g,
   /fuck|shit|bitch|bastard/gi,
 ];
 

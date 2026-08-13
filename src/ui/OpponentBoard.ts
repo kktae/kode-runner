@@ -79,15 +79,13 @@ export class OpponentBoardRenderer {
 
     // 2. Draw Falling Active Piece (Full 4-Cell Matrix with Rotation)
     if (gameState.currentPiece) {
-      const { type: typeId, x, y, rotation, shape: customShape } = gameState.currentPiece as any;
+      const { type: typeId, x, y, rotation } = gameState.currentPiece;
       const charType = ID_TO_MINO[typeId] || 'I';
-      let shape = customShape;
 
-      if (!shape) {
-        shape = SHAPES[charType];
-        for (let i = 0; i < (rotation % 4); i++) {
-          shape = MinoFactory.rotateMatrix(shape, true);
-        }
+      // 형상은 전송하지 않고 type + rotation으로 복원한다. 월킥 보정은 x/y에 반영되어 있다.
+      let shape: number[][] = SHAPES[charType];
+      for (let i = 0; i < ((rotation % 4) + 4) % 4; i++) {
+        shape = MinoFactory.rotateMatrix(shape, true);
       }
 
       if (shape && Array.isArray(shape)) {

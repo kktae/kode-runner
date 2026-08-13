@@ -30,7 +30,9 @@ export class SoundManager {
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
     if (this.isMuted) {
-      this.stopBGM();
+      // 음소거는 "BGM이 재생되어야 하는 상태"라는 의도를 바꾸지 않는다. 소리만 멈춘다.
+      // 여기서 stopBGM()을 부르면 의도까지 지워져 음소거 해제 시 BGM이 복구되지 않는다.
+      this.clearBgmInterval();
     } else if (this.isBgmPlaying) {
       this.startBGM();
     }
@@ -43,7 +45,9 @@ export class SoundManager {
 
   private ensureAudioContext() {
     if (this.audioCtx && this.audioCtx.state === 'suspended') {
-      this.audioCtx.resume();
+      // 사용자 제스처 밖에서 호출되면 reject된다. 무시해도 되지만 잡지 않으면
+      // unhandled rejection으로 콘솔에 쌓인다.
+      this.audioCtx.resume().catch(() => {});
     }
   }
 
@@ -84,11 +88,22 @@ export class SoundManager {
     }, 200);
   }
 
-  public stopBGM() {
+  /** 인터벌만 정리한다. "재생되어야 하는가"라는 의도(isBgmPlaying)는 건드리지 않는다. */
+  private clearBgmInterval() {
     if (this.bgmIntervalId) {
       clearInterval(this.bgmIntervalId);
       this.bgmIntervalId = null;
     }
+  }
+
+  /**
+   * BGM을 끄고 "재생 중이 아님"으로 의도까지 내린다 (게임 종료 / 홈 복귀).
+   * isBgmPlaying을 내리지 않으면, 이후 음소거→해제 시 게임이 실행 중이 아닌
+   * 홈 화면이나 멀티 로비에서 BGM이 되살아난다.
+   */
+  public stopBGM() {
+    this.isBgmPlaying = false;
+    this.clearBgmInterval();
   }
 
   // Synthesize Arcade Effects via Web Audio API

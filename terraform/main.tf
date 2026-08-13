@@ -106,6 +106,17 @@ resource "google_cloud_run_v2_service" "cloud_run_app" {
     # Set max 100 concurrent WebSocket connections per Cloud Run container
     max_instance_request_concurrency = 100
 
+    # Cloud Run treats a WebSocket as a single long-running request. The default request
+    # timeout is 300s, which force-closed every player's socket 5 minutes into a match.
+    # 3600s is the Cloud Run maximum.
+    timeout = "3600s"
+
+    # External Application Load Balancers do NOT support session affinity for serverless
+    # NEG backends, so socket.io's HTTP long-polling fallback cannot complete a handshake
+    # across multiple instances. Cloud Run's own affinity covers that gap and also keeps
+    # reconnects on the same instance.
+    session_affinity = true
+
     vpc_access {
       connector = google_vpc_access_connector.vpc_connector.id
       egress    = "PRIVATE_RANGES_ONLY"
@@ -151,6 +162,13 @@ resource "google_cloud_run_v2_service" "cloud_run_app" {
       env {
         name  = "REDIS_URL"
         value = "redis://${google_redis_instance.redis_instance.host}:${google_redis_instance.redis_instance.port}"
+      }
+
+      # Socket.io CORS allowlist. Unset would fall back to "*" (any site could open a
+      # socket to the game server, since there is no auth).
+      env {
+        name  = "ALLOWED_ORIGINS"
+        value = "https://${var.domain_name},https://www.${var.domain_name}"
       }
     }
   }

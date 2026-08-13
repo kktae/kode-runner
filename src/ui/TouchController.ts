@@ -47,8 +47,12 @@ export class TouchController {
     this.bindBtn('touch-hold', callbacks.onHold, 20);
   }
 
+  /**
+   * 인라인 style.display를 쓰면 모바일 전용 미디어쿼리를 이겨버려 데스크톱에서도 D-pad가
+   * 노출된다. 클래스 토글만 하고 실제 노출 여부는 CSS(미디어쿼리)가 결정하게 둔다.
+   */
   public setVisible(visible: boolean) {
-    this.containerEl.style.display = visible ? 'flex' : 'none';
+    this.containerEl.classList.toggle('is-hidden', !visible);
   }
 
   private triggerHaptic(pattern: number | number[]) {
