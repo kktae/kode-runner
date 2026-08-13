@@ -1,4 +1,4 @@
-export type MinoType = 'I' | 'J' | 'L' | 'O' | 'S' | 'T' | 'Z';
+export type MinoType = 'I' | 'J' | 'L' | 'O' | 'S' | 'T' | 'Z' | 'GARBAGE';
 
 export type GameMode = 'timeattack' | 'classic';
 

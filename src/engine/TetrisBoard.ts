@@ -287,21 +287,21 @@ export class TetrisBoard {
       const garbageRow: CellState[] = Array.from({ length: BOARD_WIDTH }, (_, colIdx) => ({
         filled: colIdx !== holePosition,
         color: '#64748b',
-        characterType: colIdx !== holePosition ? ('I' as MinoType) : undefined,
+        characterType: colIdx !== holePosition ? ('GARBAGE' as MinoType) : undefined,
       }));
       this.grid.push(garbageRow);
     }
   }
 
   /**
-   * 소켓 전송용 2D Matrix 변환 (0=empty, 1-7=minoType)
+   * 소켓 전송용 2D Matrix 변환 (0=empty, 1-7=minoType, 8=garbage)
    */
   public getGridMatrix(): number[][] {
-    const typeMap: Record<string, number> = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7 };
+    const typeMap: Record<string, number> = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7, GARBAGE: 8 };
     return this.grid.map((row) =>
       row.map((cell) => {
         if (!cell.filled) return 0;
-        return cell.characterType ? typeMap[cell.characterType] || 1 : 1;
+        return cell.characterType ? typeMap[cell.characterType] || 8 : 8;
       }),
     );
   }

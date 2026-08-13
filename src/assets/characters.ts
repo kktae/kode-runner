@@ -86,6 +86,15 @@ export const CHARACTERS: Record<MinoType, CharacterInfo> = {
     description: '겁많은 미카엘 오리 튜브',
     drawFace: () => {},
   },
+  GARBAGE: {
+    name: 'Garbage',
+    koreanName: '방해 블록',
+    primaryColor: '#64748b',
+    secondaryColor: '#475569',
+    accentColor: '#94a3b8',
+    description: '상대방의 공격으로 생성된 회색 방해 블록',
+    drawFace: () => {},
+  },
 };
 
 /**

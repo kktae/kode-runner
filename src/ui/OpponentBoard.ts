@@ -11,6 +11,7 @@ const ID_TO_MINO: Record<number, MinoType> = {
   5: 'S',
   6: 'T',
   7: 'Z',
+  8: 'GARBAGE',
 };
 
 export class OpponentBoardRenderer {

@@ -44,6 +44,7 @@ export const SHAPES: Record<MinoType, number[][]> = {
     [0, 1, 1],
     [0, 0, 0],
   ],
+  GARBAGE: [[1]],
 };
 
 export const JLSTZ_WALL_KICKS: Record<string, Point[]> = {
