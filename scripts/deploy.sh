@@ -25,21 +25,24 @@ fi
 echo "Target GCP Project ID: ${PROJECT_ID}"
 echo "Target GCP Region: ${REGION}"
 
-IMAGE_TAG="${REGION}-docker.pkg.dev/${PROJECT_ID}/${APP_NAME}-repo/${APP_NAME}-app:latest"
+TAG_SUFFIX=$(date +%Y%m%d%H%M%S)
+IMAGE_TAG="${REGION}-docker.pkg.dev/${PROJECT_ID}/${APP_NAME}-repo/${APP_NAME}-app:${TAG_SUFFIX}"
+IMAGE_LATEST="${REGION}-docker.pkg.dev/${PROJECT_ID}/${APP_NAME}-repo/${APP_NAME}-app:latest"
 
 echo "Step 1/4: Authenticating Docker with Artifact Registry..."
 gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
 
-echo "Step 2/4: Building Docker image for linux/amd64 platform (${IMAGE_TAG})..."
-docker build --platform linux/amd64 -t "${IMAGE_TAG}" .
+echo "Step 2/4: Building Docker image without cache for linux/amd64 (${IMAGE_TAG})..."
+docker build --no-cache --platform linux/amd64 -t "${IMAGE_TAG}" -t "${IMAGE_LATEST}" .
 
 echo "Step 3/4: Pushing Docker image to Artifact Registry..."
 docker push "${IMAGE_TAG}"
+docker push "${IMAGE_LATEST}"
 
 echo "Step 4/4: Running Terraform Infrastructure Apply..."
 cd "${TERRAFORM_DIR}"
 terraform init
-terraform apply -var="gcp_project_id=${PROJECT_ID}" -var="gcp_region=${REGION}" -var="app_name=${APP_NAME}" -var="container_image=${IMAGE_TAG}" -var="domain_name=your-custom-domain.com" -auto-approve
+terraform apply -var="gcp_project_id=${PROJECT_ID}" -var="gcp_region=${REGION}" -var="app_name=${APP_NAME}" -var="container_image=${IMAGE_TAG}" -auto-approve
 
 echo ""
 echo "=== Deployment Completed Successfully! ==="
