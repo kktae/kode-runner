@@ -123,7 +123,13 @@ function showHomeView() {
   pauseModal.classList.add('hidden');
   leaderboardModal.classList.add('hidden');
   gameoverModal.classList.add('hidden');
+
+  gameLoop.stop();
   gameLoop.reset();
+
+  if (opponentRenderer) {
+    opponentRenderer.clear();
+  }
 
   homeView.classList.remove('hidden');
   gameView.classList.add('hidden');
@@ -810,6 +816,12 @@ if (opponentCanvas) {
 }
 
 function startMultiplayerGame(roomId: string) {
+  gameLoop.stop();
+  gameLoop.reset();
+  if (opponentRenderer) {
+    opponentRenderer.clear();
+  }
+
   const nickname = multiNicknameInput?.value.trim() || generateKoreanNickname();
   useMultiplayerStore.getState().joinRoom(roomId, nickname);
 
@@ -822,6 +834,12 @@ function startMultiplayerGame(roomId: string) {
 
 if (quickMatchBtn) {
   quickMatchBtn.addEventListener('click', () => {
+    gameLoop.stop();
+    gameLoop.reset();
+    if (opponentRenderer) {
+      opponentRenderer.clear();
+    }
+
     const customRoom = multiRoomIdInput?.value.trim();
     const nickname = multiNicknameInput?.value.trim() || generateKoreanNickname();
 

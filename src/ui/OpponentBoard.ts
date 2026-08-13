@@ -126,4 +126,14 @@ export class OpponentBoardRenderer {
       this.ctx.fillText('KNOCK OUT!', width / 2, height / 2);
     }
   }
+
+  /**
+   * Opponent Canvas 완전히 초기화
+   */
+  public clear() {
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(0, 0, width, height);
+  }
 }

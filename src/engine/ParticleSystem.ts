@@ -180,4 +180,9 @@ export class ParticleSystem {
 
     ctx.restore();
   }
+
+  public clear() {
+    this.particles = [];
+    this.floatingTexts = [];
+  }
 }

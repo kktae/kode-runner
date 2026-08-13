@@ -10,7 +10,7 @@ export interface GameLoopCallbacks {
   onStatsUpdate: (stats: GameStats) => void;
   onCombo: (combo: number, isTetris: boolean) => void;
   onGameOver: (finalStats: GameStats) => void;
-  onNextQueueUpdate: (nextTypes: MinoType[]) => void;
+  onNextQueueUpdate: (nextTypes: (MinoType | null)[]) => void;
   onHoldUpdate: (holdType: MinoType | null) => void;
   onFeverStart?: () => void;
 }
@@ -169,9 +169,17 @@ export class GameLoop {
   }
 
   public reset() {
+    this.isRunning = false;
+    this.isPaused = false;
     this.tickerWorker?.postMessage('stop');
-    if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
-    if (this.timerIntervalId) clearInterval(this.timerIntervalId);
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+    if (this.timerIntervalId) {
+      clearInterval(this.timerIntervalId);
+      this.timerIntervalId = null;
+    }
 
     this.factory = new MinoFactory();
     this.board = new TetrisBoard(this.factory);
@@ -179,18 +187,37 @@ export class GameLoop {
     this.dropInterval = 800;
     this.dropCounter = 0;
     this.lockDelayCounter = 0;
-    this.isRunning = false;
-    this.isPaused = false;
+
+    // Clear main board canvas & particle system
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.particles.clear();
+
+    // Clear HOLD & NEXT preview canvases
+    this.callbacks.onHoldUpdate(null);
+    this.callbacks.onNextQueueUpdate([null, null, null]);
+
+    // Reset UI Stats (0 Score, 0 Lines, 1 Level, 0 Combo)
+    this.callbacks.onStatsUpdate(this.stats);
+
+    const wrapper = document.getElementById('canvas-wrapper');
+    if (wrapper) wrapper.classList.remove('is-playing', 'is-fever');
   }
 
   public stop() {
     this.isRunning = false;
+    this.isPaused = false;
     this.tickerWorker?.postMessage('stop');
-    if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
-    if (this.timerIntervalId) clearInterval(this.timerIntervalId);
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+    if (this.timerIntervalId) {
+      clearInterval(this.timerIntervalId);
+      this.timerIntervalId = null;
+    }
 
     const wrapper = document.getElementById('canvas-wrapper');
-    if (wrapper) wrapper.classList.remove('is-playing');
+    if (wrapper) wrapper.classList.remove('is-playing', 'is-fever');
   }
 
   public togglePause() {
