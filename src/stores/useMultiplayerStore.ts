@@ -56,112 +56,126 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
 
   connectSocket: () => {
     let { socket } = get();
-    if (!socket || !socket.connected) {
+    if (!socket) {
       const serverUrl = import.meta.env.VITE_SERVER_URL || window.location.origin;
       socket = io(serverUrl, {
         transports: ['websocket', 'polling'],
         autoConnect: true,
-      });
-
-      const activeSocket = socket;
-      activeSocket.on('connect', () => {
-        const { roomId, nickname } = get();
-        if (roomId && nickname) {
-          activeSocket.emit('join_room', { roomId, nickname });
-        }
-      });
-
-      socket.on('leaderboard_data', (data: { mode: any; entries: any[] }) => {
-        if (data && data.mode && Array.isArray(data.entries)) {
-          window.dispatchEvent(new CustomEvent('leaderboard_updated', { detail: data }));
-        }
-      });
-
-      socket.on('leaderboard_update', (data: { mode: any; entries: any[] }) => {
-        if (data && data.mode && Array.isArray(data.entries)) {
-          window.dispatchEvent(new CustomEvent('leaderboard_updated', { detail: data }));
-        }
-      });
-
-      socket.on('room_info', (data: { roomId: string; players: { nickname: string; socketId: string; isReady: boolean }[] }) => {
-        const state = get();
-        const curSocket = state.socket;
-        const mySocketId = curSocket ? curSocket.id : null;
-        const myNickname = state.nickname;
-
-        const me = data.players.find(
-          (p) => (myNickname && p.nickname === myNickname) || (mySocketId && p.socketId === mySocketId)
-        );
-        const opponent = data.players.find(
-          (p) => p !== me && ((myNickname && p.nickname !== myNickname) || (mySocketId && p.socketId !== mySocketId))
-        );
-
-        set({
-          roomId: data.roomId,
-          opponentNickname: opponent ? opponent.nickname : null,
-          isReady: me ? me.isReady : state.isReady,
-          opponentReady: opponent ? opponent.isReady : false,
-          status: state.status === 'PLAYING' ? 'PLAYING' : 'WAITING',
-        });
-      });
-
-      socket.on('game_start', (data: { seed: number; startTime: number; players: { nickname: string; socketId: string }[] }) => {
-        const curSocket = get().socket;
-        const mySocketId = curSocket ? curSocket.id : null;
-        const opponent = data.players.find((p) => p.socketId !== mySocketId);
-
-        set({
-          status: 'PLAYING',
-          isReady: false,
-          opponentReady: false,
-          pendingGarbageLines: 0,
-          gameSeed: data.seed,
-          gameWinner: null,
-          opponentNickname: opponent ? opponent.nickname : get().opponentNickname,
-        });
-      });
-
-      socket.on('state_sync', (state: PlayerGameState) => {
-        const current = get();
-        if (state.isGameOver && current.status === 'PLAYING') {
-          // 상대방이 게임 중 먼저 KO 되었으므로 내가 승리!
-          set({ opponentState: state, gameWinner: 'ME', status: 'GAME_OVER' });
-        } else {
-          set({ opponentState: state });
-        }
-      });
-
-      socket.on('game_over', () => {
-        const current = get();
-        if (current.status === 'PLAYING') {
-          set({ gameWinner: 'ME', status: 'GAME_OVER' });
-        }
-      });
-
-      socket.on('attack_garbage', (data: { linesCount: number; holePosition: number }) => {
-        set((s) => ({ pendingGarbageLines: s.pendingGarbageLines + data.linesCount }));
-      });
-
-      socket.on('chat_message', (msg: ChatMessage) => {
-        set((s) => ({ chatMessages: [...s.chatMessages, msg] }));
-      });
-
-      socket.on('opponent_left', () => {
-        if (get().status === 'PLAYING') {
-          set({ gameWinner: 'ME', status: 'GAME_OVER', opponentNickname: null, opponentState: null, opponentReady: false });
-        } else {
-          set({ opponentNickname: null, opponentState: null, opponentReady: false, status: 'WAITING' });
-        }
-      });
-
-      socket.on('quick_match_assigned', (data: { roomId: string }) => {
-        const myNick = get().nickname;
-        get().joinRoom(data.roomId, myNick);
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 1000,
       });
 
       set({ socket });
+    } else if (!socket.connected) {
+      socket.connect();
     }
-    return socket;
+
+    const activeSocket = socket;
+    // 기존 중복 등록된 이벤트 리스너 완전 제거
+    activeSocket.removeAllListeners();
+
+    activeSocket.on('connect', () => {
+      const { roomId, nickname } = get();
+      if (roomId && nickname) {
+        activeSocket.emit('join_room', { roomId, nickname });
+      }
+    });
+
+    activeSocket.on('leaderboard_data', (data: { mode: any; entries: any[] }) => {
+      if (data && data.mode && Array.isArray(data.entries)) {
+        window.dispatchEvent(new CustomEvent('leaderboard_updated', { detail: data }));
+      }
+    });
+
+    activeSocket.on('leaderboard_update', (data: { mode: any; entries: any[] }) => {
+      if (data && data.mode && Array.isArray(data.entries)) {
+        window.dispatchEvent(new CustomEvent('leaderboard_updated', { detail: data }));
+      }
+    });
+
+    activeSocket.on('room_info', (data: { roomId: string; players: { nickname: string; socketId: string; isReady: boolean }[] }) => {
+      const state = get();
+      const curSocket = state.socket;
+      const mySocketId = curSocket ? curSocket.id : null;
+      const myNickname = state.nickname;
+
+      const me = data.players.find(
+        (p) => (myNickname && p.nickname === myNickname) || (mySocketId && p.socketId === mySocketId)
+      );
+      const opponent = data.players.find(
+        (p) => p !== me && ((myNickname && p.nickname !== myNickname) || (mySocketId && p.socketId !== mySocketId))
+      );
+
+      set({
+        roomId: data.roomId,
+        opponentNickname: opponent ? opponent.nickname : null,
+        isReady: me ? me.isReady : state.isReady,
+        opponentReady: opponent ? opponent.isReady : false,
+        status: state.status === 'PLAYING' ? 'PLAYING' : 'WAITING',
+      });
+    });
+
+    activeSocket.on('game_start', (data: { seed: number; startTime: number; players: { nickname: string; socketId: string }[] }) => {
+      const state = get();
+      const curSocket = state.socket;
+      const mySocketId = curSocket ? curSocket.id : null;
+      const myNickname = state.nickname;
+
+      const opponent = data.players.find(
+        (p) => (myNickname && p.nickname !== myNickname) || (mySocketId && p.socketId !== mySocketId)
+      );
+
+      set({
+        status: 'PLAYING',
+        isReady: false,
+        opponentReady: false,
+        pendingGarbageLines: 0,
+        gameSeed: data.seed,
+        gameWinner: null,
+        opponentNickname: opponent ? opponent.nickname : get().opponentNickname,
+      });
+    });
+
+    activeSocket.on('state_sync', (state: PlayerGameState) => {
+      const current = get();
+      if (state.isGameOver && current.status === 'PLAYING') {
+        // 상대방이 게임 중 먼저 KO 되었으므로 내가 승리!
+        set({ opponentState: state, gameWinner: 'ME', status: 'GAME_OVER' });
+      } else {
+        set({ opponentState: state });
+      }
+    });
+
+    activeSocket.on('game_over', () => {
+      const current = get();
+      if (current.status === 'PLAYING') {
+        set({ gameWinner: 'ME', status: 'GAME_OVER' });
+      }
+    });
+
+    activeSocket.on('attack_garbage', (data: { linesCount: number; holePosition: number }) => {
+      set((s) => ({ pendingGarbageLines: s.pendingGarbageLines + data.linesCount }));
+    });
+
+    activeSocket.on('chat_message', (msg: ChatMessage) => {
+      set((s) => ({ chatMessages: [...s.chatMessages, msg] }));
+    });
+
+    activeSocket.on('opponent_left', () => {
+      if (get().status === 'PLAYING') {
+        set({ gameWinner: 'ME', status: 'GAME_OVER', opponentNickname: null, opponentState: null, opponentReady: false });
+      } else {
+        set({ opponentNickname: null, opponentState: null, opponentReady: false, status: 'WAITING' });
+      }
+    });
+
+    activeSocket.on('quick_match_assigned', (data: { roomId: string }) => {
+      const myNick = get().nickname;
+      get().joinRoom(data.roomId, myNick);
+    });
+
+    return activeSocket;
   },
 
   requestQuickMatch: (nickname: string) => {
