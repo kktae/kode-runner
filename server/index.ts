@@ -19,10 +19,17 @@ const REDIS_HOST = process.env.REDIS_HOST;
 const REDIS_PORT = process.env.REDIS_PORT || '6379';
 const REDIS_URL = process.env.REDIS_URL || (REDIS_HOST ? `redis://${REDIS_HOST}:${REDIS_PORT}` : '');
 
-// SPA Static File Server
+// SPA Static File Server with strict no-cache for index.html
 const serveAssets = sirv('dist', {
   single: true,
   dev: process.env.NODE_ENV !== 'production',
+  setHeaders: (res, pathname) => {
+    if (pathname === '/' || pathname.endsWith('.html') || pathname.endsWith('index.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  },
 });
 
 const httpServer = createServer((req, res) => {
