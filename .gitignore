@@ -29,11 +29,13 @@ scratch/
 *.tfstate.*
 .terraform/
 
-# OS & Editor files
+# OS, Editor & Log files
 .DS_Store
 *.pem
 *.key
 *.local
+*.log
 
-# Documentation & Superpowers
+# Documentation & Internal Plans
 docs/superpowers/
+docs/SERVERLESS_PLAN.md
