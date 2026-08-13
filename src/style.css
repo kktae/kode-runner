@@ -610,11 +610,37 @@ body {
   aspect-ratio: 1 / 2;
 }
 
-/* Next Queue */
-.next-queue {
+/* Next Queue Horizontal Compact Mini Layout */
+.panel-next {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 8px 10px;
+}
+
+.next-queue {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
   gap: 6px;
+  margin-top: 4px;
+}
+
+.preview-box.mini {
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+}
+
+.preview-box.mini canvas {
+  width: 40px !important;
+  height: 40px !important;
 }
 
 /* Leaderboard Card */
@@ -2311,10 +2337,11 @@ kbd {
   }
 
   .ready-btn {
-    font-size: 0.72rem !important;
-    padding: 5px 8px !important;
-    border-radius: 6px !important;
-    margin: 2px 0 !important;
+    font-size: 0.65rem !important;
+    padding: 3px 6px !important;
+    border-radius: 4px !important;
+    margin: 1px 0 !important;
+    height: auto !important;
   }
 
   .opponent-canvas-wrapper {
@@ -2332,19 +2359,32 @@ kbd {
     padding: 2px 4px !important;
   }
 
-  /* Left Panel (Hold & Stats) Second */
+  /* Left Panel (Hold, Next & Stats) Second */
   .side-panel.left-panel {
     order: 2 !important;
     width: 100% !important;
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 8px !important;
+    grid-template-columns: 1fr 1.2fr 1fr !important;
+    gap: 6px !important;
   }
 
-  .panel-hold {
+  .panel-hold, .panel-next {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 4px !important;
+  }
+
+  .preview-box.mini {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 1px !important;
+  }
+
+  .preview-box.mini canvas {
+    width: 28px !important;
+    height: 28px !important;
   }
 
   .panel-stats {
