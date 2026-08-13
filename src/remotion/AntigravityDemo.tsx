@@ -6,9 +6,7 @@ import { UserPromptArea } from "./components/UserPromptArea";
 import { WorkingProcess } from "./components/WorkingProcess";
 import { PlanResponse } from "./components/PlanResponse";
 import { ImplementationPlanCard } from "./components/ImplementationPlanCard";
-import { ToolExecution } from "./components/ToolExecution";
-import { ExecutionSuccessCard } from "./components/ExecutionSuccessCard";
-import { AgentStepShowcase } from "./components/AgentStepShowcase";
+import { ExactAntigravityScreenshotOverlay } from "./components/ExactAntigravityScreenshotOverlay";
 import { MouseCursor } from "./components/MouseCursor";
 
 export const AntigravityDemo: React.FC = () => {
@@ -16,11 +14,11 @@ export const AntigravityDemo: React.FC = () => {
 
   const cubicEase = Easing.bezier(0.16, 1, 0.3, 1);
 
-  // Enhanced Camera Zoom-In focus onto main chat response content (1.42x close-up)
-  // Zooms in during plan response, remains focused while Proceed clicked & tools run, then zooms out at completion
+  // Camera Zoom-In focus onto main chat response content (1.42x close-up)
+  // Zooms in during plan response, remains focused while Proceed clicked & Antigravity execution steps run, then zooms out
   const cameraScale = interpolate(
     frame,
-    [0, 180, 220, 1900, 1960, 2400],
+    [0, 180, 220, 2200, 2300, 2400],
     [1.0, 1.0, 1.42, 1.42, 1.0, 1.0],
     {
       extrapolateLeft: "clamp",
@@ -29,13 +27,14 @@ export const AntigravityDemo: React.FC = () => {
     }
   );
 
-  // Precise Mouse Cursor Trajectory inside the App Window coordinate system
-  // Prompt Area Input Center -> (X: 420, Y: 60)
-  // Proceed Button Center    -> (X: 380, Y: 868)
+  // Mouse Cursor Trajectory inside App Window
+  // Frame 0-25: Move to Prompt
+  // Frame 1200-1260: Move to Proceed button (X: 380, Y: 868)
+  // Frame 1800-2100: Move to "Submit" button in permission modal (X: 1100, Y: 940)
   const mouseX = interpolate(
     frame,
-    [0, 25, 1200, 1260, 1900, 1960, 2400],
-    [900, 420, 420, 380, 380, 950, 950],
+    [0, 25, 1200, 1260, 1800, 2100, 2200, 2400],
+    [900, 420, 420, 380, 800, 1100, 1100, 950],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -45,8 +44,8 @@ export const AntigravityDemo: React.FC = () => {
 
   const mouseY = interpolate(
     frame,
-    [0, 25, 1200, 1260, 1900, 1960, 2400],
-    [500, 60, 60, 868, 868, 600, 600],
+    [0, 25, 1200, 1260, 1800, 2100, 2200, 2400],
+    [500, 60, 60, 868, 700, 940, 940, 600],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -55,7 +54,9 @@ export const AntigravityDemo: React.FC = () => {
   );
 
   const isMouseClicking =
-    (frame >= 15 && frame <= 35) || (frame >= 1255 && frame <= 1275);
+    (frame >= 15 && frame <= 35) ||
+    (frame >= 1255 && frame <= 1275) ||
+    (frame >= 2095 && frame <= 2115);
 
   return (
     <AbsoluteFill
@@ -72,7 +73,7 @@ export const AntigravityDemo: React.FC = () => {
         overflow: "hidden",
       }}
     >
-      {/* Prominent Semi-transparent Partner Brand Watermark Overlay */}
+      {/* Semi-transparent Partner Brand Watermark Overlay */}
       <div
         style={{
           position: "absolute",
@@ -166,20 +167,14 @@ export const AntigravityDemo: React.FC = () => {
 
                 {/* Implementation Plan Artifact Card & Proceed Button */}
                 <ImplementationPlanCard />
-
-                {/* Tool Execution Cards after Proceed Click */}
-                <ToolExecution />
-
-                {/* Final Task Completion & Cloud Run Deployment Result Card */}
-                <ExecutionSuccessCard />
               </div>
             </div>
           </div>
 
-          {/* User Image Step Showcase Slide Overlays */}
-          <AgentStepShowcase />
+          {/* Exact User Uploaded Antigravity Screenshots Overlay after Proceed (1270f~) */}
+          <ExactAntigravityScreenshotOverlay />
 
-          {/* Interactive Mouse Cursor nested INSIDE window for 100% pixel lockstep */}
+          {/* Interactive Mouse Cursor nested INSIDE window */}
           <MouseCursor x={mouseX} y={mouseY} clicking={isMouseClicking} />
         </div>
       </div>
