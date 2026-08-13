@@ -44,8 +44,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.hidden {
+/* Universal Hide Override Rule */
+.hidden,
+div.hidden,
+section.hidden,
+.panel-chat.hidden,
+.panel-opponent.hidden,
+.panel-leaderboard.hidden {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 /* Main Container */
@@ -1699,7 +1708,7 @@ kbd {
 }
 
 /* Refined Cross-Browser Chat Panel & Form Layout */
-.panel-chat {
+.panel-chat:not(.hidden) {
   display: flex !important;
   flex-direction: column !important;
   gap: 8px !important;
