@@ -2576,16 +2576,22 @@ kbd {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    padding: 6px 12px !important;
-    width: 100% !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    padding: 6px 16px !important;
+    width: fit-content !important;
+    max-width: 90% !important;
+    margin: 0 auto !important;
     box-sizing: border-box !important;
+    border-radius: 12px !important;
   }
 
   .panel-next .panel-title {
-    font-size: 0.65rem !important;
+    font-size: 0.7rem !important;
+    font-weight: 800 !important;
     margin: 0 !important;
-    letter-spacing: 0.05em !important;
+    letter-spacing: 0.08em !important;
+    color: var(--text-muted) !important;
   }
 
   .next-queue {
@@ -2597,14 +2603,17 @@ kbd {
   }
 
   .preview-box.mini {
-    width: 32px !important;
-    height: 32px !important;
-    padding: 1px !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 2px !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 8px !important;
   }
 
   .preview-box.mini canvas {
-    width: 28px !important;
-    height: 28px !important;
+    width: 32px !important;
+    height: 32px !important;
   }
 
   /* Footer Controls & Disclaimer */
