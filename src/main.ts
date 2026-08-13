@@ -9,6 +9,7 @@ import { ComboBanner } from './ui/ComboBanner';
 import { LeaderboardManager } from './ui/Leaderboard';
 import { RemotionModal } from './ui/RemotionModal';
 import { TouchController } from './ui/TouchController';
+import { GestureController } from './ui/GestureController';
 import confetti from 'canvas-confetti';
 import { useMultiplayerStore } from './stores/useMultiplayerStore';
 import { OpponentBoardRenderer } from './ui/OpponentBoard';
@@ -193,17 +194,58 @@ const canvasWrapper = document.getElementById('canvas-wrapper')!;
 const comboBanner = new ComboBanner(canvasWrapper);
 const soundManager = SoundManager.getInstance();
 
-// Initialize Touch D-Pad Controller for Mobile/Tablet Booth Guests
+// Initialize Touch D-Pad & Gesture Controllers for Mobile
 const touchControlsRoot = document.getElementById('touch-controls-root');
+const modeBtnDpad = document.getElementById('mode-btn-dpad');
+const modeBtnGesture = document.getElementById('mode-btn-gesture');
+
+let touchController: TouchController | null = null;
+let gestureController: GestureController | null = null;
+
+const callbacks = {
+  onLeft: () => gameLoop.handleInput('left'),
+  onRight: () => gameLoop.handleInput('right'),
+  onSoftDrop: () => gameLoop.handleInput('down'),
+  onHardDrop: () => gameLoop.handleInput('hardDrop'),
+  onRotateCW: () => gameLoop.handleInput('rotate'),
+  onHold: () => gameLoop.handleInput('hold'),
+};
+
 if (touchControlsRoot) {
-  new TouchController(touchControlsRoot, {
-    onLeft: () => gameLoop.handleInput('left'),
-    onRight: () => gameLoop.handleInput('right'),
-    onSoftDrop: () => gameLoop.handleInput('down'),
-    onHardDrop: () => gameLoop.handleInput('hardDrop'),
-    onRotateCW: () => gameLoop.handleInput('rotate'),
-    onHold: () => gameLoop.handleInput('hold'),
-  });
+  touchController = new TouchController(touchControlsRoot, callbacks);
+}
+
+if (tetrisCanvas) {
+  gestureController = new GestureController(tetrisCanvas, callbacks);
+}
+
+// Control Mode Switching Logic (Button Pad vs Canvas Gesture)
+let activeControlMode: 'dpad' | 'gesture' =
+  (localStorage.getItem('kode_runner_control_mode') as 'dpad' | 'gesture') || 'dpad';
+
+function updateControlModeUI(mode: 'dpad' | 'gesture') {
+  activeControlMode = mode;
+  localStorage.setItem('kode_runner_control_mode', mode);
+
+  if (modeBtnDpad && modeBtnGesture) {
+    if (mode === 'dpad') {
+      modeBtnDpad.classList.add('active');
+      modeBtnGesture.classList.remove('active');
+      if (touchController) touchController.setVisible(true);
+      if (gestureController) gestureController.setEnabled(false);
+    } else {
+      modeBtnGesture.classList.add('active');
+      modeBtnDpad.classList.remove('active');
+      if (touchController) touchController.setVisible(false);
+      if (gestureController) gestureController.setEnabled(true);
+    }
+  }
+}
+
+if (modeBtnDpad && modeBtnGesture) {
+  modeBtnDpad.addEventListener('click', () => updateControlModeUI('dpad'));
+  modeBtnGesture.addEventListener('click', () => updateControlModeUI('gesture'));
+  updateControlModeUI(activeControlMode);
 }
 
 // Fever UI Elements

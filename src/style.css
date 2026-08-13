@@ -2048,6 +2048,35 @@ kbd {
   max-width: 300px;
   margin: 12px auto 0 auto;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-mode-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-inner);
+}
+
+.switcher-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.switcher-tabs {
+  padding: 2px;
+  gap: 2px;
+}
+
+.switcher-tabs .tab-btn {
+  font-size: 0.7rem;
+  padding: 3px 8px;
 }
 
 .touch-controller-container {

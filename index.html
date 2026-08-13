@@ -257,7 +257,16 @@
             </div>
 
             <!-- On-Screen Touch Controller Root for Mobile (Outside canvas-wrapper) -->
-            <div id="touch-controls-root" class="touch-controls-root"></div>
+            <div id="touch-controls-root" class="touch-controls-root">
+              <!-- Mobile Control Mode Switcher Bar -->
+              <div id="control-mode-switcher" class="control-mode-switcher">
+                <span class="switcher-label">조작 방식:</span>
+                <div class="tab-group switcher-tabs">
+                  <button type="button" id="mode-btn-dpad" class="tab-btn active">버튼 패드</button>
+                  <button type="button" id="mode-btn-gesture" class="tab-btn">화면 제스처</button>
+                </div>
+              </div>
+            </div>
           </section>
 
           <!-- Right Panel: Opponent Board / NEXT Queue -->

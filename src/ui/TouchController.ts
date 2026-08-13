@@ -1,5 +1,6 @@
 /**
  * On-Screen Virtual Touch Controller D-Pad for Mobile & Tablet Booth Guests
+ * Includes Web Vibration Haptic Feedback
  */
 export class TouchController {
   private containerEl: HTMLElement;
@@ -37,16 +38,30 @@ export class TouchController {
 
     containerEl.appendChild(this.containerEl);
 
-    // Bind Touch Events with Passive False
-    this.bindBtn('touch-left', callbacks.onLeft);
-    this.bindBtn('touch-right', callbacks.onRight);
-    this.bindBtn('touch-down', callbacks.onSoftDrop);
-    this.bindBtn('touch-drop', callbacks.onHardDrop);
-    this.bindBtn('touch-rotate', callbacks.onRotateCW);
-    this.bindBtn('touch-hold', callbacks.onHold);
+    // Bind Touch Events with Passive False & Vibration Haptic Feedback
+    this.bindBtn('touch-left', callbacks.onLeft, 10);
+    this.bindBtn('touch-right', callbacks.onRight, 10);
+    this.bindBtn('touch-down', callbacks.onSoftDrop, 10);
+    this.bindBtn('touch-drop', callbacks.onHardDrop, [20, 10, 30]);
+    this.bindBtn('touch-rotate', callbacks.onRotateCW, 12);
+    this.bindBtn('touch-hold', callbacks.onHold, 20);
   }
 
-  private bindBtn(id: string, action: () => void) {
+  public setVisible(visible: boolean) {
+    this.containerEl.style.display = visible ? 'flex' : 'none';
+  }
+
+  private triggerHaptic(pattern: number | number[]) {
+    if ('vibrate' in navigator) {
+      try {
+        navigator.vibrate(pattern);
+      } catch {
+        // Ignore if unsupported
+      }
+    }
+  }
+
+  private bindBtn(id: string, action: () => void, hapticPattern: number | number[]) {
     const btn = document.getElementById(id);
     if (!btn) return;
 
@@ -54,6 +69,7 @@ export class TouchController {
       'touchstart',
       (e) => {
         e.preventDefault();
+        this.triggerHaptic(hapticPattern);
         action();
       },
       { passive: false },
@@ -61,6 +77,7 @@ export class TouchController {
 
     btn.addEventListener('click', (e) => {
       e.preventDefault();
+      this.triggerHaptic(hapticPattern);
       action();
     });
   }
