@@ -2084,29 +2084,34 @@ kbd {
 }
 
 .control-mode-switcher {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 6px 10px;
+  justify-content: center;
+  padding: 3px 8px;
   background: var(--surface-card);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-inner);
+  border-radius: 20px;
+  width: fit-content;
+  margin: 4px auto 0 auto;
 }
 
 .switcher-label {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   color: var(--text-muted);
+  margin-right: 6px;
 }
 
 .switcher-tabs {
   padding: 2px;
   gap: 2px;
+  border-radius: 14px;
 }
 
 .switcher-tabs .tab-btn {
-  font-size: 0.7rem;
-  padding: 3px 8px;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 10px;
 }
 
 .touch-controller-container {
@@ -2287,22 +2292,44 @@ kbd {
   }
 
   .panel-opponent {
-    padding: 8px !important;
-    min-width: 130px !important;
-    max-width: 38vw !important;
-    gap: 6px !important;
+    padding: 6px !important;
+    min-width: 110px !important;
+    max-width: 35vw !important;
+    gap: 4px !important;
+    border-radius: var(--radius-inner) !important;
     box-sizing: border-box !important;
   }
 
+  .opponent-header h4 {
+    font-size: 0.7rem !important;
+    margin-top: 1px !important;
+  }
+
+  .opponent-badge {
+    font-size: 0.58rem !important;
+    padding: 1px 5px !important;
+  }
+
   .ready-btn {
-    font-size: 0.75rem !important;
-    padding: 6px 8px !important;
+    font-size: 0.72rem !important;
+    padding: 5px 8px !important;
+    border-radius: 6px !important;
+    margin: 2px 0 !important;
+  }
+
+  .opponent-canvas-wrapper {
+    padding: 2px !important;
   }
 
   #opponent-canvas {
     width: 100% !important;
-    max-width: 32vw !important;
-    max-height: 30vh !important;
+    max-width: 28vw !important;
+    max-height: 25vh !important;
+  }
+
+  .garbage-indicator-box {
+    font-size: 0.65rem !important;
+    padding: 2px 4px !important;
   }
 
   /* Left Panel (Hold & Stats) Second */
