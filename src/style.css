@@ -1990,14 +1990,31 @@ kbd {
 }
 
 /* ==========================================
-   Multiplayer 1v1 Opponent Board Panel
+   Multiplayer 1v1 PvP Dual Boards Container
    ========================================== */
+.pvp-boards-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
 .panel-opponent {
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: center;
   padding: 14px;
+  min-width: 180px;
+  box-sizing: border-box;
+}
+
+.ready-btn {
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  font-weight: 800;
+  width: 100%;
 }
 
 .opponent-header {
@@ -2021,15 +2038,27 @@ kbd {
   color: #ffffff;
 }
 
-.opponent-canvas-box {
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+.opponent-canvas-wrapper {
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius-inner);
   overflow: hidden;
   background: #0f172a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+}
+
+#opponent-canvas {
+  display: block;
+  width: 160px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 2;
 }
 
 .garbage-indicator-box {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #ef4444;
   font-weight: 700;
   background: rgba(239, 68, 68, 0.15);
@@ -2038,6 +2067,7 @@ kbd {
   border-radius: 6px;
   width: 100%;
   text-align: center;
+  box-sizing: border-box;
 }
 
 /* ==========================================
@@ -2224,11 +2254,21 @@ kbd {
     align-items: center !important;
   }
 
+  .pvp-boards-container {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   .board-wrapper {
-    padding: 6px !important;
+    padding: 4px !important;
     width: fit-content !important;
-    max-width: 92vw !important;
-    margin: 0 auto !important;
+    max-width: 58vw !important;
+    margin: 0 !important;
     display: inline-flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -2237,13 +2277,32 @@ kbd {
 
   #tetris-canvas {
     width: auto !important;
-    max-width: 85vw !important;
-    max-height: 52vh !important;
+    max-width: 54vw !important;
+    max-height: 48vh !important;
     aspect-ratio: 1 / 2 !important;
     object-fit: contain !important;
     touch-action: none;
     display: block !important;
     margin: 0 auto !important;
+  }
+
+  .panel-opponent {
+    padding: 8px !important;
+    min-width: 130px !important;
+    max-width: 38vw !important;
+    gap: 6px !important;
+    box-sizing: border-box !important;
+  }
+
+  .ready-btn {
+    font-size: 0.75rem !important;
+    padding: 6px 8px !important;
+  }
+
+  #opponent-canvas {
+    width: 100% !important;
+    max-width: 32vw !important;
+    max-height: 30vh !important;
   }
 
   /* Left Panel (Hold & Stats) Second */
