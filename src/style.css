@@ -633,6 +633,14 @@ section.hidden,
   overflow: hidden !important;
 }
 
+/* Hold and Next Combined Row Container */
+.hold-next-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
 /* Next Queue Horizontal Compact Mini Layout */
 .panel-next {
   display: flex !important;
@@ -2398,17 +2406,82 @@ kbd {
     box-sizing: border-box !important;
   }
 
-  /* 1. Top HUD Row: HOLD & NEXT on the EXACT SAME HORIZONTAL LINE */
+  /* 1. Left Panel Container (Holds Top Score Banner & HOLD/NEXT Row) */
   .side-panel.left-panel {
     order: 1 !important;
     width: 100% !important;
     max-width: 480px !important;
     display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Top Prominent Score Banner (SCORE, LINES, LEVEL, MAX COMBO) */
+  .panel-stats {
+    order: 1 !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    background: rgba(18, 24, 38, 0.9) !important;
+    border: 1px solid var(--border-active) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    box-sizing: border-box !important;
+  }
+
+  .panel-stats .stat-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 2px !important;
+  }
+
+  .panel-stats .stat-label {
+    font-size: 0.6rem !important;
+    font-weight: 800 !important;
+    color: var(--text-muted) !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .panel-stats .stat-value {
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+  }
+
+  /* 2. Center Panel Container (Timer Bar & Main Board) */
+  .center-panel {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .timer-bar-container {
+    order: 1 !important;
+    width: 100% !important;
+    padding: 6px 12px !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3. HOLD & NEXT Symmetrical Slim Line (Positioned Right Below Timer Bar) */
+  .hold-next-row {
+    order: 2 !important;
+    width: 100% !important;
+    display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
     gap: 8px !important;
-    margin-bottom: 2px !important;
+    box-sizing: border-box !important;
   }
 
   /* Symmetrical Slim HUD Chips for HOLD and NEXT */
@@ -2427,13 +2500,6 @@ kbd {
     background: rgba(18, 24, 38, 0.85) !important;
     border: 1px solid var(--border-subtle) !important;
     margin: 0 !important;
-  }
-
-  .panel-hold {
-    flex: 0 0 auto !important;
-  }
-
-  .panel-next {
     flex: 0 0 auto !important;
   }
 
@@ -2491,35 +2557,16 @@ kbd {
     height: 28px !important;
   }
 
-  /* Stats Card placed below or integrated */
-  .panel-stats {
-    order: 4 !important;
-    width: 100% !important;
-    max-width: 480px !important;
+  /* 4. Main Board Container (Right Below HOLD/NEXT row) */
+  .pvp-boards-container {
+    order: 2 !important;
     display: flex !important;
     flex-direction: row !important;
-    justify-content: space-around !important;
-    align-items: center !important;
-    padding: 6px 12px !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
     gap: 8px !important;
-    border-radius: 12px !important;
-    margin-top: 4px !important;
-  }
-
-  .panel-stats .stat-item {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 1px !important;
-  }
-
-  .panel-stats .stat-label {
-    font-size: 0.55rem !important;
-    opacity: 0.8;
-  }
-
-  .panel-stats .stat-value {
-    font-size: 0.85rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* 2. Center Panel (Main Tetris Canvas + PvP Opponent) */

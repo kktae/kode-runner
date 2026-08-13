@@ -175,23 +175,6 @@
         <main class="game-grid">
           <!-- Left Panel: HOLD, NEXT & Stats -->
           <section class="side-panel left-panel">
-            <div class="glass-card panel-hold">
-              <h3 class="panel-title">HOLD</h3>
-              <div class="preview-box">
-                <canvas id="hold-canvas" width="100" height="100"></canvas>
-              </div>
-              <span class="key-hint">[Shift / C]</span>
-            </div>
-
-            <div class="glass-card panel-next">
-              <h3 class="panel-title">NEXT</h3>
-              <div class="next-queue">
-                <div class="preview-box mini"><canvas id="next1-canvas" width="60" height="60"></canvas></div>
-                <div class="preview-box mini"><canvas id="next2-canvas" width="60" height="60"></canvas></div>
-                <div class="preview-box mini"><canvas id="next3-canvas" width="60" height="60"></canvas></div>
-              </div>
-            </div>
-
             <div class="glass-card panel-stats">
               <div class="stat-item">
                 <span class="stat-label">SCORE</span>
@@ -208,6 +191,25 @@
               <div class="stat-item">
                 <span class="stat-label">MAX COMBO</span>
                 <span id="combo-val" class="stat-value accent">0</span>
+              </div>
+            </div>
+
+            <div class="hold-next-row">
+              <div class="glass-card panel-hold">
+                <h3 class="panel-title">HOLD</h3>
+                <div class="preview-box">
+                  <canvas id="hold-canvas" width="100" height="100"></canvas>
+                </div>
+                <span class="key-hint">[Shift / C]</span>
+              </div>
+
+              <div class="glass-card panel-next">
+                <h3 class="panel-title">NEXT</h3>
+                <div class="next-queue">
+                  <div class="preview-box mini"><canvas id="next1-canvas" width="60" height="60"></canvas></div>
+                  <div class="preview-box mini"><canvas id="next2-canvas" width="60" height="60"></canvas></div>
+                  <div class="preview-box mini"><canvas id="next3-canvas" width="60" height="60"></canvas></div>
+                </div>
               </div>
             </div>
           </section>
