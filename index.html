@@ -131,7 +131,7 @@
               <div class="multiplayer-actions">
                 <button id="quick-match-btn" class="primary-btn flex-btn wide-quick-match">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                  <span>⚡ 빠른 무작위 자동 매칭</span>
+                  <span>⚡ 무작위 자동 매칭</span>
                 </button>
                 <button id="create-room-btn" class="secondary-btn flex-btn">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -199,21 +199,23 @@
               </div>
             </div>
 
-            <div class="glass-card panel-hold">
-              <h3 class="panel-title">HOLD</h3>
-              <div class="preview-box">
-                <canvas id="hold-canvas" width="100" height="100"></canvas>
+            <div class="hold-next-row">
+              <div class="glass-card panel-hold">
+                <h3 class="panel-title">HOLD</h3>
+                <div class="preview-box">
+                  <canvas id="hold-canvas" width="100" height="100"></canvas>
+                </div>
+                <span class="key-hint">[Shift / C]</span>
               </div>
-              <span class="key-hint">[Shift / C]</span>
-            </div>
 
-            <!-- NEXT Queue Panel Integrated into Left Sidebar -->
-            <div class="glass-card panel-next">
-              <h3 class="panel-title">NEXT</h3>
-              <div class="next-queue vertical">
-                <div class="preview-box mini"><canvas id="next1-canvas" width="60" height="60"></canvas></div>
-                <div class="preview-box mini"><canvas id="next2-canvas" width="60" height="60"></canvas></div>
-                <div class="preview-box mini"><canvas id="next3-canvas" width="60" height="60"></canvas></div>
+              <!-- NEXT Queue Panel Integrated into Left Sidebar -->
+              <div class="glass-card panel-next">
+                <h3 class="panel-title">NEXT</h3>
+                <div class="next-queue vertical">
+                  <div class="preview-box mini"><canvas id="next1-canvas" width="60" height="60"></canvas></div>
+                  <div class="preview-box mini"><canvas id="next2-canvas" width="60" height="60"></canvas></div>
+                  <div class="preview-box mini"><canvas id="next3-canvas" width="60" height="60"></canvas></div>
+                </div>
               </div>
             </div>
           </section>

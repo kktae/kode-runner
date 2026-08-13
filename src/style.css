@@ -2592,7 +2592,7 @@ kbd {
     box-sizing: border-box !important;
   }
 
-  /* 1. Left Panel Container (Holds Top Score Banner & HOLD/NEXT Row) */
+  /* 1. Left Panel Container (Top Stats & HOLD/NEXT Mobile Row) */
   .side-panel.left-panel {
     order: 1 !important;
     width: 100% !important;
@@ -2600,11 +2600,11 @@ kbd {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 6px !important;
-    margin-bottom: 2px !important;
+    gap: 8px !important;
+    margin-bottom: 4px !important;
   }
 
-  /* Top Prominent Score Banner (SCORE, LINES, LEVEL, MAX COMBO) */
+  /* Top Prominent Score Banner */
   .panel-stats {
     order: 1 !important;
     width: 100% !important;
@@ -2639,38 +2639,17 @@ kbd {
     font-weight: 800 !important;
   }
 
-  /* 2. Center Panel Container (Timer Bar, Main Board & Touch Controls) */
-  .center-panel {
-    order: 2 !important;
-    width: 100% !important;
-    max-width: 480px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 6px !important;
-  }
-
-  .timer-bar-container {
-    order: 1 !important;
-    width: 100% !important;
-    padding: 6px 12px !important;
-    border-radius: 12px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 3. HOLD & NEXT Symmetrical Slim Line (Positioned Below Timer Bar) */
+  /* HOLD & NEXT Symmetrical Row on Mobile */
   .hold-next-row {
-    order: 2 !important;
-    width: 100% !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
     gap: 8px !important;
+    width: 100% !important;
     box-sizing: border-box !important;
   }
 
-  /* Symmetrical Slim HUD Chips for HOLD and NEXT */
   .panel-hold, .panel-next {
     display: flex !important;
     flex-direction: row !important;
@@ -2678,40 +2657,43 @@ kbd {
     justify-content: center !important;
     gap: 8px !important;
     padding: 4px 10px !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    max-height: 42px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
     box-sizing: border-box !important;
     border-radius: 12px !important;
-    background: rgba(18, 24, 38, 0.85) !important;
+    background: rgba(18, 24, 38, 0.88) !important;
     border: 1px solid var(--border-subtle) !important;
     margin: 0 !important;
-    flex: 0 0 auto !important;
+    flex: 1 1 50% !important;
+    width: auto !important;
   }
 
   .panel-hold .panel-title, .panel-next .panel-title {
-    font-size: 0.65rem !important;
+    font-size: 0.72rem !important;
     font-weight: 800 !important;
     letter-spacing: 0.08em !important;
     margin: 0 !important;
     color: var(--text-muted) !important;
   }
 
-  .panel-hold .preview-box {
-    width: 32px !important;
-    height: 32px !important;
+  .panel-hold .preview-box, .preview-box.mini {
+    width: 34px !important;
+    height: 34px !important;
     padding: 1px !important;
-    background: rgba(0, 0, 0, 0.4) !important;
+    background: rgba(0, 0, 0, 0.5) !important;
     border: 1px solid var(--border-subtle) !important;
     border-radius: 8px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    box-sizing: border-box !important;
   }
 
-  #hold-canvas {
-    width: 28px !important;
-    height: 28px !important;
+  #hold-canvas, .preview-box.mini canvas {
+    width: 30px !important;
+    height: 30px !important;
+    display: block !important;
   }
 
   .panel-hold .key-hint {
@@ -2724,23 +2706,6 @@ kbd {
     align-items: center !important;
     gap: 4px !important;
     margin-top: 0 !important;
-  }
-
-  .preview-box.mini {
-    width: 32px !important;
-    height: 32px !important;
-    padding: 1px !important;
-    background: rgba(0, 0, 0, 0.4) !important;
-    border: 1px solid var(--border-subtle) !important;
-    border-radius: 8px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  .preview-box.mini canvas {
-    width: 28px !important;
-    height: 28px !important;
   }
 
   /* 4. Main Board Container (Positioned below HOLD/NEXT row) */
