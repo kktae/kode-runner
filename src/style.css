@@ -545,7 +545,8 @@ section.hidden,
   justify-content: center;
   align-items: center;
   position: relative;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
   transition:
     border-color 0.2s ease-out,
     box-shadow 0.2s ease-out,
@@ -620,13 +621,16 @@ section.hidden,
 
 #tetris-canvas {
   background: #121011;
-  border-radius: var(--radius-inner);
+  border-radius: inherit !important;
   display: block !important;
-  height: min(62vh, 560px) !important;
+  height: min(60vh, 560px) !important;
   aspect-ratio: 1 / 2 !important;
   width: auto !important;
   max-width: 100% !important;
+  max-height: 100% !important;
   object-fit: contain !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
 }
 
 /* Next Queue Horizontal Compact Mini Layout */
@@ -2381,21 +2385,215 @@ kbd {
     padding: 2px 4px !important;
   }
 
-  /* Left Panel (Hold, Next & Stats) Second */
-  .side-panel.left-panel {
-    order: 2 !important;
+  /* ==========================================
+     Mobile In-Game Grid Layout Optimization
+     ========================================== */
+  .game-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: center !important;
     width: 100% !important;
-    display: grid !important;
-    grid-template-columns: 1fr 1.2fr 1fr !important;
-    gap: 6px !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  .panel-hold, .panel-next {
+  /* 1. Left Panel (HOLD & STATS) Top Row Placement */
+  .side-panel.left-panel {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .panel-hold {
+    flex: 0 0 auto !important;
+    padding: 6px 8px !important;
+    min-width: 68px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 6px 4px !important;
+  }
+
+  .panel-hold .panel-title {
+    font-size: 0.62rem !important;
+    letter-spacing: 0.05em !important;
+    margin-bottom: 2px !important;
+  }
+
+  .panel-hold .preview-box {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 2px !important;
+  }
+
+  #hold-canvas {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .panel-hold .key-hint {
+    display: none !important;
+  }
+
+  .panel-stats {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 6px 10px !important;
+    gap: 6px !important;
+  }
+
+  .panel-stats .stat-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1px !important;
+  }
+
+  .panel-stats .stat-label {
+    font-size: 0.55rem !important;
+    opacity: 0.8;
+  }
+
+  .panel-stats .stat-value {
+    font-size: 0.85rem !important;
+  }
+
+  /* 2. Center Panel (Main Tetris Canvas + PvP Opponent) */
+  .center-panel {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .pvp-boards-container {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Board Wrapper: Overflow Hidden prevents canvas border leaks */
+  .board-wrapper {
+    padding: 4px !important;
+    width: fit-content !important;
+    max-width: 58vw !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
+  }
+
+  #tetris-canvas {
+    width: auto !important;
+    max-width: 52vw !important;
+    max-height: 44vh !important;
+    aspect-ratio: 1 / 2 !important;
+    object-fit: contain !important;
+    touch-action: none;
+    display: block !important;
+    margin: 0 auto !important;
+    border-radius: inherit !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .panel-opponent {
+    padding: 6px !important;
+    min-width: 105px !important;
+    max-width: 36vw !important;
+    gap: 4px !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .opponent-header h4 {
+    font-size: 0.68rem !important;
+    margin-top: 1px !important;
+  }
+
+  .opponent-badge {
+    font-size: 0.55rem !important;
+    padding: 1px 4px !important;
+  }
+
+  .ready-btn {
+    font-size: 0.62rem !important;
+    padding: 3px 5px !important;
+    border-radius: 4px !important;
+    margin: 1px 0 !important;
+    height: auto !important;
+  }
+
+  .opponent-canvas-wrapper {
+    padding: 2px !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+  }
+
+  #opponent-canvas {
+    width: 100% !important;
+    max-width: 28vw !important;
+    max-height: 24vh !important;
+    display: block !important;
+    border-radius: inherit !important;
+  }
+
+  .garbage-indicator-box {
+    font-size: 0.62rem !important;
+    padding: 2px 4px !important;
+  }
+
+  /* 3. Right Panel (NEXT Queue, Chat & Leaderboard) */
+  .side-panel.right-panel {
+    order: 3 !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .panel-next {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 6px 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .panel-next .panel-title {
+    font-size: 0.65rem !important;
+    margin: 0 !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .next-queue {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-top: 0 !important;
   }
 
   .preview-box.mini {
@@ -2407,19 +2605,6 @@ kbd {
   .preview-box.mini canvas {
     width: 28px !important;
     height: 28px !important;
-  }
-
-  .panel-stats {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    gap: 4px !important;
-  }
-
-  /* Right Panel (Opponent / Chat) Third */
-  .side-panel.right-panel {
-    order: 3 !important;
-    width: 100% !important;
   }
 
   /* Footer Controls & Disclaimer */
@@ -2491,7 +2676,7 @@ kbd {
   }
 
   .side-panel.left-panel {
-    grid-template-columns: 1fr !important;
+    gap: 4px !important;
   }
 
   .chat-shortcuts {
