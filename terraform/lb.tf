@@ -100,6 +100,10 @@ resource "google_compute_target_https_proxy" "https_proxy" {
     google_certificate_manager_certificate_map_entry.cert_map_entry_main,
     google_certificate_manager_certificate_map_entry.cert_map_entry_wildcard
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Global Forwarding Rule for HTTPS (Port 443)
