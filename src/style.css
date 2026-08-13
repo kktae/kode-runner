@@ -2453,7 +2453,7 @@ kbd {
     font-weight: 800 !important;
   }
 
-  /* 2. Center Panel Container (Timer Bar & Main Board) */
+  /* 2. Center Panel Container (Timer Bar, Main Board & Touch Controls) */
   .center-panel {
     order: 2 !important;
     width: 100% !important;
@@ -2472,7 +2472,7 @@ kbd {
     box-sizing: border-box !important;
   }
 
-  /* 3. HOLD & NEXT Symmetrical Slim Line (Positioned Right Below Timer Bar) */
+  /* 3. HOLD & NEXT Symmetrical Slim Line (Positioned Below Timer Bar) */
   .hold-next-row {
     order: 2 !important;
     width: 100% !important;
@@ -2557,9 +2557,9 @@ kbd {
     height: 28px !important;
   }
 
-  /* 4. Main Board Container (Right Below HOLD/NEXT row) */
+  /* 4. Main Board Container (Positioned below HOLD/NEXT row) */
   .pvp-boards-container {
-    order: 2 !important;
+    order: 3 !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
@@ -2569,24 +2569,28 @@ kbd {
     box-sizing: border-box !important;
   }
 
-  /* 2. Center Panel (Main Tetris Canvas + PvP Opponent) */
-  .center-panel {
-    order: 2 !important;
+  /* 5. Touch Controls Root (Positioned strictly BELOW main tetris board) */
+  .touch-controls-root {
+    order: 4 !important;
     width: 100% !important;
-    max-width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    gap: 8px !important;
+    margin-top: 6px !important;
   }
 
-  .pvp-boards-container {
+  .control-mode-switcher {
     display: flex !important;
     flex-direction: row !important;
+    align-items: center !important;
     justify-content: center !important;
-    align-items: flex-start !important;
     gap: 8px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    padding: 4px 10px !important;
+    background: rgba(18, 24, 38, 0.8) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 20px !important;
+    margin: 0 auto !important;
   }
 
   /* Board Wrapper: Overflow Hidden prevents canvas border leaks */
