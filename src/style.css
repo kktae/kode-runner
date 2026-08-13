@@ -2494,78 +2494,89 @@ kbd {
     align-items: center !important;
   }
 
+  /* Mobile Dual Board Arena Symmetrical Fluid Grid */
   .pvp-boards-container {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
-    align-items: flex-end !important; /* Bottom line alignment for player board, next panel, and opponent board */
-    gap: 8px !important;
+    align-items: stretch !important;
+    gap: 6px !important;
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
   }
 
-  .board-wrapper {
+  /* Player 1 Board & Player 2 Board - Fluid Equal Sizing on Mobile */
+  #canvas-wrapper,
+  .panel-opponent:not(.hidden) {
+    position: relative !important;
     padding: 4px !important;
-    width: fit-content !important;
-    max-width: 58vw !important;
-    margin: 0 !important;
-    display: inline-flex !important;
-    justify-content: center !important;
+    width: calc(47vw - 8px) !important;
+    min-width: 0 !important;
+    max-width: 200px !important;
+    flex: 1 1 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
+    justify-content: center !important;
+    border-radius: 12px !important;
     box-sizing: border-box !important;
   }
 
-  #tetris-canvas {
-    width: auto !important;
-    max-width: 54vw !important;
-    max-height: 48vh !important;
+  #canvas-wrapper #tetris-canvas,
+  #opponent-canvas {
+    width: 100% !important;
+    height: auto !important;
     aspect-ratio: 1 / 2 !important;
+    max-height: 52vh !important;
     object-fit: contain !important;
     touch-action: none;
     display: block !important;
-    margin: 0 auto !important;
+    border-radius: 8px !important;
   }
 
-  .panel-opponent {
-    padding: 6px !important;
-    min-width: 110px !important;
-    max-width: 35vw !important;
-    gap: 4px !important;
-    border-radius: var(--radius-inner) !important;
-    box-sizing: border-box !important;
+  /* Compact Mobile VS Divider */
+  .board-vs-divider:not(.hidden) {
+    height: auto !important;
+    align-self: center !important;
+    width: 18px !important;
   }
 
-  .opponent-header h4 {
-    font-size: 0.7rem !important;
-    margin-top: 1px !important;
+  .vs-text {
+    font-size: 0.65rem !important;
+    padding: 3px 2px !important;
+  }
+
+  /* Mobile In-Board Overlay Badges */
+  .board-ready-overlay {
+    bottom: 12px !important;
+    width: 90% !important;
+  }
+
+  .ready-overlay-btn {
+    padding: 8px 10px !important;
+    font-size: 0.75rem !important;
+    border-radius: 8px !important;
+  }
+
+  .board-attack-badge {
+    top: 8px !important;
+    padding: 3px 8px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .opponent-board-header-overlay {
+    top: 8px !important;
+    padding: 2px 8px !important;
+    border-radius: 8px !important;
   }
 
   .opponent-badge {
-    font-size: 0.58rem !important;
-    padding: 1px 5px !important;
+    font-size: 0.52rem !important;
   }
 
-  .ready-btn {
+  .opponent-name-text {
     font-size: 0.65rem !important;
-    padding: 3px 6px !important;
-    border-radius: 4px !important;
-    margin: 1px 0 !important;
-    height: auto !important;
-  }
-
-  .opponent-canvas-wrapper {
-    padding: 2px !important;
-  }
-
-  #opponent-canvas {
-    width: 100% !important;
-    max-width: 28vw !important;
-    max-height: 25vh !important;
-  }
-
-  .garbage-indicator-box {
-    font-size: 0.65rem !important;
-    padding: 2px 4px !important;
   }
 
   /* ==========================================
