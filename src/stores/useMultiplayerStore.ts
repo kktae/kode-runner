@@ -62,7 +62,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
         transports: ['websocket', 'polling'],
         autoConnect: true,
         reconnection: true,
-        reconnectionAttempts: 10,
+        reconnectionAttempts: 15,
         reconnectionDelay: 1000,
       });
 
@@ -72,8 +72,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
     }
 
     const activeSocket = socket;
-    // 기존 중복 등록된 이벤트 리스너 완전 제거
-    activeSocket.removeAllListeners();
+    activeSocket.off(); // 링커 리스너 깔끔한 초기화 후 1회 세팅
 
     activeSocket.on('connect', () => {
       const { roomId, nickname } = get();

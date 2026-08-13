@@ -284,9 +284,11 @@ io.on('connection', (socket: Socket) => {
     currentRoomId = roomId;
     currentNickname = nickname || '플레이어';
 
-    if (disconnectTimeouts.has(socket.id)) {
-      clearTimeout(disconnectTimeouts.get(socket.id));
-      disconnectTimeouts.delete(socket.id);
+    const userKey = `${roomId}_${currentNickname}`;
+    if (disconnectTimeouts.has(userKey)) {
+      clearTimeout(disconnectTimeouts.get(userKey));
+      disconnectTimeouts.delete(userKey);
+      logInfo('Rejoining player: cleared pending disconnect grace period timeout', { userKey, socketId: socket.id });
     }
 
     socket.join(roomId);
@@ -399,27 +401,32 @@ io.on('connection', (socket: Socket) => {
   });
 
   socket.on('disconnect', () => {
-    logInfo('Socket client disconnected', { socketId: socket.id, roomId: currentRoomId });
+    logInfo('Socket client disconnected', { socketId: socket.id, roomId: currentRoomId, nickname: currentNickname });
     if (currentRoomId) {
       const roomToNotify = currentRoomId;
-      const leavingSocketId = socket.id;
+      const leavingNickname = currentNickname;
+      const userKey = `${roomToNotify}_${leavingNickname}`;
 
-      // 4-second grace period for automatic socket reconnection before declaring opponent left
+      if (disconnectTimeouts.has(userKey)) {
+        clearTimeout(disconnectTimeouts.get(userKey));
+      }
+
+      // 6초 유예 시간 (창 이동/재연결 시 충분한 타임아웃 제공)
       const timeout = setTimeout(() => {
-        disconnectTimeouts.delete(leavingSocketId);
+        disconnectTimeouts.delete(userKey);
         let sessionList = roomSessions.get(roomToNotify) || [];
-        sessionList = sessionList.filter((s) => s.socketId !== leavingSocketId);
+        sessionList = sessionList.filter((s) => s.nickname !== leavingNickname);
         roomSessions.set(roomToNotify, sessionList);
 
         if (fallbackWaitingRoomId === roomToNotify) {
           fallbackWaitingRoomId = null;
         }
 
-        logInfo('Grace period expired: emitting opponent_left', { socketId: leavingSocketId, roomId: roomToNotify });
-        io.in(roomToNotify).emit('opponent_left', { socketId: leavingSocketId });
-      }, 4000);
+        logInfo('Grace period expired: emitting opponent_left', { userKey, roomId: roomToNotify });
+        io.in(roomToNotify).emit('opponent_left', { nickname: leavingNickname });
+      }, 6000);
 
-      disconnectTimeouts.set(leavingSocketId, timeout);
+      disconnectTimeouts.set(userKey, timeout);
     }
   });
 });
