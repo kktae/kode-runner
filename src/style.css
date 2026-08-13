@@ -299,13 +299,20 @@ body {
 }
 
 .panel-title {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--text-muted);
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   text-align: center;
   text-transform: uppercase;
+}
+
+.panel-hold, .panel-next {
+  padding: 10px 8px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .preview-box {
@@ -314,48 +321,49 @@ body {
   align-items: center;
   background: var(--surface-item);
   border-radius: var(--radius-inner);
-  padding: 8px;
+  padding: 4px;
   border: 1px solid var(--border-subtle);
 }
 
 .preview-box.mini {
-  padding: 4px;
+  padding: 3px;
 }
 
 .key-hint {
   display: block;
   text-align: center;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
-  margin-top: 6px;
-  font-weight: 500;
+  margin-top: 4px;
+  font-weight: 600;
 }
 
 .panel-stats {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  padding: 10px 8px !important;
 }
 
 .stat-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 6px 8px;
   background: var(--surface-item);
   border-radius: var(--radius-inner);
   border: 1px solid var(--border-subtle);
 }
 
 .stat-label {
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .stat-value {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: #ffffff;
 }
@@ -368,14 +376,14 @@ body {
   font-size: 1.15rem;
 }
 
-/* Optimized 3-Column Balanced E-Sports Grid Layout (Exact 832px Total Width) */
+/* Optimized 3-Column Modern E-Sports Grid Layout (Expanded Canvas, Slim Side Panels) */
 .game-grid {
   display: flex !important;
-  justify-content: space-between !important;
+  justify-content: center !important;
   align-items: flex-start !important;
-  gap: 16px !important;
+  gap: 20px !important;
   width: 100% !important;
-  max-width: 832px !important;
+  max-width: 920px !important;
   margin: 0 auto !important;
   box-sizing: border-box !important;
 }
@@ -384,23 +392,23 @@ body {
   display: flex !important;
   flex-direction: column !important;
   gap: 10px !important;
-  width: 240px !important;
-  flex: 0 0 240px !important;
+  width: 150px !important;
+  flex: 0 0 150px !important;
 }
 
-/* Center Panel & Board (Slimmed Width) */
+/* Center Panel & Main Tetris Board (Expanded Size) */
 .center-panel {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   gap: 10px !important;
-  width: 320px !important;
-  flex: 0 0 320px !important;
+  width: 380px !important;
+  flex: 0 0 380px !important;
 }
 
 .board-wrapper {
-  width: 320px !important;
-  max-width: 320px !important;
+  width: 380px !important;
+  max-width: 380px !important;
   box-sizing: border-box !important;
   display: flex !important;
   justify-content: center !important;
@@ -604,9 +612,9 @@ body {
   background: #121011;
   border-radius: var(--radius-inner);
   display: block;
-  width: 300px;
+  width: 360px !important;
   max-width: 100%;
-  height: auto;
+  height: 720px !important;
   aspect-ratio: 1 / 2;
 }
 
