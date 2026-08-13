@@ -292,8 +292,13 @@ io.on('connection', (socket: Socket) => {
     socket.join(roomId);
 
     let sessionList = roomSessions.get(roomId) || [];
+    const existingPlayer = sessionList.find(
+      (s) => s.nickname === currentNickname || s.socketId === socket.id
+    );
+    const existingReadyState = existingPlayer ? existingPlayer.isReady : false;
+
     sessionList = sessionList.filter((s) => s.socketId !== socket.id && s.nickname !== currentNickname);
-    sessionList.push({ socketId: socket.id, nickname: currentNickname, isReady: false });
+    sessionList.push({ socketId: socket.id, nickname: currentNickname, isReady: existingReadyState });
     roomSessions.set(roomId, sessionList);
 
     const players = sessionList.map((s) => ({
@@ -302,7 +307,7 @@ io.on('connection', (socket: Socket) => {
       isReady: s.isReady,
     }));
 
-    logInfo('Player joined room', { socketId: socket.id, roomId, nickname: currentNickname, totalPlayers: players.length });
+    logInfo('Player joined room', { socketId: socket.id, roomId, nickname: currentNickname, isReady: existingReadyState, totalPlayers: players.length });
     io.in(roomId).emit('room_info', { roomId, players });
   });
 

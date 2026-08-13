@@ -84,17 +84,24 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       });
 
       socket.on('room_info', (data: { roomId: string; players: { nickname: string; socketId: string; isReady: boolean }[] }) => {
-        const curSocket = get().socket;
+        const state = get();
+        const curSocket = state.socket;
         const mySocketId = curSocket ? curSocket.id : null;
-        const me = data.players.find((p) => p.socketId === mySocketId);
-        const opponent = data.players.find((p) => p.socketId !== mySocketId);
+        const myNickname = state.nickname;
+
+        const me = data.players.find(
+          (p) => (myNickname && p.nickname === myNickname) || (mySocketId && p.socketId === mySocketId)
+        );
+        const opponent = data.players.find(
+          (p) => p !== me && ((myNickname && p.nickname !== myNickname) || (mySocketId && p.socketId !== mySocketId))
+        );
 
         set({
           roomId: data.roomId,
           opponentNickname: opponent ? opponent.nickname : null,
-          isReady: me ? me.isReady : false,
+          isReady: me ? me.isReady : state.isReady,
           opponentReady: opponent ? opponent.isReady : false,
-          status: get().status === 'PLAYING' ? 'PLAYING' : 'WAITING',
+          status: state.status === 'PLAYING' ? 'PLAYING' : 'WAITING',
         });
       });
 
