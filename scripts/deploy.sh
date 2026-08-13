@@ -53,5 +53,8 @@ echo "Custom Domain URL:"
 terraform output -raw custom_domain_url || true
 echo ""
 echo "DNS A-Record Configuration Guide:"
-echo "Please set your DNS provider (e.g. Namecheap, GoDaddy, Cloudflare) A-Records for 'your-custom-domain.com' and 'www.your-custom-domain.com' to the Global Load Balancer Static IP above."
+echo "Please set your DNS provider A-Record for 'your-custom-domain.com' and Wildcard '*.your-custom-domain.com' to the Global Load Balancer Static IP above."
+echo ""
+echo "Wildcard SSL Certificate Manager CNAME Validation Record:"
+terraform output -json dns_authorization_cname_record || true
 echo ""

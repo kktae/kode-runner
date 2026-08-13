@@ -32,21 +32,56 @@ resource "google_compute_backend_service" "lb_backend" {
   }
 }
 
-# Google Managed SSL Certificate for Custom Domain (your-custom-domain.com, www, and mzs)
-resource "google_compute_managed_ssl_certificate" "lb_ssl_cert" {
-  name = "${var.app_name}-managed-ssl-cert-v2"
+# ==============================================================================
+# Certificate Manager (Next-Gen GCP SSL Management supporting Wildcards *.your-custom-domain.com)
+# ==============================================================================
+
+# 1. DNS Authorization for Certificate Manager Domain Validation
+resource "google_certificate_manager_dns_authorization" "dns_auth" {
+  depends_on  = [google_project_service.enabled_apis]
+  name        = "${var.app_name}-dns-auth"
+  description = "DNS Authorization for Wildcard SSL Certificate on ${var.domain_name}"
+  domain      = var.domain_name
+}
+
+# 2. Certificate Manager Wildcard Managed SSL Certificate (*.your-custom-domain.com & your-custom-domain.com)
+resource "google_certificate_manager_certificate" "wildcard_cert" {
+  depends_on  = [google_project_service.enabled_apis]
+  name        = "${var.app_name}-wildcard-cert"
+  description = "Google-managed Wildcard SSL Certificate for ${var.domain_name} and subdomains"
+  scope       = "DEFAULT"
 
   managed {
     domains = [
       var.domain_name,
-      "www.${var.domain_name}",
-      "mzs.${var.domain_name}"
+      "*.${var.domain_name}"
+    ]
+    dns_authorizations = [
+      google_certificate_manager_dns_authorization.dns_auth.id
     ]
   }
+}
 
-  lifecycle {
-    create_before_destroy = true
-  }
+# 3. Certificate Map
+resource "google_certificate_manager_certificate_map" "cert_map" {
+  depends_on  = [google_project_service.enabled_apis]
+  name        = "${var.app_name}-cert-map"
+  description = "Certificate Map for ${var.domain_name} and subdomains"
+}
+
+# 4. Certificate Map Entries
+resource "google_certificate_manager_certificate_map_entry" "cert_map_entry_main" {
+  name         = "${var.app_name}-cert-map-entry-main"
+  map          = google_certificate_manager_certificate_map.cert_map.name
+  certificates = [google_certificate_manager_certificate.wildcard_cert.id]
+  hostname     = var.domain_name
+}
+
+resource "google_certificate_manager_certificate_map_entry" "cert_map_entry_wildcard" {
+  name         = "${var.app_name}-cert-map-entry-wildcard"
+  map          = google_certificate_manager_certificate_map.cert_map.name
+  certificates = [google_certificate_manager_certificate.wildcard_cert.id]
+  hostname     = "*.${var.domain_name}"
 }
 
 # URL Map for HTTPS Traffic
@@ -55,11 +90,16 @@ resource "google_compute_url_map" "https_url_map" {
   default_service = google_compute_backend_service.lb_backend.id
 }
 
-# Target HTTPS Proxy
+# Target HTTPS Proxy using Certificate Map (Certificate Manager Integration)
 resource "google_compute_target_https_proxy" "https_proxy" {
-  name             = "${var.app_name}-https-proxy"
-  url_map          = google_compute_url_map.https_url_map.id
-  ssl_certificates = [google_compute_managed_ssl_certificate.lb_ssl_cert.id]
+  name            = "${var.app_name}-https-proxy"
+  url_map         = google_compute_url_map.https_url_map.id
+  certificate_map = "//certificatemanager.googleapis.com/${google_certificate_manager_certificate_map.cert_map.id}"
+
+  depends_on = [
+    google_certificate_manager_certificate_map_entry.cert_map_entry_main,
+    google_certificate_manager_certificate_map_entry.cert_map_entry_wildcard
+  ]
 }
 
 # Global Forwarding Rule for HTTPS (Port 443)

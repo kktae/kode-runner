@@ -15,7 +15,8 @@ resource "google_project_service" "enabled_apis" {
     "artifactregistry.googleapis.com",
     "vpcaccess.googleapis.com",
     "compute.googleapis.com",
-    "iam.googleapis.com"
+    "iam.googleapis.com",
+    "certificatemanager.googleapis.com"
   ])
 
   service            = each.key

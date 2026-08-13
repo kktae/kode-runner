@@ -27,3 +27,12 @@ output "custom_domain_url" {
   description = "HTTPS URL for Custom Domain"
   value       = "https://${var.domain_name}"
 }
+
+output "dns_authorization_cname_record" {
+  description = "DNS CNAME Record required for Wildcard Certificate Manager Validation"
+  value = {
+    name  = google_certificate_manager_dns_authorization.dns_auth.dns_resource_record[0].name
+    type  = google_certificate_manager_dns_authorization.dns_auth.dns_resource_record[0].type
+    value = google_certificate_manager_dns_authorization.dns_auth.dns_resource_record[0].data
+  }
+}
