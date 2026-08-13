@@ -355,30 +355,54 @@ const gameLoop = new GameLoop(tetrisCanvas, {
   },
 });
 
-// Helper for Preview Canvas Drawing
+// Helper for Preview Canvas Drawing (Perfect Tight-Bounding-Box Centering)
 function drawMinoPreview(canvas: HTMLCanvasElement, type: MinoType | null) {
   const ctx = canvas.getContext('2d')!;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!type) return;
 
   const shape = SHAPES[type];
-  const rows = shape.length;
-  const cols = shape[0].length;
-  const cellSize = Math.min(
-    canvas.width / (cols + 1),
-    canvas.height / (rows + 1),
-  );
 
-  const startX = (canvas.width - cols * cellSize) / 2;
-  const startY = (canvas.height - rows * cellSize) / 2;
+  // Compute tight bounding box of filled cells
+  let minRow = shape.length, maxRow = -1;
+  let minCol = shape[0].length, maxCol = -1;
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
+  for (let r = 0; r < shape.length; r++) {
+    for (let c = 0; c < shape[r].length; c++) {
       if (shape[r][c]) {
+        if (r < minRow) minRow = r;
+        if (r > maxRow) maxRow = r;
+        if (c < minCol) minCol = c;
+        if (c > maxCol) maxCol = c;
+      }
+    }
+  }
+
+  if (maxRow === -1 || maxCol === -1) return;
+
+  const realRows = maxRow - minRow + 1;
+  const realCols = maxCol - minCol + 1;
+
+  // Calculate optimum cell size fitting tightly inside canvas with padding
+  const padding = 6;
+  const availW = canvas.width - padding * 2;
+  const availH = canvas.height - padding * 2;
+  const maxCell = canvas.width > 80 ? 22 : 12; // Cap cell size for large vs mini canvases
+  const cellSize = Math.min(availW / realCols, availH / realRows, maxCell);
+
+  // Exact center offsets
+  const startX = (canvas.width - realCols * cellSize) / 2;
+  const startY = (canvas.height - realRows * cellSize) / 2;
+
+  for (let r = minRow; r <= maxRow; r++) {
+    for (let c = minCol; c <= maxCol; c++) {
+      if (shape[r][c]) {
+        const drawX = startX + (c - minCol) * cellSize;
+        const drawY = startY + (r - minRow) * cellSize;
         drawMinoCell(
           ctx,
-          startX + c * cellSize,
-          startY + r * cellSize,
+          drawX,
+          drawY,
           cellSize,
           type,
           false,
@@ -919,7 +943,9 @@ useMultiplayerStore.subscribe((state) => {
   }
 
   if (chatPanel) {
-    if (state.roomId !== null) {
+    // Strictly restrict chat panel visibility to ACTIVE MULTIPLAYER game sessions
+    const isMultiMode = !gameView.classList.contains('hidden') && opponentPanel && !opponentPanel.classList.contains('hidden');
+    if (isMultiMode && state.roomId !== null) {
       chatPanel.classList.remove('hidden');
     } else {
       chatPanel.classList.add('hidden');
