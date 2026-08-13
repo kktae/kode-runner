@@ -2041,6 +2041,79 @@ kbd {
 }
 
 /* ==========================================
+   Mobile On-Screen Virtual Touch D-Pad Controls
+   ========================================== */
+.touch-controls-root {
+  width: 100%;
+  max-width: 300px;
+  margin: 12px auto 0 auto;
+  box-sizing: border-box;
+}
+
+.touch-controller-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-main);
+  box-sizing: border-box;
+}
+
+.touch-dpad, .touch-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.touch-btn {
+  flex: 1;
+  height: 48px;
+  background: var(--surface-item);
+  border: 1px solid var(--border-active);
+  border-radius: 10px;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background-color 0.1s ease-out, transform 0.08s ease-out;
+}
+
+.touch-btn:active {
+  background: var(--kakao-yellow);
+  color: #000000;
+  transform: scale(0.95);
+}
+
+.touch-btn.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  border-color: var(--border-subtle);
+}
+
+.touch-btn.primary {
+  background: var(--kakao-yellow);
+  color: var(--text-dark);
+  font-size: 1.25rem;
+}
+
+.touch-btn.accent {
+  background: #ff4500;
+  color: #ffffff;
+  font-size: 0.8rem;
+  border-color: #ff6347;
+}
+
+/* ==========================================
    Comprehensive Mobile & Tablet Responsive Media Queries
    ========================================== */
 @media (max-width: 860px) {

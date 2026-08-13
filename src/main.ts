@@ -194,14 +194,17 @@ const comboBanner = new ComboBanner(canvasWrapper);
 const soundManager = SoundManager.getInstance();
 
 // Initialize Touch D-Pad Controller for Mobile/Tablet Booth Guests
-new TouchController(canvasWrapper, {
-  onLeft: () => gameLoop.handleInput('left'),
-  onRight: () => gameLoop.handleInput('right'),
-  onSoftDrop: () => gameLoop.handleInput('down'),
-  onHardDrop: () => gameLoop.handleInput('hardDrop'),
-  onRotateCW: () => gameLoop.handleInput('rotate'),
-  onHold: () => gameLoop.handleInput('hold'),
-});
+const touchControlsRoot = document.getElementById('touch-controls-root');
+if (touchControlsRoot) {
+  new TouchController(touchControlsRoot, {
+    onLeft: () => gameLoop.handleInput('left'),
+    onRight: () => gameLoop.handleInput('right'),
+    onSoftDrop: () => gameLoop.handleInput('down'),
+    onHardDrop: () => gameLoop.handleInput('hardDrop'),
+    onRotateCW: () => gameLoop.handleInput('rotate'),
+    onHold: () => gameLoop.handleInput('hold'),
+  });
+}
 
 // Fever UI Elements
 const feverFill = document.getElementById('fever-progress-fill') as HTMLElement;
